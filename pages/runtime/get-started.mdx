@@ -1,0 +1,75 @@
+import { Callout } from "nextra-theme-docs";
+import { SyncedTabs } from "nextra-synced-tabs";
+
+# Get Started with the Wasmer Runtime
+
+This page will guide you through installing Wasmer, and running a published container in the Wasmer Registry.
+
+## Run a package
+
+<div className="steps-container">
+
+### Install Wasmer
+
+<SyncedTabs items={['CLI', 'JS', 'Python']}>
+  <SyncedTabs.Tab>
+    Unix (macOS, Linux):
+
+    ```bash
+    curl https://get.wasmer.io -sSfL | sh
+    ```
+
+    PowerShell (Windows):
+
+    ```bash
+    iwr https://win.wasmer.io -useb | iex
+    ```
+
+    <Callout type="info">
+        Other installation methods available here: https://github.com/wasmerio/wasmer-install
+        </Callout>
+
+  </SyncedTabs.Tab>
+  <SyncedTabs.Tab>
+    ```bash
+    npm install wasmer
+    ```
+  </SyncedTabs.Tab>
+  <SyncedTabs.Tab>
+    ```bash
+    pip install wasmer
+    ```
+  </SyncedTabs.Tab>
+</SyncedTabs>
+
+### Run a Package
+
+<SyncedTabs items={['CLI', 'JS', 'Python']}>
+  <SyncedTabs.Tab>
+    ```bash /python\/python/
+    wasmer run python/python -- -c "print(1+1)"
+    ```
+  </SyncedTabs.Tab>
+  <SyncedTabs.Tab>
+
+    ```js /python\/python/
+    import Wasmer from "wasmer";
+
+    let python = new Wasmer("python/python");
+    let runner = python.entrypoint.run('-c "print(1+1)"');
+    console.log(python.stdout);
+    ```
+
+  </SyncedTabs.Tab>
+  <SyncedTabs.Tab>
+    ```python /python\/python/
+    from wasmer import Wasmer
+
+    python = Wasmer("python/python")
+    runner = python.entrypoint.run('-c "print(1+1)"')
+    print(python.stdout)
+    ```
+  </SyncedTabs.Tab>
+</SyncedTabs>
+
+</div>

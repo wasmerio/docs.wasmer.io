@@ -2,16 +2,16 @@ import React from 'react'
 import { DocsThemeConfig } from 'nextra-theme-docs'
 
 const config: DocsThemeConfig = {
-  logo: <span>My Project</span>,
+  logo: <span>Wasmer Docs</span>,
   project: {
-    link: 'https://github.com/shuding/nextra-docs-template',
+    link: 'https://github.com/wasmerio/docs.wasmer.io',
   },
   chat: {
-    link: 'https://discord.com',
+    link: 'https://slack.wasmer.io',
   },
-  docsRepositoryBase: 'https://github.com/shuding/nextra-docs-template',
+  docsRepositoryBase: 'https://github.com/wasmerio/docs.wasmer.io',
   footer: {
-    text: 'Nextra Docs Template',
+    text: 'Wasmer Docs',
   },
 }
 
