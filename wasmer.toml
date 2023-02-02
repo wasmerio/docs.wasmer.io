@@ -1,0 +1,21 @@
+[package]
+name = "wasmer/docs"
+version = "0.1.5"
+description = "Wasmer docs"
+license = "ISC"
+repository = "https://github.com/wasmerio/new-docs.wasmer.io"
+
+[[module]]
+name = "serve"
+source = "serve.wasm"
+abi = "wasi"
+
+[module.interfaces]
+wasi = "0.1.0-unstable"
+
+[[command]]
+name = "wcgi"
+module = "serve"
+
+[fs]
+"app" = "app"
