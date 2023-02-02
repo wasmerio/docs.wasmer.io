@@ -7,6 +7,5 @@ module.exports = {
   ...withNextra(),
   images: {
     unoptimized: true,
-  },
-  outDir: 'app',
+  }
 }

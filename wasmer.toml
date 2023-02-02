@@ -1,6 +1,6 @@
 [package]
 name = "wasmer/docs"
-version = "0.1.5"
+version = "0.1.6"
 description = "Wasmer docs"
 license = "ISC"
 repository = "https://github.com/wasmerio/new-docs.wasmer.io"
