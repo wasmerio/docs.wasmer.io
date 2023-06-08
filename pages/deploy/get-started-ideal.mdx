@@ -1,0 +1,130 @@
+# How to deploy
+
+## Install Wasmer CLI
+
+Unix (macOS, Linux):
+
+```bash
+curl https://get.wasmer.io -sSfL | sh
+```
+
+PowerShell (Windows):
+
+```bash
+iwr https://win.wasmer.io -useb | iex
+```
+
+## Login into Wasmer
+
+`wasmer login`: This will open the login page in Wasmer (to login or Register, and will automatically set a token after it)
+
+## Create a deployment
+
+
+### Mount a specific directory
+
+You can use `--mount HOST_SOURCE:TARGET_PATH` to mount the local `HOST_SOURCE` into the container `TARGET_PATH`.
+For example:
+
+```bash
+$ wasmer deploy syrusakbary/staticserver --mount `$(pwd)`/app:/
+[info] No deployment configuration was found, this will deploy a new app in `wasmer.app`
+New app created: `my-blue-host-x23423.wasmer.app`
+Configuration file created: `Deploy.toml`
+```
+
+
+This will create a `Deploy.yaml` file (it can also recognize `Deploy.json`), similar to:
+
+```
+-
+    app = "my-blue-host-x23423"
+    container = "syrusakbary/staticserver"
+    uses = [
+    ]
+    # This should be inspired by https://kubernetes.io/docs/concepts/storage/volumes/
+    mount = [{
+        source = "/the/full/host/path/app"
+        target = "/app"
+        kind = "hostfs"
+    },
+    {
+        source = "THE_BUCKET_NAME"
+        target = "/app"
+        kind = "s3"
+    }]
+```
+
+
+### Deploy a package
+
+Let's say you have a `Wasmer.toml` in the current directory, you can deploy it with:
+
+```
+$ wasmer deploy . --mount `$(pwd)`/app:/
+```
+
+# TODO
+
+* Cron jobs
+* 
+
+### Use a specific container
+
+Sometimes you may want to use specific containers so they are available in the host.
+For that, you can use the `--use` flag in `wasmer deploy`
+
+# Complex config
+
+```
+name: my-deployment
+workload:
+  name: my-workload
+  runner:
+    webc_command:
+      package:
+        repository: https://wapm.dev/
+        namespace: ns
+        name: pkg
+        tag: 0.1.2
+        auth_token:
+      command: some-command
+  capabilities:
+    cpu:
+      maximum_threads: 100
+      maximum_usage: 2000
+    fs:
+      volumes: []
+    memory_swap:
+      swappiness: never
+      memory_id:
+      maximum_size: 1073741824
+    memory_persistent:
+    network:
+      enabled: true
+      network_id:
+      ingress:
+        enabled: true
+        maximum_bandwidth_per_second: 104857600
+      egress:
+        enabled: false
+        maximum_bandwidth_per_second: 1048576
+    network_dns:
+      enabled: true
+      servers:
+      - 1.1.1.1
+      allowed_hosts:
+        allow_all_hosts: false
+        hosts:
+        - hello.com
+        regex_patterns:
+        - ".*\\.wasmer\\.io"
+        wildcard_patterns:
+        - "*.wasmer.io"
+    network_gateway:
+      enforce_https: true
+      domains:
+      - my-site.com
+
+```
+

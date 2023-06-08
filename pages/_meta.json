@@ -1,5 +1,20 @@
 {
-  "index": "Introduction",
+  "index": {
+    "title": "Introduction",
+    "theme": {
+      "typesetting": "article"
+    }
+  },
+  "install": "Install Wasmer",
+  "runtime": "Runtime",
+  "registry": "Registry",
+  "deploy": {
+    "display": "hidden"
+  },
+  "---": {
+    "type": "separator"
+  },
+  "developers": "Developers",
   "contact": {
     "title": "Contact ↗",
     "type": "page",
