@@ -1,10 +1,12 @@
 # Wasmer Features
 
-The Wasmer WebAssembly runtime provides various features for users and developers:
+The Wasmer WebAssembly runtime supports different backends:
 
-* **Compilers:** Wasmer supports multiple compilers: _Singlepass_, _Cranelift_ and _LLVM_. Each of these have different tradeoffs of compilation speed vs runtime speed;
-* **Caching**: compiled WebAssembly modules can be reused so subsequent runs of a Wasm file will have very little start up time;
-* **Metering**: computation time and other resources can be monitored and limits set to control how the Wasm code runs. This is also known as "gas metering";
+* Native backends:  _Singlepass_, _Cranelift_ and _LLVM_
+  Each of these have different tradeoffs of compilation speed vs runtime speed;
+* Other runtimes: _JavascriptCore_ and _Browser_;
+
+Each of this backends support different features, and have different support for Operating Systems and Chipsets.
 * _WebAssembly Features_:
   * **Bulk-memory operations**: e.g. instructions with behavior similar to C's `memmove` and `memset` in WebAssembly;
   * **Multi-value return**: return multiple values from functions making data transfer between host and guest simpler;
@@ -14,66 +16,54 @@ The Wasmer WebAssembly runtime provides various features for users and developer
   * **Reference types**: easier and more efficient interop with host environment;
   * **SIMD**: Single Instruction, Multiple data: do heavy number crunching more quickly and/or with lower power usage.
   * **Threads**: adds a new shared linear memory type and some new operations for atomic memory access;
-* ABIs: it allows running different types of programs compiled to WebAssembly, with ABIs such as:
-  * **Emscripten**
-  * **WASI**
-  * **WASIX**
+* _Wasmer features_:
+  * **Caching**: compiled WebAssembly modules can be reused so subsequent runs of a Wasm file will have very little start up time;
+  * **Metering**: computation time and other resources can be monitored and limits set to control how the Wasm code runs. This is also known as "gas metering";
 
-## Support of features by Compiler
-
-Runtime features:
-
-|            | Singlepass | Cranelift | LLVM |
-| ---------- | ---------- | --------- | ---- |
-| Emscripten | ✅          | ✅         | ✅    |
-| WASI       | ✅          | ✅         | ✅    |
+## Support of features by backend
 
 WebAssembly features:
 
-|                                       | Singlepass | Cranelift | LLVM |
-| ------------------------------------- | ---------- | --------- | ---- |
-| Bulk memory operations                | ✅          | ✅         | ✅    |
-| Multi-value return                    | 🔄         | ✅         | ✅    |
-| Import & export of mutable globals    | ✅          | ✅         | ✅    |
-| Non-trapping float-to-int conversions | ✅          | ✅         | ✅    |
-| Sign-extension operations             | ✅          | ✅         | ✅    |
-| Reference types                       | 🔄         | ✅         | ✅    |
-| SIMD (Phase 4)                        | ✅          | ✅         | ✅    |
-| Threads (Phase 2)                     | ✅          | 🔄        | ✅    |
+|                                       | Singlepass | Cranelift | LLVM | JavascriptCore | Browser |
+| ------------------------------------- | ---------- | --------- | ---- | -------------- | ------- |
+| Bulk memory operations                | ✅          | ✅        | ✅   | ✅             | ✅       |
+| Multi-value return                    | 🔄          | ✅        | ✅   | ✅             | ✅       |
+| Import & export of mutable globals    | ✅          | ✅        | ✅   | ✅             | ✅       |
+| Non-trapping float-to-int conversions | ✅          | ✅        | ✅   | ✅             | ✅       |
+| Sign-extension operations             | ✅          | ✅        | ✅   | ✅             | ✅       |
+| Reference types                       | 🔄          | ✅        | ✅   | ✅             | ✅       |
+| SIMD (Phase 4)                        | ✅          | ✅        | ✅   | ✅             | ✅       |
+| Threads (Phase 2)                     | ✅          | ✅        | ✅   | ✅             | ✅       |
 
-### Legend
+Wasmer features:
 
-* ✅ Supported
-* 🔄 In the works
-* ⬜ Not yet supported (please ping us if you need this feature!)
+|                                       | Singlepass | Cranelift | LLVM | JavascriptCore | Browser |
+| ------------------------------------- | ---------- | --------- | ---- | -------------- | ------- |
+| Caching                               | ✅          | ✅        | ✅   | ⬜             | ⬜*      |
+| Metering                              | ✅          | ✅        | ✅   | ⬜             | ⬜       |
 
-## Support by Operating System
+> Legend:
+  * ✅ Supported
+  * 🔄 In the works
+  * ⬜ Not yet supported (please ping us if you need this feature!)
 
-|            | Linux | macOS | Windows |
-| ---------- | ----- | ----- | ------- |
-| Cranelift  | ✅     | ✅     | ✅       |
-| LLVM       | ✅     | ✅     | ✅       |
-| Singlepass | ✅     | ✅     | ✅       |
-| WASI       | ✅     | ✅     | ✅       |
-| WASIX      | ✅     | ✅     | ✅       |
+## Backend support by Operating System
+
+|                 | Linux | macOS | Windows | Browser |
+| --------------- | ----- | ----- | ------- | ------- |
+| Cranelift       | ✅     | ✅     | ✅       | ⬜     |
+| LLVM            | ✅     | ✅     | ✅       | ⬜     |
+| Singlepass      | ✅     | ✅     | ✅       | ⬜     |
+| JavascriptCore  | ✅     | ✅     | ✅       | ⬜     |
+| Browser         | ✅     | ✅     | ✅       | ✅     |
 
 
-## Compiler Support by Chipset
+## Backend support by Chipset
 
-|            | x86\_64 | arm64 | x86 |
-| ---------- | ------- | ----- | --- |
-| Cranelift  | ✅       | ✅     | ✅   |
-| LLVM       | ✅       | ✅     | ✅   |
-| Singlepass | ✅       | ✅     | ⬜   |
-
-## Language Embeddings
-
-Wasmer enables WebAssembly usage in a lot of different languages. Here are some of the features in each of those:
-
-|                        | Rust | C / C++ | Go | Python | Ruby |
-| ---------------------- | ---- | ------- | -- | ------ | ---- |
-| Terminate in host call | ✅    | ⬜       | ✅  | ✅      | ✅    |
-| WASI                   | ✅    | ✅       | ✅  | ✅      | ✅    |
-| WASI FS API            | ✅    | ⬜       | ⬜  | ⬜      | ⬜    |
-| Serialize/Deserialize  | ✅    | ✅       | ✅  | ✅      | ✅    |
-| Metering               | ✅    | ⬜       | ⬜  | ⬜      | ⬜    |
+|                 | x86\_64 | arm64 | x86 | RISC-V |
+| --------------- | ------- | ----- | --- | ------ |
+| Cranelift       | ✅       | ✅     | ✅   | ✅     |
+| LLVM            | ✅       | ✅     | ✅   | ✅     |
+| Singlepass      | ✅       | ✅     | ⬜   | ⬜     |
+| JavascriptCore  | ✅       | ✅     | ✅   | ⬜     |
+| Browser         | ✅       | ✅     | ✅   | ✅     |

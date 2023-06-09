@@ -140,9 +140,8 @@ package/
 
 <Callout type="warning">
 
-By default, the Wasmer C API shared library will include all the compilers and
-engines available in the system where is built.
-Defaulting to `cranelift` and the `universal` engine if available.
+By default, the Wasmer C API shared library will include all the backends available in the system where is built.
+Defaulting to `cranelift` if available.
 
 You can generate the C-API for a specific compiler and engine with:
 
@@ -155,6 +154,6 @@ You can generate the C-API for a specific compiler and engine with:
 * **LLVM**: `make build-capi-llvm`
   * **Universal**: `make build-capi-llvm-universal`
   * **Native Engine**: `make build-capi-llvm-native`
-  
+
 </Callout>
 
