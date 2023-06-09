@@ -12,15 +12,14 @@ git clone git@github.com:wasmerio/deploy.git
 ## Register and get a token
 
 Register with [wasmer.io](https://wasmer.io/) if you are not yet registered.
-Then, go to https://wapm.dev/settings/access-tokens and generate a new token.
+Then, go to <https://wasmer.io/settings/access-tokens> and generate a new token.
 
 Use that token `wap_xyz` as the value of the `WASMER_TOKEN` environment.
 
 ## Create a deployment configuration
 
-`deployment.json`:
-
-```json
+```jsonc
+// `deployment.json`
 {
   // The name of the app
   "name": "ferris",
@@ -43,8 +42,8 @@ Use that token `wap_xyz` as the value of the `WASMER_TOKEN` environment.
 
 ## Deploy with that config
 
-```
-WASMER_TOKEN=TOKEN cargo run -p wasmer-server-cli -- publish-deployment deployment.json
+```console
+$ WASMER_TOKEN=TOKEN cargo run -p wasmer-server-cli -- publish-deployment deployment.json
 ```
 
 

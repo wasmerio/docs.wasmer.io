@@ -14,18 +14,18 @@ curl https://sh.rustup.rs -sSf | sh
 ```
 
 <Callout type="info">
-To install Rust on Windows, download and run [rustup-init.exe](https://win.rustup.rs/), then follow the onscreen instructions.
+To install Rust on Windows, download and run [rustup-init.exe](https://win.rustup.rs/), then follow the on-screen instructions.
 </Callout>
 
 ## Installing Additional Dependencies
 
 ### Windows
 
-Windows support is fully supported. WASI is fully supported, but Emscripten support is in the works.
+Windows is fully supported by Wasmer. WASI is also fully supported, but Emscripten support is still experimental.
 
 1. Install [Visual Studio](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=15)
 2. Install [Rust for Windows](https://win.rustup.rs/)
-3. Install [Git for Windows](https://git-scm.com/download/win). Allow it to add `git.exe` to your PATH(default settings for the installer are fine\).
+3. Install [Git for Windows](https://git-scm.com/download/win). Allow it to add `git.exe` to your PATH (default settings for the installer are fine).
 4. \(optional\) Install [LLVM 11.0](https://prereleases.llvm.org/win-snapshots/LLVM-11.0.0-2663a25f-win64.exe)
 
 ## Building the Wasmer Runtime
@@ -55,7 +55,7 @@ You may disable Singlepass compiler with `export ENABLE_SINGLEPASS=0`.
 
 ### Cranelift Compiler
 
-The Cranelift compiler will work if you are in a X86 or ARM machine, so you don't need to do anything in your system to enable it.
+The Cranelift compiler will work if you are on a X86 or ARM machine. It will be detected automatically, so you don't need to do anything to your system to enable it.
 
 ```text
 make build-wasmer
@@ -64,7 +64,7 @@ make build-wasmer
 **Note**: should see this as the first line in the console:  
 `Enabled Compilers: cranelift`
 
-You may disable Cranelift compiler with `export ENABLE_CRANELIFT=0`.
+You may disable the Cranelift compiler with `export ENABLE_CRANELIFT=0`.
 
 ### LLVM Compiler
 
@@ -84,7 +84,7 @@ make build-wasmer
 **Note**: you should see this in the console:  
 `Enabled Compilers: llvm`
 
-You may disable LLVM compiler with `export ENABLE_LLVM=0`.
+You may disable the LLVM compiler with `export ENABLE_LLVM=0`.
 
 ### All compilers
 
@@ -115,7 +115,7 @@ However, you can also compile the shared library from source:
 make build-capi
 ```
 
-This will generate the shared library \(depending on your system\):
+This will generate the shared library (depending on your system):
 
 * Windows: `target/release/libwasmer_c_api.dll`
 * macOS: `target/release/libwasmer_c_api.dylib`

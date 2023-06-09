@@ -27,7 +27,7 @@ You can use `--mount HOST_SOURCE:TARGET_PATH` to mount the local `HOST_SOURCE` i
 For example:
 
 ```bash
-$ wasmer deploy syrusakbary/staticserver --mount `$(pwd)`/app:/
+$ wasmer deploy syrusakbary/staticserver --mount $(pwd)/app:/
 [info] No deployment configuration was found, this will deploy a new app in `wasmer.app`
 New app created: `my-blue-host-x23423.wasmer.app`
 Configuration file created: `Deploy.toml`
@@ -61,7 +61,7 @@ This will create a `Deploy.yaml` file (it can also recognize `Deploy.json`), sim
 Let's say you have a `Wasmer.toml` in the current directory, you can deploy it with:
 
 ```
-$ wasmer deploy . --mount `$(pwd)`/app:/
+$ wasmer deploy . --mount $(pwd)/app:/
 ```
 
 # TODO

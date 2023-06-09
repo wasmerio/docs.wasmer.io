@@ -2,9 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Wasmer Manifest
 
-The manifest \(`wasmer.toml`\) is optional for using the `wasmer` CLI tool; it manages package dependencies, metadata and commands.
-
-However, a manifest is required [to publish](publishing-your-package.md) to the [Wasmer registry](https://wasmer.io).
+The manifest (`wasmer.toml`) is required [to publish](publishing-your-package.md) to the [Wasmer registry](https://wasmer.io); it's where a package's dependencies, metadata, and commands are declared.
 
 <Callout type="default">
 If you want to get assistance creating the `wasmer.toml` file you can simply run `wasmer init` in your directory and the CLI will guide you!
@@ -45,4 +43,4 @@ Valid keys are:
 
 ## \[fs\]
 
-* `"location/on/wasm"="location/on/host"`: a mapping between paths
+* `"location/on/wasm"="location/on/publishing/machine"`: bundle local files into the package and make them available on the WASI filesystem
