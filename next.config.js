@@ -33,15 +33,41 @@ module.exports = {
       },
       {
         source: '/ecosystem/wasmer/building-from-source',
-        destination: '/runtime/developers/build-from-source',
+        destination: '/developers/build-from-source',
         permanent: true,
       },
       {
-        source: '/ecosystem/wasmer/building-from-source',
-        destination: '/runtime/developers/testing',
+        source: '/ecosystem/wasmer/building-from-source/testing',
+        destination: '/developers/testing',
         permanent: true,
       },
 
+      // Registry
+      {
+        source: '/ecosystem/wapm',
+        destination: '/registry',
+        permanent: true,
+      },
+      {
+        source: '/ecosystem/wapm/getting-started',
+        destination: '/registry/get-started',
+        permanent: true,
+      },
+      {
+        source: '/ecosystem/wapm/publishing-your-package',
+        destination: '/registry/publish',
+        permanent: true,
+      },
+      {
+        source: '/ecosystem/wapm/manifest',
+        destination: '/registry/manifest',
+        permanent: true,
+      },
+      {
+        source: '/ecosystem/wapm/graphql-api',
+        destination: '/developers/graphql-api',
+        permanent: true,
+      },
     ];
   },
 }
