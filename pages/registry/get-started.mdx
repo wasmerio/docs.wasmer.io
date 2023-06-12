@@ -1,7 +1,96 @@
+import { Steps } from 'nextra-theme-docs';
+import { Callout } from "nextra-theme-docs";
+import { Tab, Tabs } from 'nextra-theme-docs';
+
 # Get Started with the Wasmer Runtime
 
-This page will guide you through installing Wasmer, and publishing a container into the Wasmer Registry so more users can use it.
+This page will guide you through installing Wasmer, and publishing a container in the Wasmer Registry.
 
-<div className="steps-container">
 
-</div>
+<Steps>
+ 
+### Install Wasmer CLI
+ 
+Click [here](/install) for instructions on how to install Wasmer.
+
+### Log in into Wasmer
+
+Register a new account in the [Wasmer Registry](https://wasmer.io/sign-up).
+
+Then, generate a new token in [your Access Tokens settings page](https://wasmer.io/settings/access-tokens).
+
+Once you have a token:
+
+```bash
+wasmer login TOKEN
+```
+
+### Create a package
+ 
+To create your first Wasmer pacakge simply run `wasmer init`.
+
+This should have created a `wasmer.toml` file with contents similar to:
+
+```toml
+[package]
+name = 'youruser/package'
+version = '0.1.0'
+description = 'Description for package'
+
+[[module]]
+name = 'theprogram'
+source = 'target/release/theprogram.wasm'
+  
+[[command]]
+runner = 'wasi'
+name = 'theprogram'
+module = 'theprogram'
+```
+
+You can check the manifest format here: [Wasmer Package Manifest](/registry/manifest).
+
+<Callout type="info">
+Once you have a `wasmer.toml` manifest, you can simply execute `wasmer run` in the CLI to run your package locally.
+
+```bash
+wasmer run . --command=theprogram
+```
+
+</Callout>
+
+### Build your package
+
+Now, create your WebAssembly modules:
+
+
+<Tabs items={['Rust (WASIX)', 'Rust (WASI)']}>
+  <Tab>
+    WASI is oficially supported by Rust, to compile to it you can simply do:
+
+    ```bash
+    rustup target add wasm32-wasi
+    cargo build --target=wasm32-wasi
+    ```
+
+  </Tab>
+  <Tab>
+    ```bash /python\/python/
+    cargo install cargo-wasix
+    cargo wasix build --release
+    ```
+  </Tab>
+</Tabs>
+
+Modify the `wasmer.toml` to point the module to the wasm file location `target/release/theprogram.wasm`.
+
+### Publish your package
+
+Now, simply run:
+
+```bash
+wasmer publish
+```
+
+This command will publish your package to the Wasmer Registry, so it can be used anywhere.
+
+</Steps>

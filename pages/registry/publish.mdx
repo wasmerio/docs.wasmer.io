@@ -1,4 +1,4 @@
-# Publish a package to Wasmer
+# Publish a pacakge to Wasmer
 
 Publishing a package to Wasmer is as simple as running the following command:
 
@@ -6,10 +6,15 @@ Publishing a package to Wasmer is as simple as running the following command:
 wasmer publish
 ```
 
-This command will build your package, and publish it to the Wasmer registry.
+This command will create your Wasmer package, and publish it to the Wasmer registry.
 
-It requires that you have a Wasmer account, and that you are logged in.
+## Dry run
+
+If you want to check that everything is running properly before publishing, you can run `--dry-run`:
+
+Note: this will not upload the package to the registry.
+
 
 ```bash
-wasmer login
+wasmer publish --dry-run
 ```
