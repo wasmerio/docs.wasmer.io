@@ -1,58 +1,30 @@
+import { Steps } from 'nextra-theme-docs';
 import { Callout } from "nextra-theme-docs";
-import { SyncedTabs } from "nextra-synced-tabs";
+import { Tab, Tabs } from 'nextra-theme-docs';
 
 # Get Started with the Wasmer Runtime
 
 This page will guide you through installing Wasmer, and running a published container in the Wasmer Registry.
+The runtime can run any pacakge published to the Wasmer Registry.
 
-## Run a package
 
-<div className="steps-container">
-
+<Steps>
+ 
 ### Install Wasmer
+ 
+Click [here](/install) for instructions on how to install Wasmer.
 
-<SyncedTabs items={['CLI', 'JS', 'Python']}>
-  <SyncedTabs.Tab>
-    Unix (macOS, Linux):
+### Run a package
+ 
+ Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` to print a result.
 
-    ```bash
-    curl https://get.wasmer.io -sSfL | sh
-    ```
-
-    PowerShell (Windows):
-
-    ```bash
-    iwr https://win.wasmer.io -useb | iex
-    ```
-
-    <Callout type="info">
-        Other installation methods available here: https://github.com/wasmerio/wasmer-install
-        </Callout>
-
-  </SyncedTabs.Tab>
-  <SyncedTabs.Tab>
-    ```bash
-    npm install wasmer
-    ```
-  </SyncedTabs.Tab>
-  <SyncedTabs.Tab>
-    ```bash
-    pip install wasmer
-    ```
-  </SyncedTabs.Tab>
-</SyncedTabs>
-
-### Run a Package
-
-Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` to print a result.
-
-<SyncedTabs items={['CLI', 'JS', 'Python']}>
-  <SyncedTabs.Tab>
+<Tabs items={['CLI', 'JS', 'Python']}>
+  <Tab>
     ```bash /python\/python/
     wasmer run python/python -- -c "print(1+1)"
     ```
-  </SyncedTabs.Tab>
-  <SyncedTabs.Tab>
+  </Tab>
+  <Tab>
 
     ```js /python\/python/
     import Wasmer from "wasmer";
@@ -62,8 +34,8 @@ Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io
     console.log(python.stdout);
     ```
 
-  </SyncedTabs.Tab>
-  <SyncedTabs.Tab>
+  </Tab>
+  <Tab>
     ```python /python\/python/
     from wasmer import Wasmer
 
@@ -71,7 +43,12 @@ Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io
     runner = python.entrypoint.run('-c "print(1+1)"')
     print(python.stdout)
     ```
-  </SyncedTabs.Tab>
-</SyncedTabs>
+  </Tab>
+</Tabs>
 
-</div>
+</Steps>
+
+
+<Callout type="info">
+You can also publish a package to the registry, so it can be used everywhere. [Learn how](/registry/publish).
+</Callout>
