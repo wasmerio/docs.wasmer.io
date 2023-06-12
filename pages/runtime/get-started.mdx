@@ -1,4 +1,6 @@
-import { Callout, Tabs, Tab } from "nextra-theme-docs";
+import { Steps } from "nextra-theme-docs";
+import { Callout } from "nextra-theme-docs";
+import { Tab, Tabs } from "nextra-theme-docs";
 
 # Get Started with the Wasmer Runtime
 
@@ -11,38 +13,7 @@ The runtime can run any pacakge published to the Wasmer Registry.
  
 Click [here](/install) for instructions on how to install Wasmer.
 
-<Tabs items={['CLI', 'JS', 'Python']}>
-  <Tab>
-    Unix (macOS, Linux):
-
-    ```bash
-    curl https://get.wasmer.io -sSfL | sh
-    ```
-
-    PowerShell (Windows):
-
-    ```bash
-    iwr https://win.wasmer.io -useb | iex
-    ```
-
-    <Callout type="info">
-        Other installation methods available here: https://github.com/wasmerio/wasmer-install
-        </Callout>
-
-  </Tab>
-  <Tab>
-    ```bash
-    npm install wasmer
-    ```
-  </Tab>
-  <Tab>
-    ```bash
-    pip install wasmer
-    ```
-  </Tab>
-</Tabs>
-
-### Run a Package
+### Run a package
 
 Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` to print a result.
 
