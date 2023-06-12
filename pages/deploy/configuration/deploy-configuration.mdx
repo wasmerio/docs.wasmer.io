@@ -1,3 +1,152 @@
-# Deploy Configuration
+import { Callout } from "nextra-theme-docs";
 
----
+# Wasmer Deploy Configuration
+
+Wasmer Deploy's configuration is stored in a `deploy.toml` file in the root of your project.
+
+## Fields
+
+### `kind`
+
+The `kind` field is used to identify the type of configuration file. It is required and is a constant set to `wasmer.io/App.v1`.
+
+<Callout type="info" emoji="ℹ️">
+  This constant field might be used in the future to support multiple
+  configuration formats.
+</Callout>
+
+### `meta`
+
+The schema for the `meta` field is defined as follows:
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "EntityMeta",
+  "description": "Common entity metadata.\n\nThis data is not generic, and is the same for all entity kinds.",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "annotations": {
+      "description": "Annotations are used to attach arbitrary metadata to entities. They can contain arbitrary (json-encodable) data.",
+      "type": "object",
+      "additionalProperties": true
+    },
+    "description": {
+      "description": "Long description.\n\nShould be either plain text or markdown.",
+      "type": ["string", "null"]
+    },
+    "labels": {
+      "description": "Labels are used to organize entities. They are a set of simple key/value pairs.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "name": {
+      "description": "Name of the entity.\n\nThis is only unique within the scope of the entity.",
+      "type": "string"
+    },
+    "parent": {
+      "type": ["string", "null"]
+    }
+  }
+}
+```
+
+#### `meta.name`
+
+The `meta.name` field is used to identify the name of the application. It is **required** and must be unique within the scope of the entity.
+
+Required: `true`
+Required format: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`
+
+#### `meta.description`
+
+The `meta.description` field is used to provide a description of the application. It is **optional** and can be either plain text or markdown.
+
+Required: `false`
+
+#### `meta.labels`
+
+The `meta.labels` field is used to provide a set of key/value pairs to organize the application. It is **optional** and can be used to filter applications.
+
+Required: `false`
+
+#### `meta.annotations`
+
+The `meta.annotations` field is used to provide a set of key/value pairs to attach arbitrary metadata to the application. It is **optional** and can be used to attach arbitrary data to the application.
+
+Required: `false`
+
+#### `meta.parent`
+
+The `meta.parent` field is used to provide a reference to the parent application. It is **optional** and can be used to create a hierarchy of applications.
+
+Required: `false`
+
+### `spec`
+
+The schema for the `spec` field is defined as follows:
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "AppV1Spec",
+  "type": "object",
+  "required": ["workload"],
+  "properties": {
+    "aliases": {
+      "description": "A list of alias names for the app. Aliases can be used to access the app through app domains.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "workload": {
+      "description": "The primary workload to execute.",
+      "$ref": "#/definitions/WorkloadV2"
+    }
+  },
+  "definitions": {
+    "StringWebcPackageIdent": {
+      "type": "string"
+    },
+    "WorkloadV2": {
+      "description": "Spawn a new workload on demand.",
+      "type": "object",
+      "required": ["source"],
+      "properties": {
+        "source": {
+          "$ref": "#/definitions/StringWebcPackageIdent"
+        }
+      }
+    }
+  }
+}
+```
+
+#### `spec.aliases`
+
+The `spec.aliases` field is used to provide a list of alias names for the application. It is **optional** and can be used to access the application through application domains.
+
+Required: `false`
+
+#### `spec.workload`
+
+The `spec.workload` field is used to provide the primary workload to execute. It is **required** and must be a valid WebAssembly package identifier.
+
+Required: `true`
+
+## Example
+
+For a basic static site this file contains the following information:
+
+```toml
+kind: wasmer.io/App.v1
+meta:
+  name: wasmer/my-sample-site
+spec:
+  workload:
+    source: wasmer/my-sample-site@0.1.0
+```
