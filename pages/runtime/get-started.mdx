@@ -1,12 +1,11 @@
-import { Steps } from 'nextra-theme-docs';
+import { Steps } from "nextra-theme-docs";
 import { Callout } from "nextra-theme-docs";
-import { Tab, Tabs } from 'nextra-theme-docs';
+import { Tab, Tabs } from "nextra-theme-docs";
 
 # Get Started with the Wasmer Runtime
 
 This page will guide you through installing Wasmer, and running a published container in the Wasmer Registry.
 The runtime can run any pacakge published to the Wasmer Registry.
-
 
 <Steps>
  
@@ -15,8 +14,8 @@ The runtime can run any pacakge published to the Wasmer Registry.
 Click [here](/install) for instructions on how to install Wasmer.
 
 ### Run a package
- 
- Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` to print a result.
+
+Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` to print a result.
 
 <Tabs items={['CLI', 'JS', 'Python']}>
   <Tab>
@@ -43,12 +42,13 @@ Click [here](/install) for instructions on how to install Wasmer.
     runner = python.entrypoint.run('-c "print(1+1)"')
     print(python.stdout)
     ```
+
   </Tab>
 </Tabs>
 
 </Steps>
 
-
 <Callout type="info">
-You can also publish a package to the registry, so it can be used everywhere. [Learn how](/registry/publish).
+  You can also publish a package to the registry, so it can be used everywhere.
+  [Learn how](/registry/publish).
 </Callout>
