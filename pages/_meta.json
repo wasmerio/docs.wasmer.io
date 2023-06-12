@@ -1,6 +1,24 @@
 {
-  "index": "Introduction",
-  "deploy": "Deploy",
+  "index": {
+    "title": "Introduction",
+    "theme": {
+      "typesetting": "article"
+    }
+  },
+  "install": "Install Wasmer",
+  "runtime": "Runtime",
   "registry": "Registry",
-  "runtime": "Runtime"
+  "deploy": {
+    "display": "hidden"
+  },
+  "---": {
+    "type": "separator"
+  },
+  "developers": "Developers",
+  "contact": {
+    "title": "Contact ↗",
+    "type": "page",
+    "href": "https://twitter.com/shuding_",
+    "newWindow": true
+  }
 }

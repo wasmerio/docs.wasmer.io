@@ -7,7 +7,7 @@ const config: DocsThemeConfig = {
     link: 'https://github.com/wasmerio/docs.wasmer.io',
   },
   chat: {
-    link: 'https://slack.wasmer.io',
+    link: 'https://discord.gg/qBTfsNP7N8',
   },
   docsRepositoryBase: 'https://github.com/wasmerio/docs.wasmer.io',
   footer: {

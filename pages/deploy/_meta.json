@@ -1,6 +1,6 @@
 {
-  "quick-start": "Quick Start",
   "index": "Introduction",
+  "quickstart": "Quick Start",
   "get-started": "Get Started",
   "cli": "CLI"
 }
