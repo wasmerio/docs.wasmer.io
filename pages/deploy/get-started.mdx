@@ -1,6 +1,5 @@
 # How to deploy (current)
 
-
 ## Install the Deploy CLI
 
 First, clone the Wasmer Deploy Repository
@@ -12,7 +11,7 @@ git clone git@github.com:wasmerio/deploy.git
 ## Register and get a token
 
 Register with [wasmer.io](https://wasmer.io/) if you are not yet registered.
-Then, go to <https://wasmer.io/settings/access-tokens> and generate a new token.
+Then, go to https://wasmer.io/settings/access-tokens and generate a new token.
 
 Use that token `wap_xyz` as the value of the `WASMER_TOKEN` environment.
 
@@ -28,11 +27,11 @@ Use that token `wap_xyz` as the value of the `WASMER_TOKEN` environment.
     "runner": {
       "wcgi": {
         "source": {
-            "webc": {
-                "repository": "https://registry.wapm.dev/",
-                "namespace": "christoph",
-                "name": "ferris2"
-            }
+          "webc": {
+            "repository": "https://registry.wapm.dev/",
+            "namespace": "christoph",
+            "name": "ferris2"
+          }
         }
       }
     }
@@ -46,7 +45,6 @@ Use that token `wap_xyz` as the value of the `WASMER_TOKEN` environment.
 $ WASMER_TOKEN=TOKEN cargo run -p wasmer-server-cli -- publish-deployment deployment.json
 ```
 
-
 # Full configuration
 
 ```json
@@ -57,11 +55,11 @@ $ WASMER_TOKEN=TOKEN cargo run -p wasmer-server-cli -- publish-deployment deploy
     "runner": {
       "webc_command": {
         "package": {
-            "repository": "https://wapm.dev/",
-            "namespace": "ns",
-            "name": "pkg",
-            "tag": "0.1.2",
-            "auth_token": null
+          "repository": "https://wapm.dev/",
+          "namespace": "ns",
+          "name": "pkg",
+          "tag": "0.1.2",
+          "auth_token": null
         },
         "command": "some-command"
       }
@@ -94,27 +92,17 @@ $ WASMER_TOKEN=TOKEN cargo run -p wasmer-server-cli -- publish-deployment deploy
       },
       "network_dns": {
         "enabled": true,
-        "servers": [
-          "1.1.1.1"
-        ],
+        "servers": ["1.1.1.1"],
         "allowed_hosts": {
           "allow_all_hosts": false,
-          "hosts": [
-            "hello.com"
-          ],
-          "regex_patterns": [
-            ".*\\.wasmer\\.io"
-          ],
-          "wildcard_patterns": [
-            "*.wasmer.io"
-          ]
+          "hosts": ["hello.com"],
+          "regex_patterns": [".*\\.wasmer\\.io"],
+          "wildcard_patterns": ["*.wasmer.io"]
         }
       },
       "network_gateway": {
         "enforce_https": true,
-        "domains": [
-          "my-site.com"
-        ]
+        "domains": ["my-site.com"]
       }
     }
   }

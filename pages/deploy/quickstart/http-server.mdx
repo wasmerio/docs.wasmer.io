@@ -1,0 +1,153 @@
+import { Steps, Callout, FileTree } from "nextra-theme-docs";
+import StaticSite from "@components/deploy/quickstart/StaticSite";
+
+# Wasmer Deploy Quickstart for an HTTP Server
+
+In this quickstart guide, you'll learn the process of publishing an HTTP Server app using Wasmer Deploy.
+We will cover the following topics:
+
+- Installing the Wasmer CLI
+- Creating a new HTTP Server app with RUST
+- Deploying the app to the Wasmer Deploy
+
+## Prerequisites
+
+The project requires the following tools to be installed on your system:
+
+- [Rust](https://www.rust-lang.org/tools/install)
+
+## Deploying a Static Site
+
+<Steps>
+### Install the Wasmer App CLI
+
+To get started, install both the Wasmer runtime and the wasmer-cli:
+Todo: say that we need the wasmer-cli, but how to download the latest version?
+
+```bash copy
+# Install the Wasmer runtime
+curl https://get.wasmer.io -sSfL | sh
+```
+
+You can use `wasmer --version` to verify that the installation was successful.
+
+<Callout type="info" emoji="ℹ️">
+  You can see all commands available with `wasmer --help` or click
+  [here](/todo/) to see the full documentation.
+</Callout>
+
+### Login
+
+Next, you need to authenticate with Wasmer.
+
+- Create a new account or log in at [Wasmer](https://wasmer.io).
+- Navigate to [Wasmer.io Settings](https://wasmer.io/settings) and create a new login token
+
+Now you can log in by running the command below and pasting the token:
+
+```shell copy
+wasmer login --registry https://registry.wasmer.io <token>
+```
+
+To test that everything works correctly, you can run:
+
+```shell copy
+wasmer app list
+```
+
+This should print a table showing your current apps.
+
+### Step 3: Initialize a Static Site
+
+With the Wasmer Deploy CLI installed, let's create a new static site!
+
+Run the commands below to create a new directory and initialize:
+
+```bash
+$ mkdir my-new-site
+$ cd my-new-site
+$ wasmer app init static-site
+  Initializing in current directory: (...)/deploy-quickstart/my-new-site
+  No wasmer.toml found. Initializing package...
+  App name (namespace/name): <your-namespace>/my-new-site
+  Public directory (path to the website files): : public
+  Creating public directory at '(...)/deploy-quickstart/my-new-site/public'...
+  Creating stub index.html...
+  Writing wasmer.toml package to '(...)/deploy-quickstart/my-new-site/wasmer.toml'
+  No deploy.yaml found. Configuring new app...
+  Writing Deploy config: '(...)/deploy-quickstart/my-new-site/deploy.yaml'
+  Would you like to publish the new package and app? [y/n]: n
+  Done!
+```
+
+The `wasmer app init static-site` command will prompt you for the following:
+
+- App name: This is the name of your app. It must be unique across all apps on your namespace.
+- **Public directory**: This is the directory that holds the website files. The default is `public`.
+- **Publish**: This will publish the new package and app to the registry.
+
+<Callout type="default" emoji="⚙️">
+  As you see above in the last line of the output, the CLI will prompt you to
+  publish the new package and app. We will do this later, so we enter "n" or
+  "no".
+</Callout>
+
+The above command will do the following:
+
+- Create a Wasmer package config (`wasmer.toml`)
+- Create a Wasmer Deploy app config (`deploy.yaml`)
+- Create a public directory that holds the website data
+
+Your directory structure should look like this:
+
+<FileTree>
+  <FileTree.Folder name="my-new-site" defaultOpen>
+    <FileTree.Folder name="public" defaultOpen>
+      <FileTree.File name="index.html" />
+    </FileTree.Folder>
+    <FileTree.File name="deploy.yaml" />
+    <FileTree.File name="wasmer.toml" />
+  </FileTree.Folder>
+</FileTree>
+
+### Step 4: Add Your Site Content
+
+Currently, the public directory only contains a basic `index.html` file.
+The index file should look like this by default in a browser:
+
+<StaticSite />
+
+You can now modify this directory and copy your own files (HTML, CSS, JavaScript, images, etc)
+as needed.
+
+> For this quickstart, we will use the default `index.html` file.
+
+### Step 5: Test Your Site Locally
+
+TODO: add instructions for testing locally
+
+### Step 6: Deploy Your Site
+
+Once you have added all the necessary files to the public directory, it's time to deploy your site.
+
+Run the following command to publish your site:
+
+```shell copy
+wasmer publish
+```
+
+Note: You must be in the directory holding the `wasmer.toml` and `deploy.yaml` config files.
+
+Executing this command will package and deploy your site.
+
+The output will contain a URL for accessing the new version.
+
+</Steps>
+
+## Conclusion
+
+Congratulations! You have successfully deployed a static site using Wasmer Deploy.
+
+To make changes to your site, simply modify the files in the public directory and run `wasmer-deploy publish` again to deploy the changes.
+
+## Additional Resources

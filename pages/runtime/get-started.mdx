@@ -1,5 +1,4 @@
-import { Callout } from "nextra-theme-docs";
-import { SyncedTabs } from "nextra-synced-tabs";
+import { Callout, Tabs, Tab } from "nextra-theme-docs";
 
 # Get Started with the Wasmer Runtime
 
@@ -11,8 +10,8 @@ This page will guide you through installing Wasmer, and running a published cont
 
 ### Install Wasmer
 
-<SyncedTabs items={['CLI', 'JS', 'Python']}>
-  <SyncedTabs.Tab>
+<Tabs items={['CLI', 'JS', 'Python']}>
+  <Tab>
     Unix (macOS, Linux):
 
     ```bash
@@ -29,30 +28,30 @@ This page will guide you through installing Wasmer, and running a published cont
         Other installation methods available here: https://github.com/wasmerio/wasmer-install
         </Callout>
 
-  </SyncedTabs.Tab>
-  <SyncedTabs.Tab>
+  </Tab>
+  <Tab>
     ```bash
     npm install wasmer
     ```
-  </SyncedTabs.Tab>
-  <SyncedTabs.Tab>
+  </Tab>
+  <Tab>
     ```bash
     pip install wasmer
     ```
-  </SyncedTabs.Tab>
-</SyncedTabs>
+  </Tab>
+</Tabs>
 
 ### Run a Package
 
 Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` to print a result.
 
-<SyncedTabs items={['CLI', 'JS', 'Python']}>
-  <SyncedTabs.Tab>
+<Tabs items={['CLI', 'JS', 'Python']}>
+  <Tab>
     ```bash /python\/python/
     wasmer run python/python -- -c "print(1+1)"
     ```
-  </SyncedTabs.Tab>
-  <SyncedTabs.Tab>
+  </Tab>
+  <Tab>
 
     ```js /python\/python/
     import Wasmer from "wasmer";
@@ -62,8 +61,8 @@ Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io
     console.log(python.stdout);
     ```
 
-  </SyncedTabs.Tab>
-  <SyncedTabs.Tab>
+  </Tab>
+  <Tab>
     ```python /python\/python/
     from wasmer import Wasmer
 
@@ -71,7 +70,8 @@ Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io
     runner = python.entrypoint.run('-c "print(1+1)"')
     print(python.stdout)
     ```
-  </SyncedTabs.Tab>
-</SyncedTabs>
+
+  </Tab>
+</Tabs>
 
 </div>
