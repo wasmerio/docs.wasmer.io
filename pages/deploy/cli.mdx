@@ -17,6 +17,27 @@ To proceed, run `wasmer login` follow the instructions.
 If you want, you can log out at any time.
 To proceed, run `wasmer logout`.
 
+## `wasmer apps`
+
+It lists the apps that you have running in Wasmer Deploy.
+
+```
+$ wasmer apps list
+NAME        OWNER       STATUS	LATEST DEPLOY
+my-app      syrusakbary live    Dec 13th, 2022 - 12:24pm
+```
+
 ## `wasmer deploy`
 
-`wasmer deploy PATH`
+```
+$ wasmer deploy syrusakbary/app
+```
+
+Flags
+### `--mount`
+To mount a directory.
+
+### `--name`
+The name of the app
+
+### `--use`
