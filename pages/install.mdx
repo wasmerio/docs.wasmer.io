@@ -1,36 +1,54 @@
 # Install Wasmer
 
-import { Callout, Tabs, Tab } from "nextra-theme-docs";
+import { Callout } from "nextra-theme-docs";
+import { Tabs, Tab } from "nextra-theme-docs";
 
 Wasmer allows you to run applications either **Standalone** (_via the CLI_) or **Embedded** within [other languages](./#wasmer-language-integrations) such as C/C++, Rust, Python, Go, PHP, Ruby...
 
-<Tabs items={['CLI' /*, 'JS', 'Python' */]}>
+<Tabs items={['CLI (Bash)', 'CLI (PowerShell)' /*, 'JS', 'Python' */]}>
   <Tab>
-    Unix (macOS, Linux):
+    **Unix** (macOS, Linux):
 
     ```bash
     curl https://get.wasmer.io -sSfL | sh
     ```
 
-    PowerShell (Windows):
+    Or, to install a specific version:
+
+    ```bash /4\.0\.0/
+    curl https://get.wasmer.io -sSfL | sh -s "4.0.0"
+    ```
+
+  </Tab>
+
+  <Tab>
+    **PowerShell** (Windows):
 
     ```bash
     iwr https://win.wasmer.io -useb | iex
     ```
 
-    <Callout type="info">
-        Other installation methods available here: https://github.com/wasmerio/wasmer-install
-    </Callout>
+    Or, to install a specific version:
+
+    ```bash /4\.0\.0/
+    $v="4.0.0"; iwr https://win.wasmer.io -useb | iex
+    ```
 
   </Tab>
-  {/* <Tab>
-    ```bash
+
+{/\* <SyncedTabs.Tab>
+`bash
     npm install wasmer
-    ```
+    `
+
   </Tab>
   <Tab>
     ```bash
     pip install wasmer
     ```
-  </Tab> */}
+  </SyncedTabs.Tab> */}
 </Tabs>
+
+    <Callout type="info">
+        Other installation methods available here: https://github.com/wasmerio/wasmer-install
+    </Callout>
