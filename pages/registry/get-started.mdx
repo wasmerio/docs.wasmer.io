@@ -1,6 +1,8 @@
 import { Steps } from 'nextra-theme-docs';
 import { Callout } from "nextra-theme-docs";
 import { Tab, Tabs } from 'nextra-theme-docs';
+import Install from '../../components/install.mdx';
+import Login from '../../components/login.mdx';
 
 # Get Started with the Wasmer Runtime
 
@@ -9,21 +11,9 @@ This page will guide you through installing Wasmer, and publishing a container i
 
 <Steps>
  
-### Install Wasmer CLI
- 
-Click [here](/install) for instructions on how to install Wasmer.
+<Install />
 
-### Log in into Wasmer
-
-Register a new account in the [Wasmer Registry](https://wasmer.io/sign-up).
-
-Then, generate a new token in [your Access Tokens settings page](https://wasmer.io/settings/access-tokens).
-
-Once you have a token:
-
-```bash
-wasmer login TOKEN
-```
+<Login />
 
 ### Create a package
  

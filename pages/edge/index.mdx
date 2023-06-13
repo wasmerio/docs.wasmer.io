@@ -5,8 +5,7 @@ import { Callout } from 'nextra-theme-docs'
 Wasmer Deploy allows running Wasmer containers in the Wasmer Edge Nodes. It's also self-hostable (soon!).
 
 <Callout type="warning">
-  Wasmer Deploy is still in heavy development. Do not use yet for production
-  usages.
+  Wasmer Deploy is still in heavy development. Use in production apps with caution.
 </Callout>
 
 Current status:
@@ -25,12 +24,12 @@ Current status:
   * WCGI: CGIs on top of WebAssembly
 * Deploy APIs, SSR(ed) websites, Webhooks endpoints, Cron jobs...
 * CLI to manage websites and develop locally
-* Deploy at the Edge using the Cloud version, or self-host it (soon!)
-* 100% open-source (soon!)
+* _Deploy at the Edge using the Cloud version, or self-host it (soon!)_
+* _100% open-source (soon!)_
 
 # How it works
 
-Wasmer Deploy uses [Wasmer Runtime](/runtime), which are sandboxed environments used to run applications anywher.
+Wasmer Deploy uses [Wasmer Runtime](/runtime), which allows having sandboxed environments when running your applications.
 That means each application memory is isolated from each others, and you can run a lot of them at the same time with very few resources.
 
 Starting an Wasmer Container is a lot faster than starting a Docker container, which allows for almost free cold starts.
