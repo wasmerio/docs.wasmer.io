@@ -1,0 +1,77 @@
+# Logging on Wasmer Edge
+
+Identifying issues in deployed applications often requires log output. 
+
+To make the experience as frictionless as possible, Wasmer Edge automatically
+collects logs from your Webassembly instances and makes them available to you
+through the web interface and the CLI.
+
+## Producing Logs
+
+To produce logs, all you need to do is to emit log output from your application
+to standard output streams.
+
+This means you can use any logging library of your choice in the language you use.
+In Rust [tracing](https://github.com/tokio-rs/tracing) is a popular option.
+
+## Configuring Log Capture
+
+For [proxy - TODO insert proxy deployment link](./) apps, both `stdout` and
+`stderr` are captured by default.
+
+For [WCGI - TODO insert WCGI deployment link](./) apps, only `stderr` is captured,
+because `stdout` is used for transferring the HTTP response.
+
+You will be able to further customize log capturing in the future through the
+app config, to turn off logs or limit them to a specific stream.
+
+This configuration is not available just yet though, so be mindful of which log
+ouput you produce to avoid leaking information.
+
+## Accessing Logs
+
+There are two methods for accessing your logs.
+
+### CLI
+
+The `wasmer app logs` command can retrieve log output.
+
+Some example commands, which assume that your application is called `webserver`:
+
+* Retrieve logs for the last ten minutes:
+
+```bash
+wasmer app logs webserver
+```
+
+* Retrieve logs for a specific time range:
+
+Note the `--max XXX` entry to limit the amount of retrieved log lines.
+
+```bash
+wasmer app logs --max 1000 --from 2023-06-10 --until 2023-06-10T10:00:00
+```
+
+* Retrieve logs in JSON format for further processing:
+
+```bash
+wasmer app logs -f json
+```
+
+### Web Interface
+
+You can access logs through the Wasmer dashboard as well.
+
+Just open the apps dashboard on [wasmer.io/apps](https://wasmer.io/apps) and
+select your app.
+
+![app logs in the Wasmer Dashboard](./logging_webui.png)
+
+## Log Retention and Limits
+
+During the early testing period log retention and log volume limits are subject
+to change.
+
+Different billing tiers will be introduced in the future to allow upgrading to
+longer retention periods and higher log volume limits.
+

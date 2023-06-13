@@ -2,6 +2,8 @@
   "index": "Introduction",
   "quickstart": "Quick Start",
   "get-started": "Get Started",
+  "usage": "Usage",
   "configuration": "Configuration",
+  "observability": "Observability",
   "cli": "CLI"
 }
