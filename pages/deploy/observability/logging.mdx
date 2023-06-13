@@ -1,6 +1,8 @@
+import ImageLoader from "@components/ImageLoader";
+
 # Logging on Wasmer Edge
 
-Identifying issues in deployed applications often requires log output. 
+Identifying issues in deployed applications often requires log output.
 
 To make the experience as frictionless as possible, Wasmer Edge automatically
 collects logs from your Webassembly instances and makes them available to you
@@ -38,13 +40,13 @@ The `wasmer app logs` command can retrieve log output.
 
 Some example commands, which assume that your application is called `webserver`:
 
-* Retrieve logs for the last ten minutes:
+- Retrieve logs for the last ten minutes:
 
 ```bash
 wasmer app logs webserver
 ```
 
-* Retrieve logs for a specific time range:
+- Retrieve logs for a specific time range:
 
 Note the `--max XXX` entry to limit the amount of retrieved log lines.
 
@@ -52,7 +54,7 @@ Note the `--max XXX` entry to limit the amount of retrieved log lines.
 wasmer app logs --max 1000 --from 2023-06-10 --until 2023-06-10T10:00:00
 ```
 
-* Retrieve logs in JSON format for further processing:
+- Retrieve logs in JSON format for further processing:
 
 ```bash
 wasmer app logs -f json
@@ -65,7 +67,9 @@ You can access logs through the Wasmer dashboard as well.
 Just open the apps dashboard on [wasmer.io/apps](https://wasmer.io/apps) and
 select your app.
 
-![app logs in the Wasmer Dashboard](./logging_webui.png)
+import loggingWebUIImg from "@assets/deploy/logging/logging-web-ui.png";
+
+<ImageLoader alt="app logs in the Wasmer Dashboard" img={loggingWebUIImg} />
 
 ## Log Retention and Limits
 
@@ -74,4 +78,3 @@ to change.
 
 Different billing tiers will be introduced in the future to allow upgrading to
 longer retention periods and higher log volume limits.
-

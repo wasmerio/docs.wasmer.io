@@ -9,7 +9,7 @@ You can even forward ports from the session to your local machine, allowing you
 access to servers running inside the session!
 
 Note that at the moment sessions do not persist after the connection is closed.
-In the future persistent sessions will be introduced. 
+In the future persistent sessions will be introduced.
 This means you will be able to close the connection and then re-connect to your
 session later on, giving you a persistent remote environment.
 
@@ -19,28 +19,30 @@ ecosystem and to test out the behaviour of your own apps.
 ## Usage
 
 To start a session:
-* Install the `wasmer` CLI and log in to Wasmer
+
+- Install the `wasmer` CLI and log in to Wasmer
   See the [Quickstart](../quickstart/http-server.mdx) for a guide.
-* Make sure the `ssh` command is installed.
+- Make sure the `ssh` command is installed.
 
 Once that is done, you can simply run:
 
 ```bash
-wasmer ssh
-````
+$ wasmer ssh
+```
 
 This will drop you right into a interactive bash session.
-You can now use standard Linux commands like `cd`, `ls`, `mkdir`, ...
+You can now use standard Linux commands like `cd`, `ls`, `mkdir`, etc.
 
 You also have access to the `wasmer run` command, so you can run arbitrary
 packages from the Wasmer registry.
 
 For example:
+
 ```bash
-wasmer run john-sharratt/catsay meow
+$ wasmer run john-sharratt/catsay meow
 ```
 
-To forward a port, run: 
+To forward a port, run:
 
 ```bash
 wasmer ssh --map-port 9000
@@ -59,7 +61,7 @@ We then create a `public` directory and a stub `index.html` file, and start a
 static web server on port 9000.
 
 ```bash
-wasmer ssh --map-port 9000
+$ wasmer ssh --map-port 9000
 
 > mkdir public
 > echo HELLO > public/index.html
@@ -71,10 +73,10 @@ You will now be able to access the remote server!
 Run this on your local machine in a new terminal window:
 
 ```bash
-curl localhost:9000
+$ curl localhost:9000
 
 > HELLO
-````
+```
 
 ## How It Works
 
