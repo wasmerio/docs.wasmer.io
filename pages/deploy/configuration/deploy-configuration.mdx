@@ -4,6 +4,19 @@ import { Callout } from "nextra-theme-docs";
 
 Wasmer Deploy's configuration is stored in a `deploy.toml` file in the root of your project.
 
+## Example
+
+For a basic static site this file contains the following information:
+
+```toml
+kind: wasmer.io/App.v1
+meta:
+  name: wasmer/my-sample-site
+spec:
+  workload:
+    source: wasmer/my-sample-site@0.1.0
+```
+
 ## Fields
 
 ### `kind`
@@ -137,16 +150,3 @@ Required: `false`
 The `spec.workload` field is used to provide the primary workload to execute. It is **required** and must be a valid WebAssembly package identifier.
 
 Required: `true`
-
-## Example
-
-For a basic static site this file contains the following information:
-
-```toml
-kind: wasmer.io/App.v1
-meta:
-  name: wasmer/my-sample-site
-spec:
-  workload:
-    source: wasmer/my-sample-site@0.1.0
-```
