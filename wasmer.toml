@@ -1,21 +1,10 @@
 [package]
 name = "wasmer/docs"
-version = "0.1.6"
-description = "Wasmer docs"
-license = "ISC"
-repository = "https://github.com/wasmerio/new-docs.wasmer.io"
+version = "0.2.6"
+description = "wasmer/docs website"
 
-[[module]]
-name = "serve"
-source = "serve.wasm"
-abi = "wasi"
-
-[module.interfaces]
-wasi = "0.1.0-unstable"
-
-[[command]]
-name = "wcgi"
-module = "serve"
+[dependencies]
+"sharrattj/static-web-server" = "1"
 
 [fs]
-"app" = "app"
+public = "app"
