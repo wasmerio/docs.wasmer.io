@@ -1,0 +1,100 @@
+# Remote Sessions
+
+You can start interactive remote sessions on the Wasmer Edge.
+
+A session opens an interactive bash shell, which allows you to run any package
+from the Wasmer registry.
+
+You can even forward ports from the session to your local machine, allowing you
+access to servers running inside the session!
+
+Note that at the moment sessions do not persist after the connection is closed.
+In the future persistent sessions will be introduced.
+This means you will be able to close the connection and then re-connect to your
+session later on, giving you a persistent remote environment.
+
+While this isn't available quite yet, sessions are already useful to explore the
+ecosystem and to test out the behaviour of your own apps.
+
+## Usage
+
+To start a session:
+
+- Install the `wasmer` CLI and log in to Wasmer
+  See the [Quickstart](../quickstart/http-server.mdx) for a guide.
+- Make sure the `ssh` command is installed.
+
+Once that is done, you can simply run:
+
+```bash
+$ wasmer ssh
+```
+
+This will drop you right into a interactive bash session.
+You can now use standard Linux commands like `cd`, `ls`, `mkdir`, etc.
+
+You also have access to the `wasmer run` command, so you can run arbitrary
+packages from the Wasmer registry.
+
+For example:
+
+```bash
+$ wasmer run john-sharratt/catsay meow
+```
+
+To forward a port, run:
+
+```bash
+wasmer ssh --map-port 9000
+```
+
+This will forward your local port 9000 to port 9000 in the remote instance,
+allowing you to access remotely running servers.
+
+### Example: Local Access to a Remote Server
+
+We can now combine all these features to run a static web server inside a remote
+session, and access the server locally through a forwarded port.
+
+The below will first start a session with port 9000 mapped.
+We then create a `public` directory and a stub `index.html` file, and start a
+static web server on port 9000.
+
+```bash
+$ wasmer ssh --map-port 9000
+
+> mkdir public
+> echo HELLO > public/index.html
+> wasmer run wasmer/static-web-server -- -p 9000
+```
+
+You will now be able to access the remote server!
+
+Run this on your local machine in a new terminal window:
+
+```bash
+$ curl localhost:9000
+
+> HELLO
+```
+
+## How It Works
+
+`wasmer ssh` simply connects to a server in the Wasmer Edge network through a
+standard SSH connection.
+
+The server then runs a command (bash by default), and connects `stdin`, `stdout`
+and `stderr` of the running workload with the SSH session, forwarding all input
+and output.
+
+Port forwarding is also achieved through SSH.
+
+In fact, you could simply replace `wasmer ssh` with `ssh token@WASMER-SERVER-IP`.
+
+The only thing special about `wasmer ssh` is that it will automatically provision
+a token for your user that will be recognized by the Edge servers.
+
+## Billing
+
+Remote sessions will count toward your resource usage on Wasmer, and will be
+included in your invoice.
