@@ -1,35 +1,25 @@
 import { Steps, Callout, FileTree } from "nextra-theme-docs";
 import StaticSite from "@components/deploy/quickstart/StaticSite";
 
-# Wasmer Deploy Quickstart for an HTTP Server
+# Wasmer Edge Quickstart for deploying an HTTP Server
 
-In this quickstart guide, you'll learn the process of publishing an HTTP Server app using Wasmer Deploy.
-We will cover the following topics:
-
-- Installing the Wasmer CLI
-- Creating a new HTTP Server app with RUST
-- Deploying the app to the Wasmer Deploy
+In this quickstart guide, you'll learn how to deploy an HTTP server on the Wasmer Edge.
+We will be using Rust's popular [Axum](https://github.com/tokio-rs/axum) framework to create a simple HTTP server.
 
 ## Prerequisites
 
 The project requires the following tools to be installed on your system:
 
 - [Rust](https://www.rust-lang.org/tools/install)
+- [Wasmer CLI](/install)
+- [`WASIX`](http://wasix.org/docs/language-guide/rust/installation)
 
-## Deploying a Static Site
+## Deploying an HTTP Server
 
 <Steps>
 ### Install the Wasmer App CLI
 
-To get started, install both the Wasmer runtime and the wasmer-cli:
-Todo: say that we need the wasmer-cli, but how to download the latest version?
-
-```bash copy
-# Install the Wasmer runtime
-curl https://get.wasmer.io -sSfL | sh
-```
-
-You can use `wasmer --version` to verify that the installation was successful.
+Install the latest version of `Wasmer CLI` following the instructions [here](/install).
 
 <Callout type="info" emoji="ℹ️">
   You can see all commands available with `wasmer --help` or click
@@ -46,108 +36,200 @@ Next, you need to authenticate with Wasmer.
 Now you can log in by running the command below and pasting the token:
 
 ```shell copy
-wasmer login --registry https://registry.wasmer.io <token>
+$ wasmer login <token>
 ```
 
 To test that everything works correctly, you can run:
 
 ```shell copy
-wasmer app list
+$ wasmer whoami
+logged into registry "https://registry.wasmer.io/graphql" as user "<user-name>"
 ```
 
-This should print a table showing your current apps.
+### Initialize a Sample Axum Project
 
-### Step 3: Initialize a Static Site
+Now that you have installed the CLI and logged in, you can initialize a new Axum project.
 
-With the Wasmer Deploy CLI installed, let's create a new static site!
+Run the following command to initialize a new Axum project:
 
-Run the commands below to create a new directory and initialize:
-
-```bash
-$ mkdir my-new-site
-$ cd my-new-site
-$ wasmer app init static-site
-  Initializing in current directory: (...)/deploy-quickstart/my-new-site
-  No wasmer.toml found. Initializing package...
-  App name (namespace/name): <your-namespace>/my-new-site
-  Public directory (path to the website files): : public
-  Creating public directory at '(...)/deploy-quickstart/my-new-site/public'...
-  Creating stub index.html...
-  Writing wasmer.toml package to '(...)/deploy-quickstart/my-new-site/wasmer.toml'
-  No deploy.yaml found. Configuring new app...
-  Writing Deploy config: '(...)/deploy-quickstart/my-new-site/deploy.yaml'
-  Would you like to publish the new package and app? [y/n]: n
-  Done!
+```shell copy
+$ cargo new wasmer-hello --bin
+     Created binary (application) `wasmer-hello` package
+$ cd wasmer-hello
 ```
-
-The `wasmer app init static-site` command will prompt you for the following:
-
-- App name: This is the name of your app. It must be unique across all apps on your namespace.
-- **Public directory**: This is the directory that holds the website files. The default is `public`.
-- **Publish**: This will publish the new package and app to the registry.
-
-<Callout type="default" emoji="⚙️">
-  As you see above in the last line of the output, the CLI will prompt you to
-  publish the new package and app. We will do this later, so we enter "n" or
-  "no".
-</Callout>
-
-The above command will do the following:
-
-- Create a Wasmer package config (`wasmer.toml`)
-- Create a Wasmer Deploy app config (`deploy.yaml`)
-- Create a public directory that holds the website data
 
 Your directory structure should look like this:
 
 <FileTree>
-  <FileTree.Folder name="my-new-site" defaultOpen>
-    <FileTree.Folder name="public" defaultOpen>
-      <FileTree.File name="index.html" />
+  <FileTree.Folder name="wasmer-hello" defaultOpen>
+    <FileTree.Folder name="src" defaultOpen>
+      <FileTree.File name="main.rs" />
     </FileTree.Folder>
-    <FileTree.File name="deploy.yaml" />
-    <FileTree.File name="wasmer.toml" />
+    <FileTree.File name="Cargo.toml" />
   </FileTree.Folder>
 </FileTree>
 
-### Step 4: Add Your Site Content
+Next, add the following dependencies to your `Cargo.toml` file:
 
-Currently, the public directory only contains a basic `index.html` file.
-The index file should look like this by default in a browser:
+```toml copy filename="Cargo.toml"
+[package]
+name = "wasmer-hello"
+version = "0.1.0"
+edition = "2021"
 
-<StaticSite />
+[dependencies]
+axum = { version = "=0.6.9", features = ["tokio", "json"] }
+serde = { version = "1.0.160", features = ["derive"] }
+tracing = "0.1.37"
+tracing-subscriber = { version = "0.3.16", features = ["fmt"] }
 
-You can now modify this directory and copy your own files (HTML, CSS, JavaScript, images, etc)
-as needed.
+tokio = { version = "=1.24.2", default-features = false, features = ["full"] }
+parking_lot = { version = "=0.12.1", features = ["nightly"] }
 
-> For this quickstart, we will use the default `index.html` file.
+[patch.crates-io]
+tokio = { git = "https://github.com/wasix-org/tokio.git", branch = "wasix-1.24.2" }
+socket2 = { git = "https://github.com/wasix-org/socket2.git", branch = "v0.4.7" }
+libc = { git = "https://github.com/wasix-org/libc.git", branch = "master" }
 
-### Step 5: Test Your Site Locally
-
-TODO: add instructions for testing locally
-
-### Step 6: Deploy Your Site
-
-Once you have added all the necessary files to the public directory, it's time to deploy your site.
-
-Run the following command to publish your site:
-
-```shell copy
-wasmer publish
 ```
 
-Note: You must be in the directory holding the `wasmer.toml` and `deploy.yaml` config files.
+<Callout type="default" emoji="🚧">
+  We need to pin and replace some dependencies to achieve wasix compatibility.
+  To learn more about these patches, click
+  [here](http://wasix.org/docs/language-guide/rust/patched-repos).
+</Callout>
 
-Executing this command will package and deploy your site.
+After updating your dependencies, let's update the `src/main.rs` file with the following code:
 
-The output will contain a URL for accessing the new version.
+```rust copy filename="src/main.rs"
+use axum::{routing::get, Router};
+use std::net::SocketAddr;
+
+#[tokio::main]
+async fn main() {
+    // Building our application with a single Route
+    let app = Router::new().route("/", get(handler));
+
+    // Run the server with hyper on http://127.0.0.1:3000
+    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    eprintln!("Listening on http://{}", addr);
+    axum::Server::bind(&addr)
+        .serve(app.into_make_service())
+        .await
+        .unwrap();
+}
+
+async fn handler() -> &'static str {
+    "Hello, Axum ❤️ Wasmer!"
+}
+```
+
+Now, let's build our project using `wasix`:
+
+```shell copy
+$ cargo wasix build --release
+   ...
+   Compiling serde_urlencoded v0.7.1
+   Compiling serde_path_to_error v0.1.11
+   Compiling wasmer-hello v0.1.0 (/.../Wasmer/edge-quickstart/wasmer-hello)
+    Finished dev [unoptimized + debuginfo] target(s) in 10.69s
+info: Post-processing WebAssembly files
+```
+
+<Callout type="default" emoji="🚨">
+  It might happen that your build fails. One of the easiest way to resolve this
+  is updating your lock file with `cargo update`.
+</Callout>
+
+### Test the server locally
+
+We can test out server locally by running the following command:
+
+import TerminalLeft from "@components/deploy/quickstart/TerminalLeft.mdx";
+import TerminalRight from "@components/deploy/quickstart/TerminalRight.mdx";
+
+| Terminal 1       | Terminal 2        |
+| ---------------- | ----------------- |
+| <TerminalLeft /> | <TerminalRight /> |
+
+### Deploying to Wasmer Edge
+
+Now let's add our deployment configuration.
+
+For this we need two files:
+
+- `wasmer.toml` - This file contains the configuration for the Wasmer Registry.
+- `deploy.yaml` - This file contains the configuration for the Wasmer Edge deployment.
+
+```toml copy filename="wasmer.toml"
+[package]
+name = "<your-namespace>/wasmer-hello"
+version = "0.1.0"
+description = "Sample Axum server for Wasmer Edge"
+license = "MIT"
+wasmer-extra-flags = "--net --enable-threads --enable-bulk-memory"
+
+[[module]]
+name = "wasmer-hello"
+source = "./target/wasm32-wasmer-wasi/release/wasmer-hello.wasm"
+abi = "wasi"
+
+[[command]]
+name = "proxy"
+module = "wasmer-hello"
+runner = "https://webc.org/runner/wasi"
+
+```
+
+```yaml copy filename="deploy.yaml"
+kind: wasmer.io/App.v1
+meta:
+  name: <your-namespace>/wasmer-hello
+spec:
+  workload:
+    source: <your-namespace>/wasmer-hello@0.1.0
+```
+
+<Callout type="info" emoji="ℹ️">
+  You can also check if your configuration is valid by running `wasmer publish
+  --dry-run`. To learn more about the `wasmer.toml` file, click [here](/todo/).
+</Callout>
+
+Let's Deploy!
+
+```shell copy
+$ wasmer deploy
+  Found local package in wasmer.toml
+  Publish package '<your-namespace>/wasmer-hello'? yes
+  Publishing package...
+  [1/2] ⬆️   Uploading...
+  [2/2] 📦  Publishing...
+  Successfully published package `<your-namespace>/wasmer-hello@0.1.0`
+  Package '<your-namespace>/wasmer-hello@0.1.0' published successfully!
+  Writing updates deploy.yaml...
+  Publishing app...
+  App published successfully!
+  Access your app at: https://x20imtdf68qv.id.wasmer.app
+```
+
+> TODO: UPDATE THE URL
+
+<Callout type="info" emoji="ℹ️">
+  `wasmer deploy` automatically publishes your package and bumps the minor
+  version. You can check all the available options with `wasmer deploy --help`
+  or click [here](/todo/) to see the full documentation.
+</Callout>
+
+Now you can access your axum server at the url provided in the output by the `wasmer deploy` command.
 
 </Steps>
 
 ## Conclusion
 
-Congratulations! You have successfully deployed a static site using Wasmer Deploy.
-
-To make changes to your site, simply modify the files in the public directory and run `wasmer-deploy publish` again to deploy the changes.
+Congratulations! You have successfully deployed your first Axum server to Wasmer Edge.
 
 ## Additional Resources
+
+To learn more about Wasmer Edge, click [here](/todo/).
+
+Checkout our full tutorials [here](/todo/)
