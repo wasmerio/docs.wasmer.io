@@ -137,7 +137,7 @@ Now let's add our deployment configuration.
 For this we need two files:
 
 - `wasmer.toml` - This file contains the configuration for the Wasmer Registry.
-- `deploy.yaml` - This file contains the configuration for the Wasmer Edge deployment.
+- `app.yaml` - This file contains the configuration for the Wasmer Edge deployment.
 
 ```toml copy filename="wasmer.toml"
 [package]
@@ -159,7 +159,7 @@ runner = "https://webc.org/runner/wasi"
 
 ```
 
-```yaml copy filename="deploy.yaml"
+```yaml copy filename="app.yaml"
 kind: wasmer.io/App.v1
 meta:
   name: <your-namespace>/wasmer-hello
@@ -184,7 +184,7 @@ $ wasmer deploy
   [2/2] 📦  Publishing...
   Successfully published package `<your-namespace>/wasmer-hello@0.1.0`
   Package '<your-namespace>/wasmer-hello@0.1.0' published successfully!
-  Writing updates deploy.yaml...
+  Writing updates app.yaml...
   Publishing app...
   App published successfully!
   Access your app at: https://x20imtdf68qv.id.wasmer.app

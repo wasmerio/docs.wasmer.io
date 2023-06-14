@@ -1,10 +1,10 @@
 import { Steps, Callout, FileTree } from "nextra-theme-docs";
 import StaticSite from "@components/deploy/quickstart/StaticSite";
 
-# Wasmer Deploy Quickstart for a Static Site
+#  Quickstart for a Static Site
 
-In this quickstart guide, you'll learn the process of publishing a static site using Wasmer Deploy.
-We will cover installation of the Wasmer Deploy CLI, setting up a new static site, and deploying it.
+In this quickstart guide, you'll learn the process of publishing a static site using .
+We will cover installation of the  CLI, setting up a new static site, and deploying it.
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ logged into registry "https://registry.wasmer.io/graphql" as user "<user-name>"
 
 ### Step 3: Initialize a Static Site
 
-With the Wasmer Deploy CLI installed, let's create a new static site!
+With the  CLI installed, let's create a new static site!
 
 Run the commands below to create a new directory and initialize:
 
@@ -61,8 +61,8 @@ $ wasmer app init static-site
   Creating public directory at '(...)/deploy-quickstart/my-new-site/public'...
   Creating stub index.html...
   Writing wasmer.toml package to '(...)/deploy-quickstart/my-new-site/wasmer.toml'
-  No deploy.yaml found. Configuring new app...
-  Writing Deploy config: '(...)/deploy-quickstart/my-new-site/deploy.yaml'
+  No app.yaml found. Configuring new app...
+  Writing Deploy config: '(...)/deploy-quickstart/my-new-site/app.yaml'
   Would you like to publish the new package and app? [y/n]: n
   Done!
 ```
@@ -82,7 +82,7 @@ The `wasmer app init static-site` command will prompt you for the following:
 The above command will do the following:
 
 - Create a Wasmer package config (`wasmer.toml`)
-- Create a Wasmer Deploy app config (`deploy.yaml`)
+- Create a  app config (`app.yaml`)
 - Create a public directory that holds the website data
 
 Your directory structure should look like this:
@@ -92,7 +92,7 @@ Your directory structure should look like this:
     <FileTree.Folder name="public" defaultOpen>
       <FileTree.File name="index.html" />
     </FileTree.Folder>
-    <FileTree.File name="deploy.yaml" />
+    <FileTree.File name="app.yaml" />
     <FileTree.File name="wasmer.toml" />
   </FileTree.Folder>
 </FileTree>
@@ -142,14 +142,14 @@ Publishing package...
 [2/2] 📦  Publishing...
 Successfully published package `<user-name>/my-new-site@0.1.0`
 Package '<user-name>/my-new-site@0.1.0' published successfully!
-Writing updates deploy.yaml...
+Writing updates app.yaml...
 Publishing app...
 App published successfully!
 Access your app at: https://x43izt2fqm45.id.wasmer.dev
 ```
 
 <Callout type="info" emoji="ℹ️">
-  You must be in the directory holding the `wasmer.toml` and `deploy.yaml`
+  You must be in the directory holding the `wasmer.toml` and `app.yaml`
   config files.
 </Callout>
 
@@ -169,7 +169,7 @@ Now you can access your site on the web at the URL provided in the output.
 
 ## Conclusion
 
-Congratulations! You have successfully deployed a static site using Wasmer Deploy.
+Congratulations! You have successfully deployed a static site using .
 
 To make changes to your site, simply modify the files in the public directory and run `wasmer deploy publish` again to deploy the changes.
 
