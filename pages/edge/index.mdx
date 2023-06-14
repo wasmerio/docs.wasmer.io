@@ -1,48 +1,114 @@
 import { Callout } from "nextra-theme-docs";
 
-# Deploy
+# Wasmer Edge
 
-Wasmer Edge allows running Wasmer containers in the Wasmer Edge Nodes. It's also self-hostable (soon!).
+Wasmer Edge is a next-generation cloud platform, built from the ground up to
+enable the Wasmer vision:
+
+> Run, Publish & Deploy any code - anywhere.
+
+Edge harnesses WebAssembly, the Wasmer runtime and WASI(X) to enable
+secure, scalable and cost-effective global deployments of your applications with
+minimal operational complexity.
+
+The guiding principles of Wasmer Edge are:
+
+- **Simplicity**: Designed to be a joy to use, with a
+  developer-centric workflow and a focus on productivity.
+  For standard use cases, the platform should be trivial to understand,
+  hiding all underlying complexity from the user.
+- **Power**: Ease of use should not imply a limited feature set.
+  Edge aims to enable complex deployment scenarios that can currently only be
+  fulfilled by complicated systems like Kubernetes or the large cloud providers.
+- **Security**: WebAssembly enables secure, sandboxed execution of untrusted code,
+  without the burden of additional emulation layers like containers or virtual machines.
+  Users can define tightly scoped, fine-grained permissions to limit the attack surface
+  of their applications.
+- **Scalability**: Applications scale seamlessly, all the way from zero
+  up to serving millions of requests per second, or running thousands of concurrent
+  instances, empowered by WebAssembly's small footprint and fast startup time.
+  The core platform itself is also designed to scale seamlessly, from a single
+  server to large, globally distributed clusters.
+- **Resilience**: Outages are a common occurrence today, even for the largest cloud
+  providers.
+  Edge is designed around a **shared nothing** architecture. Each server
+  can continue to operate independently, without relying on any shared services,
+  which also means your workloads are shielded from larger outages.
+- **Cost-Effectiveness**: WebAssembly enables much more resource-effective startup,
+  scaling and operation than traditional container and virtualization technologies.
+  We aim to pass down these benefits to our users, and provide extremely competitive
+  pricing.
 
 <Callout type="warning">
-  Wasmer Edge is still in heavy development. Use in production apps with
-  caution.
+  Wasmer Deploy is still under heavy development and is not ready yet for
+  production usage.
 </Callout>
 
-Current status:
+**Current status**:
 
-- **Dev**: In heavy development, features are being added and APIs have breaking changes
-- ~~**Alpha**~~: Missing features and bugs to fix, not ready for production usage
+- **Alpha**: Missing features and bugs to fix, not ready for production usage, breaking changes should be rare but can occur
 - ~~**Beta**~~: Stable APIs, last bugs are being fixed and last features are being added
 - ~~**General Availability**~~: Cloud version available for production usage
 - ~~**Open Source**~~: Open Source version available for creating your own servers and using it on-premise
 
-# Features
+## Features
 
-- Based on the [Wasmer Runtime](/runtime)
-- Supports the following runners:
-  - WASIX: _any_ programming language and framework
-  - WCGI: CGIs on top of WebAssembly
-- Deploy APIs, SSR(ed) websites, Webhooks endpoints, Cron jobs...
-- CLI to manage websites and develop locally
-- _Deploy at the Edge using the Cloud version, or self-host it (soon!)_
-- _100% open-source (soon!)_
+The current early access version comes with a limited set of features.
 
-# How it works
+Many additional features are planned, some of them coming really soon!
 
-Wasmer Edge uses [Wasmer Runtime](/runtime), which allows it to have sandboxed environments while running your applications.
-That means each application memory is isolated from each others, and you can run a lot of them at the same time with very few resources.
+### Available Features
 
-Starting an Wasmer Container is a lot faster than starting a Docker container, which allows for almost free cold starts.
+- Run stateless, auto-scaled WebAssembly HTTP apps:
+  The only way to serve your workloads at the moment is through HTTP.
+  You can use [WASIX - TODO: insert wasix link](./) or
+  [WCGI - TODO: insert WCGI link](./) to build servers in WebAssembly.
+- Automatic scaling:
+  Workloads will be served by the Wasmer Edge network, on the servers closest
+  to the user, and will scale automatically to meet the demand.
+- Auto-domains and aliases:
+  Each deployed app will be reachable through a unique URL, `[NAME].wasmer.app`.
+  You can also configure additional aliases.
+- Versioned deployments and rollback:
+  App deployment versions are tracked.
+  You can always access previous versions though a special URL, and rollback to
+  previous versions with a single CLI command or click.
+  You can also publish preview-versions and test them before switching them to active.
+- Custom domains with automatic SSL:
+  You can configure custom domains for your applications.
+  SSL certificates will automatically be provisioned and renewed for you.
 
-<Callout type="info" emoji="ℹ️">
-  You can also read an article by KodeCloud comparing [WASI vs
-  Docker](https://kodekloud.com/blog/webassembly-vs-docker/)
-</Callout>
+### Features in Development
 
-TODO:
+#### Persistent workloads
 
-- Investigate Vercel for dev/staging/prod workflows
-- Investigate Cloudflare for wrangler config
-- Investigate Fly.io for Deployment config (`fly.toml`)
-- Port mapping
+Apps are stateless and auto-scaled by default, which is great for scalability
+and cost-effectiveness, but sometimes you need to run a persistent workload
+that keep running, even with no requests coming in.
+
+Persistent workloads will enable you to provision a fixed number of instances
+that are kept alive by the edge runtime.
+
+#### Persistent volumes
+
+Stateless apps are great for scalability, but eventually the state needs to
+live somewhere.
+You will be able to create persistent volumes, and mount these volumes into
+your workloads.
+
+#### Private network:
+
+Create secure, private networks to connect your workloads globally.
+Powered by [DNET - TODO: insert dnet architecture link](./);
+
+#### Scheduled tasks / cronjobs:
+
+Running tasks at a certain interval is a common requirement.
+You will be able to configure scheduled invocation of your apps at a given interval.
+The web UI and CLI will allow inspecting logs and success status of the task runs.
+
+## First Steps
+
+To start using Wasmer Edge, check out the [Getting Started](./getting-started.md) guide.
+
+To understand how the platform works, check out the [Architecture](./architecture.md) documentation.
