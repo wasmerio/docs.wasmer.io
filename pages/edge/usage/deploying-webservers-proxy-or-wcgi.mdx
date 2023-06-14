@@ -7,7 +7,7 @@ Each comes with it's own advantages and tradeoffs.
 ## Proxy
 
 In proxy mode, the WebAssembly instance is expected to start an HTTP server on
-a specified port (currently defaulting to 80).
+a specified port (currently defaulting to `80`).
 
 The Edge gateway will then forward (proxy) requests to the inner server, and
 send the response back to the client.
@@ -17,9 +17,8 @@ if the application runs a multi-threaded server.
 This increases performance, thanks to reduced startup overhead and lack of a
 required warmup.
 
-
 This deployment mode currently requires the [WASIX](https://wasix.org)
-WebAssembly toolchain, a superset over [WASI](https://wasi.dev/). 
+WebAssembly toolchain, a superset over [WASI](https://wasi.dev/).
 WASIX adds additional functionality to WASI, in particular the ability to listen
 on sockets.
 
@@ -46,17 +45,17 @@ language.
 
 The primary benefits of this approach:
 
-* Supported by all languages that already compile to standard WASI
-* Isolation: each request is handled in a isolated context in a new application
+- Supported by all languages that already compile to standard WASI
+- **Isolation**: Each request is handled in a isolated context in a new application
   instance, which is sandboxed.
   This means there is no way for requests to negatively affect each other by
   blocking threads, or for bugs or vulnerabilities introduced by shared state.
-* Perfect scalability: the gateway starts a new instance for each request,
+- **Perfect scalability**: The gateway starts a new instance for each request,
   so there is no need to worry about concurrency or thread safety.
   The Edge gateway will do the work for you, and scale up dynamically.
   Your instances also stop immediately after the request is served, so you don't
   incur any additional cost from idle instances.
 
-To run WCGI workloads locally, see the [WCGI Runner](../../runtime/runners/wcgi.mdx) docs.
+To run WCGI workloads locally, see the [WCGI Runner](/runtime/runners/wcgi) docs.
 
 You can also check out the [WCGI announcement post](https://wasmer.io/posts/announcing-wcgi).
