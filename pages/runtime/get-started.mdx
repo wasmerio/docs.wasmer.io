@@ -17,13 +17,13 @@ Click [here](/install) for instructions on how to install Wasmer.
 
 Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` to print a result.
 
-<Tabs items={['CLI', 'JS', 'Python']}>
+<Tabs items={['CLI', /*'JS', 'Python'*/]}>
   <Tab>
     ```bash copy
     wasmer run python/python -- -c "print(1+1)"
     ```
   </Tab>
-
+{/* 
   <Tab>
 
     ```js copy
@@ -45,12 +45,12 @@ Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io
     print(python.stdout)
     ```
 
-  </Tab>
+  </Tab> */}
 </Tabs>
 
 </Steps>
 
 <Callout type="info" emoji="ℹ️">
   You can also publish your packages to the Wasmer registry, so it can be used
-  everywhere. [Learn how](/registry/publish).
+  everywhere. [Learn how](/registry/get-started).
 </Callout>

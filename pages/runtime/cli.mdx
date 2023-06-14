@@ -1,1 +1,187 @@
-# `wasmer` CLI
+# `wasmer run` CLI
+
+Run a WebAssembly file or Wasmer container.
+
+## Usage
+
+### Run a Wasmer package
+
+All packages published on [Wasmer Registry](/registry) can be run with the `wasmer run` command.
+
+```
+wasmer run python/python
+```
+
+Some commands, such as `cowsay` have multiple commands that we can run (eg. `cowsay` or `cowthink`)
+
+```
+wasmer run syrusakbary/cowsay hello --command-name=cowthink a
+```
+
+If in your current dir you have a `wasmer.toml` file, you can simply run the local package with:
+
+```
+wasmer run .
+```
+
+Wasmer run also allows running from URLs (in case a package is hosted on a different registry).
+
+```
+wasmer run https://wasmer.io/python/python
+```
+
+
+### Run a Wasm file
+
+```
+wasmer run my_program.wasm
+```
+
+#### Run a Wasm file with a custom compiler
+
+```
+wasmer run my_program.wasm --singlepass
+```
+
+> You can also use `--cranelift` or `--llvm` instead of `--singlepass`.
+
+### Run a WASI or WASIX Module
+
+You can pass the arguments that will be given to the WASI program:
+
+```
+wasmer run my_wasi_program.wasm -- arg1 arg2 arg3
+```
+
+You can also pass environment variables:
+
+```
+wasmer run my_wasi_program.wasm --env MYVAR=MYVALUE -- arg1 arg2 arg3
+```
+
+
+## Help
+
+This is the help output from the Wasmer CLI for `wasmer run --help`:
+
+```
+Usage: wasmer run [OPTIONS] <INPUT> [ARGS]...
+
+Arguments:
+  <INPUT>
+          The file, URL, or package to run
+
+  [ARGS]...
+          Command-line arguments passed to the package
+
+Options:
+  -v, --verbose...
+          More output per occurrence
+
+  -q, --quiet...
+          Less output per occurrence
+
+      --wasmer-dir <WASMER_DIR>
+          The Wasmer home directory
+
+          [env: WASMER_DIR=/Users/syrusakbary/.wasmer]
+          [default: /Users/syrusakbary/.wasmer]
+
+      --singlepass
+          Use Singlepass compiler
+
+      --cranelift
+          Use Cranelift compiler
+
+      --llvm
+          Use LLVM compiler
+
+      --enable-verifier
+          Enable compiler internal verification
+
+      --enable-simd
+          Enable support for the SIMD proposal
+
+      --disable-threads
+          Disable support for the threads proposal
+
+      --enable-threads
+          Deprecated, threads are enabled by default
+
+      --enable-reference-types
+          Enable support for the reference types proposal
+
+      --enable-multi-value
+          Enable support for the multi value proposal
+
+      --enable-bulk-memory
+          Enable support for the bulk memory proposal
+
+      --enable-all
+          Enable support for all pre-standard proposals
+
+      --dir <DIR>
+          WASI pre-opened directory
+
+      --mapdir <GUEST_DIR:HOST_DIR>
+          Map a host directory to a different location for the Wasm module
+
+      --env <KEY=VALUE>
+          Pass custom environment variables
+
+      --forward-host-env
+          Forward all host env variables to the wcgi task
+
+          [env: FORWARD_HOST_ENV=]
+
+      --use <USE>
+          List of other containers this module depends on
+
+      --include-webc <WEBC>
+          List of webc packages that are explicitly included for execution Note: these packages will be used instead of those in the registry
+
+      --map-command <MAPCMD>
+          List of injected atoms
+
+      --net
+          Enable networking with the host network.
+
+          Allows WASI modules to open TCP and UDP connections, create sockets, ...
+
+      --no-tty
+          Disables the TTY bridge
+
+      --enable-async-threads
+          Enables asynchronous threading
+
+      --http-client
+          Allow instances to send http requests.
+
+          Access to domains is granted by default.
+
+      --deny-multiple-wasi-versions
+          Require WASI modules to only import 1 version of WASI
+
+      --registry <REGISTRY>
+          The registry to use
+
+          [env: WASMER_REGISTRY=]
+
+  -a, --addr <ADDR>
+          The address to serve on
+
+          [env: ADDR=]
+          [default: 127.0.0.1:8000]
+
+      --stack-size <STACK_SIZE>
+          Set the default stack size (default is 1048576)
+
+  -e, --entrypoint <ENTRYPOINT>
+          The function or command to invoke
+
+      --COREDUMP PATH <COREDUMP PATH>
+          Generate a coredump at this path if a WebAssembly trap occurs
+
+  -h, --help
+          Print help (see a summary with '-h')
+```

@@ -20,7 +20,20 @@ This page will guide you through installing Wasmer, and deploying an already exi
 ```bash
 wasmer deploy edge-examples/hello-world
 ```
- 
+
+This will create a `deploy.yaml` file with the following contents
+
+```yaml copy filename="deploy.yaml"
+kind: wasmer.io/App.v1
+meta:
+  name: <your-username>/hello-world
+spec:
+  workload:
+    source: edge-examples/hello-world
+```
+
+So next time you can simply do `wasmer deploy` when running on a directory with an already existing `deploy.yaml` file.
+
 * Do you want to serve your custom static site content? [Learn more](/edge/quickstart/static-site)
 
 </Steps>

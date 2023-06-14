@@ -1,0 +1,84 @@
+import { Callout } from "nextra-theme-docs";
+
+# `wasmer publish` CLI
+
+Publish a Wasmer container to the [registry](/registry).
+
+## Usage
+
+### Publish a pacakge to Wasmer
+
+Publishing a package to Wasmer is as simple as running the following command:
+
+```bash
+wasmer publish
+```
+
+This command will create your Wasmer package, and publish it to the Wasmer registry.
+
+#### Dry run
+
+If you want to check that everything is running properly before publishing, you can run `--dry-run`:
+
+```bash
+wasmer publish --dry-run
+```
+
+<Callout type="default" emoji="💡">
+  This will not upload the package to the registry.
+</Callout>
+
+## Configuration
+
+You can set the configuration for the registry very easily.
+
+### `registry.url`: Registry URL 
+
+Get:
+```
+wasmer config get registry.url
+```
+
+Set:
+```
+wasmer config set registry.url https://registry.wasmer.io/graphql
+```
+
+## Help
+
+This is the help output from the Wasmer CLI for `wasmer publish --help`:
+
+```
+Usage: wasmer publish [OPTIONS] [PACKAGE_PATH]
+
+Arguments:
+  [PACKAGE_PATH]
+          Directory containing the `wasmer.toml`, or a custom *.toml manifest file.
+
+          Defaults to current working directory.
+
+Options:
+      --registry <REGISTRY>
+          Registry to publish to
+
+      --dry-run
+          Run the publish logic without sending anything to the registry server
+
+      --quiet
+          Run the publish command without any output
+
+      --package-name <PACKAGE_NAME>
+          Override the package of the uploaded package in the wasmer.toml
+
+      --version <VERSION>
+          Override the package version of the uploaded package in the wasmer.toml
+
+      --token <TOKEN>
+          Override the token (by default, it will use the current logged in user)
+
+      --no-validate
+          Skip validation of the uploaded package
+
+  -h, --help
+          Print help (see a summary with '-h')
+```

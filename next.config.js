@@ -55,7 +55,7 @@ module.exports = {
       },
       {
         source: '/ecosystem/wapm/publishing-your-package',
-        destination: '/registry/publish',
+        destination: '/registry/get-started',
         permanent: true,
       },
       {

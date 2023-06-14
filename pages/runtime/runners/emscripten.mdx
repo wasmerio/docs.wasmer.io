@@ -1,0 +1,25 @@
+import { Callout } from "nextra-theme-docs";
+
+# Emscripten Runner
+
+The Emscripten runner allows you to run applications compiled with Emscripten with Wasmer.
+
+<Callout type="info">
+Emscripten support is experimental in Wasmer
+</Callout>
+
+## Usage
+
+To use the emscripten runner, you need to specify the runner for you package in your `wasmer.toml` file:
+
+```toml
+...
+[[command]]
+name = "proxy"
+module = "<your-module>"
+runner = "https://webc.org/runner/emscripten"
+```
+
+## Learn More
+
+To learn more about emscripten runner, please click [here](https://docs.rs/webc/latest/webc/metadata/annotations/constant.EMSCRIPTEN_RUNNER_URI.html).
