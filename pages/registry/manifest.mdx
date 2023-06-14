@@ -2,10 +2,11 @@ import { Callout } from "nextra-theme-docs";
 
 # Wasmer Manifest
 
-The manifest (`wasmer.toml`) is required [to publish](publishing-your-package.md) to the [Wasmer registry](https://wasmer.io); it's where a package's dependencies, metadata, and commands are declared.
+The manifest file called `wasmer.toml` is required [to publish](publishing-your-package.md) to the [Wasmer registry](https://wasmer.io/products/registry); This file contains the package's dependencies, metadata, and commands are declared.
 
-<Callout type="default">
-If you want to get assistance creating the `wasmer.toml` file you can simply run `wasmer init` in your directory and the CLI will guide you!
+<Callout type="default" emoji="💡">
+  If you want to get assistance creating the `wasmer.toml` file you can simply
+  run `wasmer init` in your directory and the CLI will guide you!
 </Callout>
 
 The manifest file contains 4 sections:
@@ -14,33 +15,33 @@ The manifest file contains 4 sections:
 
 Valid keys are:
 
-* `name` \(string\) **required**
-* `version` \([semver version](https://semver.org/)\) **required**: a valid Semantic Versioning version.
-* `description` \(string\) **required**
-* `license` \([spdx identifier](https://spdx.org/licenses/)\): can be MIT or GPL, for example.
-* `license-file` \(path\): an override for the license file path used in publishing. Left undefined, the `LICENSE` file will be implicitly included in the package.
-* `readme` \(path\)
-* `repository` \(url\)
-* `homepage` \(url\)
+- `name` \(string\) **required**
+- `version` \([semver version](https://semver.org/)\) **required**: a valid Semantic Version.
+- `description` \(string\) **required**
+- `license` \([spdx identifier](https://spdx.org/licenses/)\): can be MIT or GPL, for example.
+- `license-file` \(path\): an override for the license file path used in publishing. Left undefined, the `LICENSE` file will be implicitly included in the package.
+- `readme` \(path\)
+- `repository` \(url\)
+- `homepage` \(url\)
 
 ## \[dependencies\]
 
-* `"<namespace>/<name>" = "<version>"`
+- `"<namespace>/<name>" = "<version>"`
 
 ## \[\[module\]\]
 
-* `name` \(string\) **required**
-* `source` \(path\) **required**: path to the `.wasm` file
-* `abi` \(enum\): one of: `wasi`, `emscripten`, or `none`
+- `name` \(string\) **required**
+- `source` \(path\) **required**: path to the `.wasm` file
+- `abi` \(enum\): one of: `wasi`, `emscripten`, or `none`
 
 ## \[\[command\]\]
 
-* `name` **required** \(string\): the name of the command, invoked via `wasmer run . --command=<command-name>`
-* `module` **required** \(string\): the name of the module this command is running.
-* `package` **required** \(string\): the package name that the module is in.
-* `main_args`
-* `package`
+- `name` **required** \(string\): the name of the command, invoked via `wasmer run . --command=<command-name>`
+- `module` **required** \(string\): the name of the module this command is running.
+- `package` **required** \(string\): the package name that the module is in.
+- `main_args`
+- `package`
 
 ## \[fs\]
 
-* `"location/on/wasm"="location/on/publishing/machine"`: bundle local files into the package and make them available on the WASI filesystem
+- `"location/on/wasm"="location/on/publishing/machine"`: bundle local files into the package and make them available on the WASI filesystem

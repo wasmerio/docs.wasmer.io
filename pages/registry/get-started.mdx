@@ -1,13 +1,12 @@
-import { Steps } from 'nextra-theme-docs';
+import { Steps } from "nextra-theme-docs";
 import { Callout } from "nextra-theme-docs";
-import { Tab, Tabs } from 'nextra-theme-docs';
-import Install from '../../components/install.mdx';
-import Login from '../../components/login.mdx';
+import { Tab, Tabs } from "nextra-theme-docs";
+import Install from "../../components/install.mdx";
+import Login from "../../components/login.mdx";
 
 # Get Started with the Wasmer Registry
 
 This page will guide you through installing Wasmer, and publishing a container in the Wasmer Registry.
-
 
 <Steps>
  
@@ -16,25 +15,25 @@ This page will guide you through installing Wasmer, and publishing a container i
 <Login />
 
 ### Create a package
- 
+
 To create your first Wasmer pacakge simply run `wasmer init`.
 
 This should have created a `wasmer.toml` file with contents similar to:
 
-```toml
+```toml copy
 [package]
-name = 'youruser/package'
+name = '<your-user>/<package>'
 version = '0.1.0'
 description = 'Description for package'
 
 [[module]]
-name = 'theprogram'
-source = 'target/release/theprogram.wasm'
-  
+name = '<your-module>'
+source = 'target/release/<your-module>.wasm'
+
 [[command]]
 runner = 'wasi'
-name = 'theprogram'
-module = 'theprogram'
+name = '<your-module>'
+module = '<your-module>'
 ```
 
 You can check the manifest format here: [Wasmer Package Manifest](/registry/manifest).
@@ -42,8 +41,8 @@ You can check the manifest format here: [Wasmer Package Manifest](/registry/mani
 <Callout type="info">
 Once you have a `wasmer.toml` manifest, you can simply execute `wasmer run` in the CLI to run your package locally.
 
-```bash
-wasmer run . --command=theprogram
+```bash copy
+wasmer run . --command=<your-module>
 ```
 
 </Callout>
@@ -52,8 +51,15 @@ wasmer run . --command=theprogram
 
 Now, create your WebAssembly modules:
 
-
 <Tabs items={['Rust (WASIX)', 'Rust (WASI)']}>
+  <Tab>
+
+    ```bash
+    cargo install cargo-wasix
+    cargo wasix build --release
+    ```
+
+  </Tab>
   <Tab>
     WASI is oficially supported by Rust, to compile to it you can simply do:
 
@@ -63,15 +69,9 @@ Now, create your WebAssembly modules:
     ```
 
   </Tab>
-  <Tab>
-    ```bash /python\/python/
-    cargo install cargo-wasix
-    cargo wasix build --release
-    ```
-  </Tab>
 </Tabs>
 
-Modify the `wasmer.toml` to point the module to the wasm file location `target/release/theprogram.wasm`.
+Modify the `wasmer.toml` to point the module to the wasm file location `target/release/<your-module>.wasm`.
 
 ### Publish your package
 
@@ -81,6 +81,6 @@ Now, simply run:
 wasmer publish
 ```
 
-This command will publish your package to the Wasmer Registry, so it can be used anywhere.
+This command will publish your package to the [Wasmer Registry](https://wasmer.io/products/registry), so it can be used anywhere.
 
 </Steps>

@@ -6,6 +6,20 @@ gaps sufficiently enough to enable real, practical and useful applications to be
 
 WASIX was created by the Wasmer team to speed up the ecosystem around the WASI so that the Wasm’ification of code bases around the world can really start today!
 
-You can check more about wasix on the website:
+You can check more about wasix on the [website](https://wasix.org/).
 
-https://wasix.org/
+## Usage
+
+To use the wasix runner, you need to specify the runner for you package in your `wasmer.toml` file:
+
+```toml
+...
+[[command]]
+name = "proxy"
+module = "<your-module>"
+runner = "https://webc.org/runner/wasi"
+```
+
+## Learn More
+
+To learn more about wasix runner, please click [here](https://docs.rs/webc/latest/webc/metadata/annotations/constant.WASI_RUNNER_URI.html).

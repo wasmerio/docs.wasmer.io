@@ -1,3 +1,5 @@
+import { Callout } from "nextra-theme-docs";
+
 # Publish a pacakge to Wasmer
 
 Publishing a package to Wasmer is as simple as running the following command:
@@ -12,9 +14,10 @@ This command will create your Wasmer package, and publish it to the Wasmer regis
 
 If you want to check that everything is running properly before publishing, you can run `--dry-run`:
 
-Note: this will not upload the package to the registry.
-
-
 ```bash
 wasmer publish --dry-run
 ```
+
+<Callout type="default" emoji="💡">
+  This will not upload the package to the registry.
+</Callout>
