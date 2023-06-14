@@ -114,10 +114,18 @@ as needed.
 You can now test your site locally by running the following command:
 
 ```shell copy
-$ wasmer run .
+$ wasmer run . --net -- --port 9000
 ```
 
-This will start a local server using the Static Web Server and will output the URL to access your site:
+This will start a local server using the Static Web Server on `http://localhost:9000`.
+
+You can also specify a different port by changing the `--port` flag.
+
+<Callout type="info" emoji="ℹ️">
+  The arguments after `--` are passed to the static web server. You can see all
+  the available options with `wasmer run --help` or click [here](/todo/) to see
+  the full documentation.
+</Callout>
 
 ### Step 6: Deploy Your Site
 
