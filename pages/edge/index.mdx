@@ -2,14 +2,24 @@ import { Callout } from "nextra-theme-docs";
 
 # Wasmer Edge
 
+<Callout type="warning">
+  Wasmer Deploy is still under heavy development and is not ready yet for
+  production usage.
+</Callout>
+
 Wasmer Edge is a next-generation cloud platform, built from the ground up to
 enable the Wasmer vision:
 
 > Run, Publish & Deploy any code - anywhere.
 
+
+
 Edge harnesses WebAssembly, the Wasmer runtime and WASI(X) to enable
 secure, scalable and cost-effective global deployments of your applications with
 minimal operational complexity.
+
+---
+
 
 The guiding principles of Wasmer Edge are:
 
@@ -39,17 +49,12 @@ The guiding principles of Wasmer Edge are:
   We aim to pass down these benefits to our users, and provide extremely competitive
   pricing.
 
-<Callout type="warning">
-  Wasmer Deploy is still under heavy development and is not ready yet for
-  production usage.
-</Callout>
+### Status of Wasmer Edge
 
-**Current status**:
-
-- **Alpha**: Missing features and bugs to fix, not ready for production usage, breaking changes should be rare but can occur
-- ~~**Beta**~~: Stable APIs, last bugs are being fixed and last features are being added
-- ~~**General Availability**~~: Cloud version available for production usage
-- ~~**Open Source**~~: Open Source version available for creating your own servers and using it on-premise
+- [x] **Alpha**: Missing features and bugs to fix, not ready for production usage, breaking changes should be rare but can occur
+- [ ] **Beta**: Stable APIs, last bugs are being fixed and last features are being added
+- [ ] **General Availability**: Cloud version available for production usage
+- [ ] **Open Source**: Open Source version available for creating your own servers and using it on-premise
 
 ## Features
 
@@ -61,7 +66,7 @@ Many additional features are planned, some of them coming really soon!
 
 - Run stateless, auto-scaled WebAssembly HTTP apps:
   The only way to serve your workloads at the moment is through HTTP.
-  You can use [WASIX - TODO: insert wasix link](./) or
+  You can use [WASIX - TODO: insert WASIX link](./) or
   [WCGI - TODO: insert WCGI link](./) to build servers in WebAssembly.
 - Automatic scaling:
   Workloads will be served by the Wasmer Edge network, on the servers closest

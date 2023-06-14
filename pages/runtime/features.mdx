@@ -1,6 +1,6 @@
 import { Callout } from "nextra-theme-docs";
 
-# Wasmer Features
+# Wasmer Runtime Features
 
 The Wasmer WebAssembly runtime supports different backends:
 
@@ -10,7 +10,8 @@ The Wasmer WebAssembly runtime supports different backends:
 
 Each of this backends support different features, and have different support for Operating Systems and Chipsets.
 
-- _WebAssembly Features_:
+### WebAssembly Features
+
   - **Bulk-memory operations**: e.g. instructions with behavior similar to C's `memmove` and `memset` in WebAssembly;
   - **Multi-value return**: return multiple values from functions making data transfer between host and guest simpler;
   - **Import & export of mutable globals**: adds ability to import and export mutable globals;
@@ -19,7 +20,8 @@ Each of this backends support different features, and have different support for
   - **Reference types**: easier and more efficient interop with host environment;
   - **SIMD**: Single Instruction, Multiple data: do heavy number crunching more quickly and/or with lower power usage.
   - **Threads**: adds a new shared linear memory type and some new operations for atomic memory access;
-- _Wasmer features_:
+
+### Wasmer features
   - **Caching**: compiled WebAssembly modules can be reused so subsequent runs of a Wasm file will have very little start up time;
   - **Metering**: computation time and other resources can be monitored and limits set to control how the Wasm code runs. This is also known as "gas metering";
 
