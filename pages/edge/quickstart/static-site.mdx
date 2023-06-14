@@ -121,10 +121,12 @@ This will start a local server using the Static Web Server on `http://localhost:
 
 You can also specify a different port by changing the `--port` flag.
 
+> The arguments after `--` are passed to the static web server.
+
 <Callout type="info" emoji="ℹ️">
-  The arguments after `--` are passed to the static web server. You can see all
-  the available options with `wasmer run --help` or click [here](/todo/) to see
-  the full documentation.
+  You can see all the available options with `wasmer run --help` or click
+  [here](/todo/) to see the full documentation. To see all the avilable options
+  for the static web server, run `wasmer run . -- --help`.
 </Callout>
 
 ### Step 6: Deploy Your Site
