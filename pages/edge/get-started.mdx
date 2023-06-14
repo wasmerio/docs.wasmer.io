@@ -1,0 +1,26 @@
+import { Steps } from 'nextra-theme-docs';
+import { Callout } from "nextra-theme-docs";
+import { Tab, Tabs } from 'nextra-theme-docs';
+import Install from '../../components/install.mdx';
+import Login from '../../components/login.mdx';
+
+# Get Started with Wasmer Edge
+
+This page will guide you through installing Wasmer, and deploying an already existing package to Wasmer Edge.
+
+
+<Steps>
+ 
+<Install />
+
+<Login />
+
+### Deploy a package
+
+```bash
+wasmer deploy edge-examples/hello-world
+```
+ 
+* Do you want to serve your custom static site content? [Learn more](/edge/quickstart/static-site)
+
+</Steps>

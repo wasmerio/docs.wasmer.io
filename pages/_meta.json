@@ -8,7 +8,7 @@
   "install": "Install Wasmer",
   "runtime": "Runtime",
   "registry": "Registry",
-  "deploy": "Deploy",
+  "edge": "Edge",
   "---": {
     "type": "separator"
   },

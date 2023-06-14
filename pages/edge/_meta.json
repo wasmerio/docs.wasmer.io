@@ -1,7 +1,7 @@
 {
   "index": "Introduction",
-  "quickstart": "Quick Start",
   "get-started": "Get Started",
+  "quickstart": "Quick Start",
   "usage": "Usage",
   "configuration": "Configuration",
   "observability": "Observability",
