@@ -1,78 +1,28 @@
 import { Callout } from "nextra-theme-docs";
 
-# Wasmer deploy CLI
+# `wasmer app` and `wasmer deploy` CLI
 
-Wasmer provides you with a CLI to deploy and manage your applications on the edge.
-
-## Installation
-
-You can check how to install the Wasmer CLI in the [official docs](/install)
+Wasmer provides you with commands in their CLI to deploy and manage your applications on the edge.
 
 ## Usage
 
 Wasmer has two main commands for deploy:
 
-- `wasmer apps`
+- `wasmer app`
 - `wasmer deploy`
 
 <Callout type="info" emoji="ℹ️">
-  <b> Note: </b> You must login to wasmer to use the deploy command.
+  **Note:** You must be logged in to Wasmer to use the `app` and `deploy` commands.
 </Callout>
 
-### `wasmer apps`
 
-Todo: write about this command and how to use it.
+### `wasmer app`
 
-**`wasmer app --help`** will show you the help for this command.
+It allows managing the apps
 
-```shell copy
-$ wasmer apps --help
-Manage deployed apps
+#### `wasmer app create <package-to-deploy>`
 
-Usage: wasmer app <COMMAND>
-
-Commands:
-  get   Show an app
-  list  List apps
-  logs  Show an app
-  init  Initialize apps with templates
-  help  Print this message or the help of the given subcommand(s)
-
-Options:
-  -h, --help  Print help
-```
-
-#### `wasmer app get`
-
-Use this command to get information about an app.
-
-```shell
-$ wasmer app get --help
-Show an app
-
-Usage: wasmer app get [OPTIONS] <IDENT>
-
-Arguments:
-  <IDENT>
-          Identifier of the app.
-
-          Eg: - name (assumes current user) - namespace/name
-
-Options:
-      --token <TOKEN>
-          [env: WASMER_TOKEN=]
-
-      --registry <REGISTRY>
-
-
-  -f, --format <FORMAT>
-          Output format. (json, text)
-
-          [default: yaml]
-
-  -h, --help
-          Print help (see a summary with '-h')
-```
+This command is used to create a new app deployment based on the `<package-to-deploy>` package.
 
 #### `wasmer app list`
 
@@ -91,116 +41,52 @@ $ wasmer app list
 +------------------------------+---------+----------------------------------+-----------------+
 ```
 
-**`wasmer app list --help`** will show you the help for this command.
+### `wasmer deploy`
+
+This command is used to deploy an app. Running this command will automatically publish an app to the registry and then deploy it to the edge.
+Once you have an `app.yaml` file, you can deploy it with the following command:
 
 ```shell
-$ wasmer app list --help
-List apps
-
-Usage: wasmer app list [OPTIONS]
-
-Options:
-  -f, --format <FORMAT>
-          Output format. (json, text)
-
-          [default: table]
-
-      --token <TOKEN>
-          [env: WASMER_TOKEN=]
-
-      --registry <REGISTRY>
-
-
-  -n, --namespace <NAMESPACE>
-          Get apps in a specific namespace.
-
-          Will fetch the apps owned by the current user otherwise.
-
-  -a, --all
-          Get all apps that are accessible by the current user, including apps directly owned by the user and apps in namespaces the user can access
-
-  -h, --help
-          Print help (see a summary with '-h')
+$ wasmer deploy
 ```
 
-#### `wasmer app logs`
+For a complete guide on deploying an app, check the [edge get started guide](/edge/get-started).
 
-This command will show you the logs of an app.
+## Help
 
-```shell
-$ wasmer app logs --help
-Show an app
+This is the help output from the Wasmer CLI for `wasmer app --help`:
 
-Usage: wasmer app logs [OPTIONS] <IDENT>
-
-Arguments:
-  <IDENT>
-          The name of the app.
-
-          Eg: - name (assumes current user) - namespace/name - namespace/name@version
-
-Options:
-      --token <TOKEN>
-          [env: WASMER_TOKEN=]
-
-      --registry <REGISTRY>
-
-
-  -f, --format <FORMAT>
-          Output format. (json, text)
-
-          [default: table]
-
-      --from <FROM>
-          The date of the earliest log entry.
-
-          Defaults to the last 10 minutes.
-
-      --until <UNTIL>
-          The date of the latest log entry
-
-      --max <MAX>
-          Maximum log lines to fetch. Defaults to 1000
-
-          [default: 1000]
-
-  -h, --help
-          Print help (see a summary with '-h')
 ```
-
-#### `wasmer app init`
-
-This command is used to initialize an app with a template.
-
-```shell
-$ wasmer app init
-Initialize apps with templates
-
-Usage: wasmer app init <COMMAND>
+Usage: wasmer app <COMMAND>
 
 Commands:
-  static-site  Initialize a static site
-  help         Print this message or the help of the given subcommand(s)
+  get   Show an app
+  list  List apps
+  logs  Show an app
+  init  Initialize apps with templates
+  help  Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help  Print help
+➜  ~ wasmer app --help
+Manage Wasmer Deploy apps
+
+Usage: wasmer app <COMMAND>
+
+Commands:
+  get   Show an app
+  list  List apps
+  logs  Show an app
+  init  Initialize apps with templates
+  help  Print this message or the help of the given subcommand(s)
 
 Options:
   -h, --help  Print help
 ```
 
-You can use the `static-site` command to initialize a static site. For a complete guide on how to use this command, check the [static site guide](/deploy/static-site).
+This is the help output from the Wasmer CLI for `wasmer deploy --help`:
 
----
-
-### `wasmer deploy`
-
-This command is used to deploy an app. Running this command will automatically publish an app to the registry and then deploy it to the edge.
-
-For a complete guide on deploying an app, check the [deploy guide](/todo/link).
-
-```shell
-$ wasmer deploy --help
-
-Deploy apps to the Wasmer Edge
-
+```
 Usage: wasmer deploy [OPTIONS] [PATH]
 
 Arguments:
