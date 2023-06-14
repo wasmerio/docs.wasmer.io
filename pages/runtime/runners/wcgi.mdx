@@ -9,3 +9,18 @@ You can read more about WCGI here:
 
 https://wasmer.io/posts/announcing-wcgi
 
+## Usage
+
+To use the wcgi runner, you need to specify the runner for you package in your `wasmer.toml` file:
+
+```toml
+...
+[[command]]
+name = "proxy"
+module = "<your-module>"
+runner = "https://webc.org/runner/wcgi"
+```
+
+## Learn More
+
+To learn more about wcgi runner, please click [here](https://docs.rs/webc/latest/webc/metadata/annotations/constant.WCGI_RUNNER_URI.html).

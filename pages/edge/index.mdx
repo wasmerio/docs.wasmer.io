@@ -1,11 +1,12 @@
-import { Callout } from 'nextra-theme-docs'
+import { Callout } from "nextra-theme-docs";
 
 # Deploy
 
-Wasmer Deploy allows running Wasmer containers in the Wasmer Edge Nodes. It's also self-hostable (soon!).
+Wasmer Edge allows running Wasmer containers in the Wasmer Edge Nodes. It's also self-hostable (soon!).
 
 <Callout type="warning">
-  Wasmer Deploy is still in heavy development. Use in production apps with caution.
+  Wasmer Edge is still in heavy development. Use in production apps with
+  caution.
 </Callout>
 
 Current status:
@@ -18,25 +19,30 @@ Current status:
 
 # Features
 
-* Based on the [Wasmer Runtime](/runtime)
-* Supports the following runners:
-  * WASIX: *any* programming language and framework
-  * WCGI: CGIs on top of WebAssembly
-* Deploy APIs, SSR(ed) websites, Webhooks endpoints, Cron jobs...
-* CLI to manage websites and develop locally
-* _Deploy at the Edge using the Cloud version, or self-host it (soon!)_
-* _100% open-source (soon!)_
+- Based on the [Wasmer Runtime](/runtime)
+- Supports the following runners:
+  - WASIX: _any_ programming language and framework
+  - WCGI: CGIs on top of WebAssembly
+- Deploy APIs, SSR(ed) websites, Webhooks endpoints, Cron jobs...
+- CLI to manage websites and develop locally
+- _Deploy at the Edge using the Cloud version, or self-host it (soon!)_
+- _100% open-source (soon!)_
 
 # How it works
 
-Wasmer Deploy uses [Wasmer Runtime](/runtime), which allows having sandboxed environments when running your applications.
+Wasmer Edge uses [Wasmer Runtime](/runtime), which allows it to have sandboxed environments while running your applications.
 That means each application memory is isolated from each others, and you can run a lot of them at the same time with very few resources.
 
 Starting an Wasmer Container is a lot faster than starting a Docker container, which allows for almost free cold starts.
 
+<Callout type="info" emoji="ℹ️">
+  You can also read an article by KodeCloud comparing [WASI vs
+  Docker](https://kodekloud.com/blog/webassembly-vs-docker/)
+</Callout>
 
 TODO:
-* Investigate Vercel for dev/staging/prod workflows
-* Investigate Cloudflare for wrangler config
-* Investigate Fly.io for Deployment config (`fly.toml`)
-* Port mapping
+
+- Investigate Vercel for dev/staging/prod workflows
+- Investigate Cloudflare for wrangler config
+- Investigate Fly.io for Deployment config (`fly.toml`)
+- Port mapping

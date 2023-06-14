@@ -1,6 +1,5 @@
 {
-    "index": "Introduction",
-    "get-started": "Get Started",
-    "manifest": "wasmer.toml"
-  }
-  
+  "index": "Introduction",
+  "get-started": "Get Started",
+  "manifest": "Manifest"
+}
