@@ -19,13 +19,14 @@ Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io
 
 <Tabs items={['CLI', 'JS', 'Python']}>
   <Tab>
-    ```bash /python\/python/
+    ```bash copy
     wasmer run python/python -- -c "print(1+1)"
     ```
   </Tab>
+
   <Tab>
 
-    ```js /python\/python/
+    ```js copy
     import Wasmer from "wasmer";
 
     let python = new Wasmer("python/python");
@@ -34,8 +35,9 @@ Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io
     ```
 
   </Tab>
+
   <Tab>
-    ```python /python\/python/
+    ```python copy
     from wasmer import Wasmer
 
     python = Wasmer("python/python")
@@ -48,7 +50,7 @@ Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io
 
 </Steps>
 
-<Callout type="info">
-  You can also publish a package to the registry, so it can be used everywhere.
-  [Learn how](/registry/publish).
+<Callout type="info" emoji="ℹ️">
+  You can also publish your packages to the Wasmer registry, so it can be used
+  everywhere. [Learn how](/registry/publish).
 </Callout>

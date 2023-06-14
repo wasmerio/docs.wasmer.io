@@ -2,24 +2,27 @@
 
 The Wasmer Runtime is the engine that allows running WebAssembly modules and Wasmer packages anywhere.
 
-Wasmer can be used as a library from any programming language, or as a standalone runtime via the Wasmer CLI.
+Wasmer can be used as a [library](/runtime/sdk) from any programming language, or as a standalone runtime via the [`Wasmer CLI`](/runtime/cli).
 
 ## Features
 
-* **Secure** by default. No file, network, or environment access, unless explicitly enabled.
-* **Fast**. Run WebAssembly at near-native speeds.
-* **Pluggable**. Embeddable in multiple programming languages
-* Compliant with latest WebAssembly Proposals (SIMD, Reference Types, Threads, ...)
+- **Secure** by default. No file, network, or environment access, unless explicitly enabled.
+- **Fast**. Run WebAssembly at near-native speeds.
+- **Pluggable**. Embeddable in multiple programming languages
+- Compliant with latest WebAssembly Proposals (SIMD, Reference Types, Threads, ...)
 
 ## Backends
 
 The Wasmer Runtime supports multiple backends, depending on your needs:
-* Native backends:
-    * Singlepass: A single-pass compiler for fast compilation times and low memory usage.
-    * Cranelift: A fast compiler backend with a focus on compile times, and runtime performance.
-    * LLVM: A compiler backend that uses LLVM for optimization and code generation.
 
-* Integration backends:
-    * Browser: it allows running Wasmer fully in the browser (via `wasm-bindgen`).
-    * JavascriptCore: it allows running Wasmer using the WebAssembly engine inside JavascriptCore
-    * *coming soon* V8: it allows running Wasmer using the WebAssembly engine inside V8
+### Native backends:
+
+- **Singlepass**: A single-pass compiler for fast compilation times and low memory usage.
+- **Cranelift**: A fast compiler backend with a focus on compile times, and runtime performance.
+- **LLVM**: A compiler backend that uses LLVM for optimization and code generation.
+
+### Integration backends:
+
+- **Browser**: it allows running Wasmer fully in the browser (via `wasm-bindgen`).
+- **JavascriptCore**: it allows running Wasmer using the WebAssembly engine inside JavascriptCore
+- **V8** _(coming soon)_: it allows running Wasmer using the WebAssembly engine inside V8
