@@ -1,0 +1,223 @@
+# Architecture of Wasmer Edge
+
+## Wasmer Edge - Built for the future
+
+Wasmer Edge has been built from the ground up to host pure WebAssembly packages
+fully natively - nothing else like this exists today and is only possibly through
+the close integration of the an Open Source runtime (in this case Wasmer), a WASM
+package manager and a distributed hosting infrastructure.
+
+What is described above is the realization of so called _Vertical Integration_.
+Vertical integration is an approach to software or hardware products that builds
+as much as possible of the product internally rather than through multiple separate
+vendors or firms. The approach has benefits and costs; on the positive side vertical
+integration gives rapid speed of delivery, better products and lower complexity
+while on the negative side the available features must be limited to the constraints
+of the internal engineering power.
+
+With the approach of VI, Wasmer Edge does not inherit the technical debt and
+constraints of other hypervisor and virtualization platforms such as virtual
+machines and Kubernetes as it builds up a full virtualized and sand-boxed
+layer built on the WASM runtime itself with minimal complexity. Removing these
+constraints adds new challenges in the need to reinvent things but also unlocks
+great potential by side stepping problems that simply cease to exist.
+
+The core design of what makes up the Wasmer Edge code base is a distributed
+monolith. This means that every node that serves requests has exactly the same
+single binary on it that runs the whole platform. "Separation of Concerns" is
+achieved not by utilizing the hype of complex and error prone microservices but
+by instead breaking the core functionality into compilable `rust` libraries that
+build the deployable at compile time rather than runtime. Further, by following
+the principles below the distributed monolith can easily scale out to an almost
+limitless potential by making careful design choices that avoid common pitfalls.
+
+{/* ![Edge in Racks](images/core-racks.drawio.png) */}
+
+## Foundations are important.
+
+Wasmer Edge has been designed from day-one to be massively scalable, with
+particular attention given to resilience measures, shared scalability bottlenecks
+and long term low cost operations:
+
+- Wasmer Edge is built almost exclusively in **_rust_** meaning it inherits
+  excellent performance and security intrinsics that come from this programming methodology.
+  https://www.wired.com/story/rust-secure-programming-language-memory-safe/
+  https://www.protocol.com/rust-programming-safety-security
+
+- Wasmer Edge is **_vertically integrated,_** meaning the runtime and its hosting
+  components are collapsed together with minimal dependencies and abstractions into a distributed monolith.
+  https://en.wikipedia.org/wiki/Vertical_integration
+
+- Wasmer Edge follows a **shared nothing** architecture where any node globally
+  can operate completely standalone in the event of an unavoidable network partition.
+  https://en.wikipedia.org/wiki/Shared-nothing_architecture
+
+- Density of workloads running on edge nodes has been highly optimized for pure
+  WebAssembly hosting allowing for a high degree **scale-up** through optmizations of the runtime.
+
+- The distributed monolith approach of Wasmer Edge means all nodes are identical
+  and can be replicated with little need for scaling supporting infrastructure that
+  manage them, thus almost **_infinite scale-out_** of hosting capacity can be
+  expanded rapidly.
+
+- Wasmer Edge is built on a **_fully asynchronous_** IO and process sub-sytem
+  that uses mature cargo packages and components that are proven production grade.
+
+- Our edge gateway supports **_global load balancing_** of workloads with **_on
+  demand provisioning_**, meaning after you publish a package it can and will run
+  anywhere and everywhere.
+
+## Wasmer Edge Regions
+
+The closed beta will launch in a set of limited production regions for invited
+participants only, these locations are:
+
+- US West Coast
+- US East Coast
+- Europe Central
+
+Once the product transitions out of this beta phase then other hosting locations
+will be unlocked and made available to customers. Ultimately though users of Wasmer
+Edge that deploy stateless packages are abstracted from this and do not see it.
+
+{/* ![Wasmer Regions](images/core-regions.drawio.png) */}
+
+As stated in the principles, Wasmer Edge follows a **shared nothing** architecture
+which means any isolated node can run all the services and all published packages
+without the need for orchestration or shared components(\*). Given this any node
+can serve any request hence the deployment of nodes into different regions of the
+world is purely and solely to improve latency and availability.
+
+As we monitor and learn the best regions to serve based off requests and load of
+the edge nodes more regions will be added and expanded. Wasmer Edge uses a geo-aware
+DNS load balancer to ensure all requests go to the closest region.
+
+(\*) An exception to the shared nothing principle is published packages themselves
+which are published on a private (and secure) content delivery network.
+
+## Wasmer Gateway
+
+Every node within the platform runs a fully featured gateway that reverse proxies the following protocols:
+
+- **HTTPS**
+- **HTTP**
+- **SSH**
+- **WebSockets**
+
+The gateway also runs a custom DNS server that ensures requests to workloads
+running in Wasmer Edge are sent to the closest gateway node and served there,
+if a node becomes overloaded then requests are spilled over to other nodes
+near by meaning it is able to handle local bursts of high traffic without
+the need for a higher level schedulers (Kubernetes eat your heart out).
+
+As the gateway is fully stateless it will automatically spin up workloads on
+on-demand and execute requests against these workloads - this means that customers
+need not worry about "where" to run things or how to scale the services up and
+can instead just focus on the app itself as Wasmer Edge does the rest for you.
+
+The gateways fully support IPv4 and IPv6, SNI and CNAME redirects. This means
+that custom domains that one may own and want to point to Wasmer Edge can be
+redirected as simply as a DNS entry update. The gateways will also automatically
+generate custom DNS certificates for you and automatically renew them on demand
+and handle versioning of your apps.
+
+## Wasmer Runtime
+
+One of the core parts of Wasmer Edge is the runtime itself. By utilizing the
+Wasmer Runtime as the core virtualization platform of Wasmer Edge and the
+recently announced WASIX, the platform is now able to run real useful WASM
+programs and services directly on the edge. As the runtime itself developes
+over time this will continuously create new and exciting features for Wasmer Edge.
+
+As an example it is now possible to code up a HTTP server or API totally
+in WASM using standard libraries and deploy it on Wasmer Edge so that it
+can serve requests.
+
+The Wasmer Runtime has been optimized recently to handle asynchronous threading,
+full POSIX virtualized sockets, high density of workloads, memory page sharing and sub processes.
+
+Every workload that runs in Wasmer edge is fully isolated from each other in its own dedicated process table, memory, handle map, network and threads. While further security auditing will be carried out to improve the threat of side channel attacks the fundamental isolation mechanism is already a strong base to build upon.
+
+Watch this space for further announcements on WASIX and other supporting ABI's and standards.
+
+## Wasmer Storage
+
+Persistent Storage will be released after the **Beta**, this will allow for databases,
+file systems and object storage to be compiled against WASM and run natively inside the
+Wasmer Edge platform. More details on this will be released later.
+
+## Wasmer Distributed Networking (DNET)
+
+Networking is the most important aspect of a scalable and usable Edge Network.
+Every Edge Computing platform requires a network backbone as the foundation of
+the workloads it hosts, without one the use cases it can host are quite limited.
+Wasmer Edge uses a virtual networking overlay exposed directly to the WASIX sandbox.
+
+In the first beta release of Wasmer Edge you will see aspects of this distributed
+mesh network that allow for sockets and networking from workloads however its full
+potential will only become visible later as we unlock more core networking functionality.
+
+Traffic is sent from browsers over websockets to enter the Wasmer Distributed
+Network while UDP encapsulated (and encrypted) packets are used to ship enternet
+frames (OSI Layer 2) between participating nodes in a specific virtual network.
+
+The design of the subsystems and topology is for many (hundreds of thousands) of
+unique virtual networks while all nodes can actively participate in a virtual network.
+
+Browsers only need to establish a WebSocket connection to the closests Wasmer
+Edge Node in order to join a virtual network.
+
+Great care was taken to implement design constraints that removed the requirements
+for a "control plane" - DNET operates as a fully stateless "data plane" which gives it unique performance and scalability characteristics.
+
+{/* ![Wasmer DNET](images/core-dnet.drawio.png) */}
+
+### DNET Features
+
+- All internode traffic is encrypted with **AES196** without any known quantum compromised algorithms.
+- All internode traffic is signed with **Blake3**
+- Supports **ARP** and **DHCP** snooping for port MAC learning
+- Supports both **IPv4** and **IPv6**
+- All tenant traffic is encrypted with unique (derived) tenant keys thus segmenting and sandboxing it from each other
+- Fully support for concurrent **socket polling**
+- **Multithread** safe
+- Supports promiscuous **raw sockets**
+- Built in **DHCP** server
+- Supports user defined routing tables, IP addresses and MAC addresses
+
+### Wasmer DNET Design Principles
+
+#### 1. Fully stateless
+
+Control planes add complexity and create single pointers of failure thus if one is able to
+deliver the same functionality without a control plane then it is a better design.
+
+#### 2. Peer-to-Peer connection-less
+
+Many VPN protocols are design as a hub-and-spoke model which limits their scalability and
+creates performance bottlenecks. Using peer-to-peer connection-less protocols creates almost
+endless scalability and is more robust against denial of service attacks.
+
+#### 3. Shared nothing
+
+Shared components represent weak points in a design - eliminate the weak points and one
+eliminates the points of failure.
+
+#### 4. Fully asynchronous
+
+Using a fully asynchronous architecture reduces latency and CPU usage and eliminates performance
+bottlenecks related to saturated threads.
+
+#### 5. Private network back-plane.
+
+All traffic between nodes must be routed over a dedicated private network for compliance and
+security reasons
+
+#### 6. Edge based ingress
+
+All the nodes can act as an ingress gateway thus simplifying the design.
+
+#### 7. Mandatory encryption
+
+All backend traffic is encrypted and signed by default for all network traffic for security
+and compliance reasons.
