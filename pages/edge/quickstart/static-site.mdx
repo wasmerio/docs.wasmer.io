@@ -53,7 +53,7 @@ Run the commands below to create a new directory and initialize:
 ```bash
 $ mkdir my-new-site
 $ cd my-new-site
-$ wasmer app init static-site
+$ wasmer app create static-site
   Initializing in current directory: (...)/deploy-quickstart/my-new-site
   No wasmer.toml found. Initializing package...
   App name (namespace/name): <your-namespace>/my-new-site
@@ -67,7 +67,7 @@ $ wasmer app init static-site
   Done!
 ```
 
-The `wasmer app init static-site` command will prompt you for the following:
+The `wasmer app create static-site` command will prompt you for the following:
 
 - App name: This is the name of your app. It must be unique across all apps on your namespace.
 - **Public directory**: This is the directory that holds the website files. The default is `public`.
