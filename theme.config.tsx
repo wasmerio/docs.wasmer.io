@@ -47,7 +47,7 @@ const config: DocsThemeConfig = {
     defaultMenuCollapseLevel: 1,
     toggleButton: true,
   },
-  docsRepositoryBase: "https://github.com/wasmerio/docs.wasmer.io",
+  docsRepositoryBase: "https://github.com/wasmerio/docs.wasmer.io/tree/main",
   editLink: {
     text: "Edit this page on GitHub →",
   },
