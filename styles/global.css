@@ -20,3 +20,19 @@
   mask-position: 100%;
   transition: mask-position 1s ease, -webkit-mask-position 1s ease;
 }
+
+.footer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.sub-footer-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: currentColor;
+  width: 100%;
+}
