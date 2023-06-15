@@ -64,24 +64,26 @@ Many additional features are planned, some of them coming really soon!
 
 ### Available Features
 
-- Run stateless, auto-scaled WebAssembly HTTP apps:
+- Run stateless, auto-scaled WebAssembly HTTP apps:<br/>
   The only way to serve your workloads at the moment is through HTTP.
-  You can use [WASIX - TODO: insert WASIX link](./) or
-  [WCGI - TODO: insert WCGI link](./) to build servers in WebAssembly.
-- Automatic scaling:
+  You can use [proxy](/edge/learn/deploying-webservers-proxy-or-wcgi#proxy) or
+  [WCGI](/edge/learn/deploying-webservers-proxy-or-wcgi#wcgi) to build servers in WebAssembly.
+- Automatic scaling:<br/>
   Workloads will be served by the Wasmer Edge network, on the servers closest
   to the user, and will scale automatically to meet the demand.
-- Auto-domains and aliases:
+- Auto-domains and aliases:<br/>
   Each deployed app will be reachable through a unique URL, `[NAME].wasmer.app`.
   You can also configure additional aliases.
-- Versioned deployments and rollback:
+- Versioned deployments and rollback:<br/>
   App deployment versions are tracked.
   You can always access previous versions though a special URL, and rollback to
   previous versions with a single CLI command or click.
   You can also publish preview-versions and test them before switching them to active.
-- Custom domains with automatic SSL:
+- Custom domains with automatic SSL:<br/>
   You can configure custom domains for your applications.
   SSL certificates will automatically be provisioned and renewed for you.
+- [Remote Sessions](./learn/remote-sessions):<br/>
+  Interactive remote shell environments.
 
 ### Features in Development
 

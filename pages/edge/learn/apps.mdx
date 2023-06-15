@@ -1,0 +1,37 @@
+import { Callout } from "nextra-theme-docs";
+
+# Wasmer Edge Apps
+
+Apps are the main deployment mechanism on Wasmer Edge, and provide a simple and
+configuration-driven way to define, upgrade and manage your services.
+
+Each app is based on a package from the [registry](../registry), which is then
+deployed to the Wasmer Edge cloud.
+
+The package **must provide a HTTP server**, which will be auto-scaled on demand to
+serve incoming requests from the edge node (server) closest to the user. 
+
+App instances are currently stateless and ephemeral. They will automatically
+be started to serve requests, and shut down again after a short idle period.
+
+Apps are reachable through an automatically provisioned URL (`NAME.wasmer.app`), 
+
+<Callout type='info'>
+Note: in the future apps will also be able to be persistent and stateful with persistent volumes.
+Apps will also expand to provide generic TCP/UDP servers, not just HTTP.
+</Callout>
+
+## Deployment Flow
+
+Apps are based on a [configuration file](../configuration/app-configuration), which
+can also be managed through the admin UI.
+
+Each deployment of an app will create a new app version. Each version will also
+be independently accessible through a dedicated version URL, which can be inspected
+in the CLI or web UI.
+
+You can optionally skip setting an app version as the active default, allowing
+you to test out new changes before promoting them to production.
+Rolling back to a previous version is also trivial.
+
+Previous versions always remaining accessible also helps with reproducing bugs!

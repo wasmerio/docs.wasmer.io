@@ -17,23 +17,31 @@ This page will guide you through installing Wasmer, and deploying an already exi
 
 ### Deploy a package
 
+Creates an app based on an existing package on the [registry](../registry).
+
+Here we use <a href="https://wasmer.io/wasmer/hello-server" target="_blank">wasmer.io/wasmer/hello-server</a>,
+a simple web server with a stub template page.
+
 ```bash
-wasmer app create edge-examples/hello-world
+wasmer app create wasmer/hello-server
 ```
 
-This will create a `app.yaml` file with the following contents
+This will create an `app.yaml` file with the following contents
 
 ```yaml copy filename="app.yaml"
-kind: wasmer.io/App.v1
-meta:
-  name: <your-username>/hello-world
-spec:
-  workload:
-    source: edge-examples/hello-world
+kind: wasmer.io/App.v0
+name: <your-username>-hello-world
+package: wasmer/hello-server
 ```
 
-So next time you can simply do `wasmer deploy` when running on a directory with an already existing `app.yaml` file.
+To redeploy after making changes, like upgrading the package, simply run
+`wasmer deploy` in a directory with an `app.yaml` file.
 
-* Do you want to serve your custom static site content? [Learn more](/edge/quickstart/static-site)
+### Next Steps
+
+* Read one of the more detailed quickstart guides:
+  - [Deploy a static site](./quickstart/static-site)
+  - [Deploy a Rust webserver](./quickstart/http-server)
+* Explore the "Learn" section
 
 </Steps>
