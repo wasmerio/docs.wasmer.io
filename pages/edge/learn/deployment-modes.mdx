@@ -2,22 +2,16 @@ import { Callout } from "nextra-theme-docs";
 
 # Deployment modes
 
-Currently Wasmer Edge only allows deploying web servers.
+There are different ways to deploy applications on Wasmer Edge:
+* TCP/UDP applications
+* WebServer applications
 
-<Callout>
-
-TCP and UDP applications are also supported in Wasmer Edge, but we haven't exposed the API as is still in alpha phase.
-
-If you want to run TCP or UDP applications (such as video server, a websockets application or more)
-please [let us know on this issue](https://github.com/wasmerio/wasmer-edge-support/issues/1), or ping us in [Wasmer Discord](https://discord.gg/qBTfsNP7N8).
-
-</Callout>
 
 ## WebServers
 
-There are two different ways to deploy web servers on Wasmer Edge.
+WebServers are the most common type of applications.
 
-Each comes with it's own advantages and tradeoffs.
+Wasmer Edge support two modes for webservers: Proxy and WCGI, and each comes with it's own advantages and tradeoffs.
 
 ### Proxy
 
@@ -74,3 +68,14 @@ The primary benefits of this approach:
 To run WCGI workloads locally, see the [WCGI Runner](/runtime/runners/wcgi) docs.
 
 You can also check out the [WCGI announcement post](https://wasmer.io/posts/announcing-wcgi).
+
+## TCP/UDP applications
+
+<Callout>
+
+TCP and UDP applications are also supported in Wasmer Edge, but we haven't exposed the API as is still in alpha phase.
+
+If you want to run TCP or UDP applications (such as video server, a websockets application or more)
+please [let us know on this issue](https://github.com/wasmerio/wasmer-edge-support/issues/1), or ping us in [Wasmer Discord](https://discord.gg/qBTfsNP7N8).
+
+</Callout>
