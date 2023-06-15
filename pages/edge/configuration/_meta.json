@@ -1,4 +1,3 @@
 {
-  "wasmer-configuration": "Wasmer Configuration",
-  "edge-configuration": "Edge Configuration"
+  "app-configuration": "App Config (app.yaml)"
 }
