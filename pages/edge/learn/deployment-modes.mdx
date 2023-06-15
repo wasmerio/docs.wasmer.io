@@ -1,10 +1,25 @@
-# Deploying Webservers - Proxy or WCGI
+import { Callout } from "nextra-theme-docs";
+
+# Deployment modes
+
+Currently Wasmer Edge only allows deploying web servers.
+
+<Callout>
+
+TCP and UDP applications are also supported in Wasmer Edge, but we haven't exposed the API as is still in alpha phase.
+
+If you want to run TCP or UDP applications (such as video server, a websockets application or more)
+please [let us know on this issue](https://github.com/wasmerio/wasmer-edge-support/issues/1), or ping us in [Wasmer Discord](https://discord.gg/qBTfsNP7N8).
+
+</Callout>
+
+## WebServers
 
 There are two different ways to deploy web servers on Wasmer Edge.
 
 Each comes with it's own advantages and tradeoffs.
 
-## Proxy
+### Proxy
 
 In proxy mode, the WebAssembly instance is expected to start an HTTP server on
 a specified port (currently defaulting to `80`).
@@ -29,7 +44,7 @@ To learn more about WASIX and how to build WASIX-enabled applications, see the
 [wasix.org](https://wasix.org) website, or the
 [WASIX announcement post](https://wasmer.io/posts/announcing-wasix).
 
-## WCGI
+### WCGI
 
 WCGI, short for WebassmblyCommonGatewayInterface, uses the tried and true
 [CGI](https://en.wikipedia.org/wiki/Common_Gateway_Interface) protocol to process

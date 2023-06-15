@@ -9,6 +9,9 @@ const config: DocsThemeConfig = {
   chat: {
     link: 'https://discord.gg/qBTfsNP7N8',
   },
+  sidebar: {
+    defaultMenuCollapseLevel: 1
+  },
   docsRepositoryBase: 'https://github.com/wasmerio/docs.wasmer.io',
   footer: {
     text: 'Wasmer Docs',
