@@ -1,3 +1,5 @@
+import ImageLoader from "@components/ImageLoader";
+
 # Architecture of Wasmer Edge
 
 ## Wasmer Edge - Built for the future
@@ -31,7 +33,13 @@ build the deployable at compile time rather than runtime. Further, by following
 the principles below the distributed monolith can easily scale out to an almost
 limitless potential by making careful design choices that avoid common pitfalls.
 
-{/* ![Edge in Racks](images/core-racks.drawio.png) */}
+import CoreRacks from "@assets/deploy/architecture/core-racks.svg";
+
+<ImageLoader
+  img={CoreRacks}
+  alt={"Edge in Racks"}
+  className="bg-[#111111] rounded-lg p-4 dark:bg-transparent"
+/>
 
 ## Foundations are important.
 
@@ -80,7 +88,13 @@ Once the product transitions out of this beta phase then other hosting locations
 will be unlocked and made available to customers. Ultimately though users of Wasmer
 Edge that deploy stateless packages are abstracted from this and do not see it.
 
-{/* ![Wasmer Regions](images/core-regions.drawio.png) */}
+import CoreRegions from "@assets/deploy/architecture/core-regions.png";
+
+<ImageLoader
+  img={CoreRegions}
+  alt={"Wasmer Regions"}
+  className="bg-white rounded-lg"
+/>
 
 As stated in the principles, Wasmer Edge follows a **shared nothing** architecture
 which means any isolated node can run all the services and all published packages
@@ -170,7 +184,13 @@ Edge Node in order to join a virtual network.
 Great care was taken to implement design constraints that removed the requirements
 for a "control plane" - DNET operates as a fully stateless "data plane" which gives it unique performance and scalability characteristics.
 
-{/* ![Wasmer DNET](images/core-dnet.drawio.png) */}
+import CoreDnet from "@assets/deploy/architecture/core-dnet.svg";
+
+<ImageLoader
+  img={CoreDnet}
+  alt={"Wasmer DNET"}
+  className="bg-[#111111] rounded-lg p-4 dark:bg-transparent"
+/>
 
 ### DNET Features
 
