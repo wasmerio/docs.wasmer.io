@@ -1,10 +1,10 @@
 [package]
 name = "wasmer/docs"
-version = "0.3.6"
+version = "0.4.8"
 description = "wasmer/docs website"
 
 [dependencies]
-"sharrattj/static-web-server" = "1"
+"wasmer/static-web-server" = "1"
 
 [fs]
 public = "public"

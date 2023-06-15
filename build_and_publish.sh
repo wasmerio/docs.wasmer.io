@@ -2,4 +2,4 @@
 
 pnpm run build
 mv app public
-wasmer publish
+# wasmer publish

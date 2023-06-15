@@ -1,0 +1,5 @@
+---
+kind: wasmer.io/App.v0
+name: wasmer-docs
+app_id: da_4K6AIot5UVP2
+package: wasmer/docs@0.4.8
