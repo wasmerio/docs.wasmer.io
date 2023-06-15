@@ -18,10 +18,10 @@ In Rust [tracing](https://github.com/tokio-rs/tracing) is a popular option.
 
 ## Configuring Log Capture
 
-For [proxy - TODO insert proxy deployment link](./) apps, both `stdout` and
+In [proxy mode](/edge/learn/deployment-modes#proxy) apps, both `stdout` and
 `stderr` are captured by default.
 
-For [WCGI - TODO insert WCGI deployment link](./) apps, only `stderr` is captured,
+In [WCGI mode](/edge/learn/deployment-modes#wcgi) apps, only `stderr` is captured,
 because `stdout` is used for transferring the HTTP response.
 
 You will be able to further customize log capturing in the future through the
