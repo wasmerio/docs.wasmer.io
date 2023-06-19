@@ -4,7 +4,7 @@
   "description": "Documentation for Wasmer's Products",
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export -o release/public",
+    "build": "next build && next export -o release",
     "start": "next start"
   },
   "repository": {
