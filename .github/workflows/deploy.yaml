@@ -19,8 +19,10 @@ jobs:
         with:
           toolchain: stable
 
-      - name: Install wasmer-cli
-        run: cargo install wasmer-cli --version 4.0.0-beta.3 --features singlepass,cranelift,llvm
+      - name: Setup Wasmer
+        uses: wasmerio/setup-wasmer@v2
+        with:
+          version: "v4.0.0-beta.3"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -51,4 +53,4 @@ jobs:
 
       # Publish to docs.wasmer.io
       - name: Publish
-        run: wasmer deploy --publish-package --registry https://registry.wasmer.io/graphql --token=${{ secrets.WAPM_IO_TOKEN }} --non-interactive
+        run: wasmer deploy --publish-package --registry https://registry.wasmer.io/graphql --token=${{ secrets.WAPM_PROD_USERNAME }} --non-interactive
