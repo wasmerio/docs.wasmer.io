@@ -1,0 +1,19 @@
+# DNS
+
+You can point any custom subdomains or domains to your application by modifying the DNS records.
+
+There are two ways:
+
+## Root domain
+
+You will need to add an `A` record with the name `@` and the value being the IP of one of Wasmer Edge deployments: `5.161.213.176`.
+
+Also, you'll need to add a TXT record with the name `@` having the value `cname:<YOURAPP>.wasmer.app.` 
+
+## Subdomains
+
+Pointing a subdomain is fairly easy, you just will need to add a cname record to your domain:
+
+Kind: `CNAME`
+Name: `subdomain.domain.com`
+Value: `<YOURAPP>.wasmer.app.`
