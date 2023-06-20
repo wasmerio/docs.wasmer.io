@@ -1,10 +1,10 @@
 import { Steps, Callout, FileTree } from "nextra-theme-docs";
 import StaticSite from "@components/deploy/quickstart/StaticSite";
 
-#  Quickstart for a Static Site
+# Quickstart for a Static Site
 
 In this quickstart guide, you'll learn the process of publishing a static site using .
-We will cover installation of the  CLI, setting up a new static site, and deploying it.
+We will cover installation of the CLI, setting up a new static site, and deploying it.
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ logged into registry "https://registry.wasmer.io/graphql" as user "<user-name>"
 
 ### Step 3: Initialize a Static Site
 
-With the  CLI installed, let's create a new static site!
+With the CLI installed, let's create a new static site!
 
 Run the commands below to create a new directory and initialize:
 
@@ -82,7 +82,7 @@ The `wasmer app create static-site` command will prompt you for the following:
 The above command will do the following:
 
 - Create a Wasmer package config (`wasmer.toml`)
-- Create a  app config (`app.yaml`)
+- Create a app config (`app.yaml`)
 - Create a public directory that holds the website data
 
 Your directory structure should look like this:
@@ -149,14 +149,14 @@ Access your app at: https://x43izt2fqm45.id.wasmer.dev
 ```
 
 <Callout type="info" emoji="ℹ️">
-  You must be in the directory holding the `wasmer.toml` and `app.yaml`
-  config files.
+  You must be in the directory holding the `wasmer.toml` and `app.yaml` config
+  files.
 </Callout>
 
 <Callout type="info" emoji="ℹ️">
   `wasmer deploy` automatically publishes your package and bumps the minor
   version. You can check all the available options with `wasmer deploy --help`
-  or click [here](/todo/) to see the full documentation.
+  or click [here](/edge/cli) to see the full documentation.
 </Callout>
 
 Executing this command will package and deploy your site.
