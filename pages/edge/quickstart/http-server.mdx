@@ -61,14 +61,14 @@ serde = { version = "1.0.160", features = ["derive"] }
 tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.16", features = ["fmt"] }
 
+# NOTE: We need to pin and replace some dependencies to achieve wasix compatibility.
 tokio = { version = "=1.24.2", default-features = false, features = ["full"] }
 parking_lot = { version = "=0.12.1", features = ["nightly"] }
 
 [patch.crates-io]
 tokio = { git = "https://github.com/wasix-org/tokio.git", branch = "wasix-1.24.2" }
-socket2 = { git = "https://github.com/wasix-org/socket2.git", branch = "v0.4.7" }
+socket2 = { git = "https://github.com/wasix-org/socket2.git", branch = "v0.4.9" }
 libc = { git = "https://github.com/wasix-org/libc.git", branch = "master" }
-
 ```
 
 <Callout type="default" emoji="🚧">
@@ -88,8 +88,13 @@ async fn main() {
     // Building our application with a single Route
     let app = Router::new().route("/", get(handler));
 
+    let port = std::env::var("PORT").unwrap_or("80".to_string());
+    let port = port.parse::<u16>().unwrap_or_else(|_| {
+        eprintln!("Invalid port number: {}", port);
+        std::process::exit(1);
+    });
     // Run the server with hyper on http://127.0.0.1:3000
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
     eprintln!("Listening on http://{}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
@@ -98,9 +103,12 @@ async fn main() {
 }
 
 async fn handler() -> &'static str {
-    "Hello, Axum ❤️ Wasmer!"
+    "Hello, Axum ❤️ WASMER!"
 }
 ```
+
+> Note: We are using the `PORT` environment variable to set the port number for our server to listen on. This is for local development. On wasmer edge, the port number should be set to `80`. That's why it's the default value.
+> This is done so because wasmer edge expects the server to listen on port `80`.
 
 Now, let's build our project using `WASIX`:
 
@@ -168,7 +176,8 @@ package: <your-namespace>/<your-username>-hello
 
 <Callout type="info" emoji="ℹ️">
   You can also check if your configuration is valid by running `wasmer publish
-  --dry-run`. To learn more about the `wasmer.toml` file, click [here](../configuration/app-configuration).
+  --dry-run`. To learn more about the `wasmer.toml` file, click
+  [here](../configuration/app-configuration).
 </Callout>
 
 Let's Deploy!
@@ -191,7 +200,7 @@ $ wasmer deploy
 <Callout type="info" emoji="ℹ️">
   `wasmer deploy` automatically publishes your package and bumps the minor
   version. You can check all the available options with `wasmer deploy --help`
-  or click [here](/todo/) to see the full documentation.
+  or click [here](/edge/cli) to see the full documentation.
 </Callout>
 
 Now you can access your axum server at the url provided in the output by the `wasmer deploy` command.
@@ -204,6 +213,6 @@ Congratulations! You have successfully deployed your first Axum server to Wasmer
 
 ## Additional Resources
 
-To learn more about Wasmer Edge, click [here](/todo/).
+To learn more about Wasmer Edge, click [here](https://wasmer.io/products/edge).
 
-Checkout our full tutorials [here](/todo/)
+Checkout our full tutorial [here](http://wasix.org/docs/language-guide/rust/tutorials/wasix-axum) for `wasix-axum`.
