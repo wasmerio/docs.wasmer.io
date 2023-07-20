@@ -1,11 +1,10 @@
 import { Steps, Callout, FileTree } from "nextra-theme-docs";
 import StaticSite from "@components/deploy/quickstart/StaticSite";
-import staticSiteImg from "@assets/deploy/quickstart/static-site.png";
+import edgeReactImg from "@assets/deploy/tutorials/edge-react.png";
 
-# Quickstart for a Static Site
+# Starter guide for deploying a react app
 
-In this quickstart guide, you'll learn the process of publishing a static site using .
-We will cover installation of the CLI, setting up a new static site, and deploying it.
+In this guide, you'll learn the process of publishing a static site using react on Wasmer Edge.
 
 ## Prerequisites
 
@@ -45,25 +44,34 @@ $ wasmer whoami
 logged into registry "https://registry.wasmer.io/graphql" as user "<user-name>"
 ```
 
-### Step 3: Initialize a Static Site
+### Step 3.1: Initialize the React Starter template
 
-With the CLI installed, let's create a new static site!
+<Callout type="info" emoji="ℹ️">
+  If you have already have a react app, you can skip this step and follow the
+  step 3.2.
+</Callout>
 
-Run the commands below to create a new directory and initialize:
+Clone the starter template from GitHub:
+
+```shell copy
+$ git clone https://github.com/wasmerio/edge-react-starter.git
+```
+
+### Step 3.2: Setup a current react project for Wasmer Edge
+
+Run the commands below to initialize files for Wasmer Edge:
 
 ```bash
-$ mkdir my-new-site
-$ cd my-new-site
 $ wasmer app create static-site
-  Initializing in current directory: (...)/deploy-quickstart/my-new-site
+  Initializing in current directory: (...)/deploy-tutorials/<your-app-name>
   No wasmer.toml found. Initializing package...
-  App name (namespace/name): <your-namespace>/my-new-site
+  App name (namespace/name): <your-namespace>/<your-app-name>
   Public directory (path to the website files): : public
-  Creating public directory at '(...)/deploy-quickstart/my-new-site/public'...
+  Creating public directory at '(...)/deploy-tutorials/<your-app-name>/public'...
   Creating stub index.html...
-  Writing wasmer.toml package to '(...)/deploy-quickstart/my-new-site/wasmer.toml'
+  Writing wasmer.toml package to '(...)/deploy-tutorials/<your-app-name>/wasmer.toml'
   No app.yaml found. Configuring new app...
-  Writing Deploy config: '(...)/deploy-quickstart/my-new-site/app.yaml'
+  Writing Deploy config: '(...)/deploy-tutorials/<your-app-name>/app.yaml'
   Would you like to publish the new package and app? [y/n]: n
   Done!
 ```
@@ -86,31 +94,38 @@ The above command will do the following:
 - Create a app config (`app.yaml`)
 - Create a public directory that holds the website data
 
-Your directory structure should look like this:
+<Callout type="default" emoji="⚙️">
+  As mentioned above, the default public directory is `public`. You **must**
+  change this for a react project to `build` or `dist` or any suitable directory
+  other than public because it might contain your static assets such as
+  **favicon**. The starter project in step 3.1, is setup with vite so the build
+  directory is automatically set to `dist`.
+  <br /> For a react project you can do this by setting the `outDir` using the `-o`
+  flag in the `build` script in `package.json`:
+>
+  ```json
+  "scripts": {
+    "build": "vite build -o dist" // 👈🏼 dist or any other directory
+  }
+  ```
+</Callout>
 
-<FileTree>
-  <FileTree.Folder name="my-new-site" defaultOpen>
-    <FileTree.Folder name="public" defaultOpen>
-      <FileTree.File name="index.html" />
-    </FileTree.Folder>
-    <FileTree.File name="app.yaml" />
-    <FileTree.File name="wasmer.toml" />
-  </FileTree.Folder>
-</FileTree>
+After this you would have to change your `wasmer.toml` to match your project's build directory:
 
-### Step 4: Add Your Site Content
+```toml copy filename="wasmer.toml"
+[package]
+name = "<your-wasmer-username>/<your-app-name>"
+version = "0.1.0"
+description = "Your cool react project's description"
 
-Currently, the public directory only contains a basic `index.html` file.
-The index file should look like this by default in a browser:
+[dependencies]
+"sharrattj/static-web-server" = "1"
 
-<StaticSite image={staticSiteImg} />
+[fs]
+public = "dist" # 👈🏼 dist or any other directory
+```
 
-You can now modify this directory and copy your own files (HTML, CSS, JavaScript, images, etc)
-as needed.
-
-> For this quickstart, we will use the default `index.html` file.
-
-### Step 5: Test Your Site Locally
+### Step 4: Test Your Site Locally
 
 You can now test your site locally by running the following command:
 
@@ -118,7 +133,9 @@ You can now test your site locally by running the following command:
 $ wasmer run . --net -- --port 9000
 ```
 
-This will start a local server using the Static Web Server on `http://localhost:9000`.
+This will start a local server using the Static Web Server on `http://localhost:9000` and now you can access your site on the web at the URL provided in the output.
+
+<StaticSite image={edgeReactImg} />
 
 You can also specify a different port by changing the `--port` flag.
 
@@ -132,7 +149,11 @@ You can also specify a different port by changing the `--port` flag.
 
 ### Step 6: Deploy Your Site
 
-Once you have added all the necessary files to the public directory, it's time to deploy your site.
+To deploy your site just build your site and run the following command:
+
+```shell copy
+$ pnpm run build
+```
 
 Run the following command to deploy your site:
 
@@ -141,13 +162,20 @@ $ wasmer deploy
 Publishing package...
 [1/2] ⬆️   Uploading...
 [2/2] 📦  Publishing...
-Successfully published package `<user-name>/my-new-site@0.1.0`
-Package '<user-name>/my-new-site@0.1.0' published successfully!
-Writing updates app.yaml...
-Publishing app...
-App published successfully!
-Access your app at: https://x43izt2fqm45.id.wasmer.dev
+Successfully published package `<your-wasmer-username>/<your-app-name>@0.1.0`
+Waiting for package to become available........
+Package '<your-wasmer-username>/<your-app-name>@0.1.0' published successfully!
+
+Deploying app <your-app-name>...
+
+ ✅ App your-app-name was successfully deployed!
+
+> App URL: https://<your-app-name>.wasmer.app
+> Versioned URL: https://exj0iotefyy5.id.wasmer.app
+> Admin dashboard: https://wasmer.io/apps/<your-wasmer-username>/<your-app-name>
 ```
+
+> You can checkout our versioned URL above to access how our starter demo looks like.
 
 <Callout type="info" emoji="ℹ️">
   You must be in the directory holding the `wasmer.toml` and `app.yaml` config
@@ -164,12 +192,15 @@ Executing this command will package and deploy your site.
 
 Now you can access your site on the web at the URL provided in the output.
 
-<StaticSite />
+<Callout type="default" emoji="♺">
+  To make changes to your site, simply modify the files in the public directory
+  and run `wasmer deploy` again to deploy the changes.
+</Callout>
+
+<StaticSite image={edgeReactImg} />
 
 </Steps>
 
 ## Conclusion
 
-Congratulations! You have successfully deployed a static site using .
-
-To make changes to your site, simply modify the files in the public directory and run `wasmer deploy` again to deploy the changes.
+Congratulations! You have successfully deployed your react project on wasmer edge .
