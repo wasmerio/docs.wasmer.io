@@ -47,17 +47,25 @@ logged into registry "https://registry.wasmer.io/graphql" as user "<user-name>"
 ### Step 3.1: Initialize the React Starter template
 
 <Callout type="info" emoji="ℹ️">
-  If you have already have a react app, you can skip this step and follow the
-  step 3.2.
+  If you have already your react project with you, you can skip this step and
+  follow the step 3.2.
 </Callout>
 
-Clone the starter template from GitHub:
+Clone the starter template from GitHub and install the dependencies:
 
 ```shell copy
 $ git clone https://github.com/wasmerio/edge-react-starter.git
+$ cd edge-react-starter
+$ pnpm install
 ```
 
 ### Step 3.2: Setup a current react project for Wasmer Edge
+
+<Callout type="info" emoji="ℹ️">
+  This step is for those who already have a react project with them. If you are
+  starting from scratch, you can follow the step 3.1 to get a boilerplate react
+  project with vite.
+</Callout>
 
 Run the commands below to initialize files for Wasmer Edge:
 
@@ -105,7 +113,7 @@ The above command will do the following:
 >
   ```json
   "scripts": {
-    "build": "vite build -o dist" // 👈🏼 dist or any other directory
+    "build": "vite build -o dist" // 👈🏼 dist or any other directory (keep consistent with wasmer.toml)
   }
   ```
 </Callout>
@@ -122,7 +130,7 @@ description = "Your cool react project's description"
 "sharrattj/static-web-server" = "1"
 
 [fs]
-public = "dist" # 👈🏼 dist or any other directory
+public = "dist" # 👈🏼 dist or any other directory (keep consistent with package.json)
 ```
 
 ### Step 4: Test Your Site Locally
