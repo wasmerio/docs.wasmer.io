@@ -25,9 +25,16 @@ The project requires the following tools to be installed on your system:
   You can see all commands available with `wasmer --help` or click
   [here](/edge/cli/) to see the full documentation.
 </Callout>
+
 <Login />
 
 ### Initialize a Static Site
+
+<Callout type="default" emoji="⚛">
+  If you want to deploy a static site made from frameworks like React, Vue, or
+  Svelte, you can follow our [React Static
+  Site](/edge/tutorials/react-static-site) tutorial.
+</Callout>
 
 With the CLI installed, let's create a new static site!
 
@@ -67,6 +74,13 @@ The above command will do the following:
 - Create a Wasmer package config (`wasmer.toml`)
 - Create a app config (`app.yaml`)
 - Create a public directory that holds the website data
+
+<Callout type="error" emoji="⚠️">
+  Don't change the `public` directory attribute in the `wasmer.toml` file for
+  this tutorial. If you want to learn how to specify a different directory for
+  build output, check out our [React Static
+  Site](/edge/tutorials/react-static-site) tutorial.
+</Callout>
 
 Your directory structure should look like this:
 
