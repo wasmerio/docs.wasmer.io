@@ -1,3 +1,4 @@
 {
-  "app-configuration": "App Config (app.yaml)"
+  "app-configuration": "App Config (app.yaml)",
+  "custom-domains": "Custom Domains (DNS)"
 }
