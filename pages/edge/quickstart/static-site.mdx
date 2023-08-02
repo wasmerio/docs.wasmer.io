@@ -1,5 +1,8 @@
 import { Steps, Callout, FileTree } from "nextra-theme-docs";
 import StaticSite from "@components/deploy/quickstart/StaticSite";
+import Install from "@components/install.mdx";
+import Login from "../../../components/login.mdx";
+import staticSiteImg from "@assets/deploy/quickstart/static-site.png";
 
 # Quickstart for a Static Site
 
@@ -15,36 +18,16 @@ The project requires the following tools to be installed on your system:
 ## Deploying a Static Site
 
 <Steps>
-### Install the Wasmer App CLI
 
-Install the latest version of `Wasmer CLI` following the instructions [here](/install).
+<Install />
 
 <Callout type="info" emoji="ℹ️">
   You can see all commands available with `wasmer --help` or click
-  [here](/todo/) to see the full documentation.
+  [here](/edge/cli/) to see the full documentation.
 </Callout>
+<Login />
 
-### Login
-
-Next, you need to authenticate with Wasmer.
-
-- Create a new account or log in at [Wasmer](https://wasmer.io).
-- Navigate to [Wasmer.io Settings](https://wasmer.io/settings) and create a new login token
-
-Now you can log in by running the command below and pasting the token:
-
-```shell copy
-$ wasmer login <token>
-```
-
-To test that everything works correctly, you can run:
-
-```shell copy
-$ wasmer whoami
-logged into registry "https://registry.wasmer.io/graphql" as user "<user-name>"
-```
-
-### Step 3: Initialize a Static Site
+### Initialize a Static Site
 
 With the CLI installed, let's create a new static site!
 
@@ -97,19 +80,19 @@ Your directory structure should look like this:
   </FileTree.Folder>
 </FileTree>
 
-### Step 4: Add Your Site Content
+### Add Your Site Content
 
 Currently, the public directory only contains a basic `index.html` file.
 The index file should look like this by default in a browser:
 
-<StaticSite />
+<StaticSite image={staticSiteImg} />
 
 You can now modify this directory and copy your own files (HTML, CSS, JavaScript, images, etc)
 as needed.
 
 > For this quickstart, we will use the default `index.html` file.
 
-### Step 5: Test Your Site Locally
+### Test Your Site Locally
 
 You can now test your site locally by running the following command:
 
@@ -125,11 +108,11 @@ You can also specify a different port by changing the `--port` flag.
 
 <Callout type="info" emoji="ℹ️">
   You can see all the available options with `wasmer run --help` or click
-  [here](/todo/) to see the full documentation. To see all the avilable options
-  for the static web server, run `wasmer run . -- --help`.
+  [here](/runtime/cli/) to see the full documentation. To see all the avilable
+  options for the static web server, run `wasmer run . -- --help`.
 </Callout>
 
-### Step 6: Deploy Your Site
+### Deploy Your Site
 
 Once you have added all the necessary files to the public directory, it's time to deploy your site.
 
@@ -171,6 +154,4 @@ Now you can access your site on the web at the URL provided in the output.
 
 Congratulations! You have successfully deployed a static site using .
 
-To make changes to your site, simply modify the files in the public directory and run `wasmer deploy publish` again to deploy the changes.
-
-## Additional Resources
+To make changes to your site, simply modify the files in the public directory and run `wasmer deploy` again to deploy the changes.
