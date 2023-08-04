@@ -1,6 +1,9 @@
 import { Steps, Callout, FileTree } from "nextra-theme-docs";
 import StaticSite from "@components/deploy/quickstart/StaticSite";
 import edgeReactImg from "@assets/deploy/tutorials/edge-react.png";
+import Install from "@components/install.mdx";
+import Login from "@components/login.mdx";
+import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
 
 # Starter guide for deploying a react app
 
@@ -15,34 +18,12 @@ The project requires the following tools to be installed on your system:
 ## Deploying a Static Site
 
 <Steps>
-### Install the Wasmer App CLI
 
-Install the latest version of `Wasmer CLI` following the instructions [here](/install).
+<Install />
 
-<Callout type="info" emoji="ℹ️">
-  You can see all commands available with `wasmer --help` or click
-  [here](/edge/cli/) to see the full documentation.
-</Callout>
+<CliVersionCallout />
 
-### Login
-
-Next, you need to authenticate with Wasmer.
-
-- Create a new account or log in at [Wasmer](https://wasmer.io).
-- Navigate to [Wasmer.io Settings](https://wasmer.io/settings) and create a new login token
-
-Now you can log in by running the command below and pasting the token:
-
-```shell copy
-$ wasmer login <token>
-```
-
-To test that everything works correctly, you can run:
-
-```shell copy
-$ wasmer whoami
-logged into registry "https://registry.wasmer.io/graphql" as user "<user-name>"
-```
+<Login />
 
 ### Step 3.1: Initialize the React Starter template
 
@@ -69,38 +50,54 @@ $ pnpm install
 
 Run the commands below to initialize files for Wasmer Edge:
 
-```bash
-$ wasmer app create static-site
-  Initializing in current directory: (...)/deploy-tutorials/<your-app-name>
-  No wasmer.toml found. Initializing package...
-  App name (namespace/name): <your-namespace>/<your-app-name>
-  Public directory (path to the website files): : public
-  Creating public directory at '(...)/deploy-tutorials/<your-app-name>/public'...
-  Creating stub index.html...
-  Writing wasmer.toml package to '(...)/deploy-tutorials/<your-app-name>/wasmer.toml'
-  No app.yaml found. Configuring new app...
-  Writing Deploy config: '(...)/deploy-tutorials/<your-app-name>/app.yaml'
-  Would you like to publish the new package and app? [y/n]: n
-  Done!
+```shell copy
+$ wasmer app create --type static-website
 ```
 
-The `wasmer app create static-site` command will prompt you for the following:
+```bash
+  Who should own this package?:
+  > <your-username>
+  What package do you want to use?:
+  > Create new package # 👈🏼 let's select this for this tutorial
+    Use existing package
+  What should the package be called?: react-edge-tutorial # 👈🏼 You can choose any name you like
+  What should be the name of the app?: <your-username>-react-edge-tutorial
+  Would you like to publish the app now? yes
+  Creating the app...
+  Publishing package...
+  [1/2] ⬆️   Uploading...
+  [2/2] 📦  Publishing...
+  Successfully published package `<your-username>/react-edge-tutorial@0.1.0`
+  Deploying app <your-username>/<your-username>-react-edge-tutorial...
 
-- App name: This is the name of your app. It must be unique across all apps on your namespace.
-- **Public directory**: This is the directory that holds the website files. The default is `public`.
+   ✅ App <your-username>/<your-username>-react-edge-tutorial was successfully deployed!
+
+  > App URL: https://<your-username>-react-edge-tutorial.wasmer.app
+  > Versioned URL: https://x43izt2fk0n5.id.wasmer.app # 🌐 You can access our URL too
+  > Admin dashboard: https://wasmer.io/apps/<your-username>/<your-username>-react-edge-tutorial
+
+  Waiting for the app to become reachable...
+  (You can safely exit now with CTRL-C)
+```
+
+The `wasmer app create --type static-site` command will prompt you for the following:
+
+- **Package owner**: This is the owner of the package. It can be your username or an organization.
+- **Package**: This is the package you want to use. You can either select an existing package or create a new one.
+- **Package name**: This is the name of your package. It must be unique across all packages on your namespace.
+- **App name**: This is the name of your app. It must be unique across all apps on your namespace.
 - **Publish**: This will publish the new package and app to the registry.
 
 <Callout type="default" emoji="⚙️">
   As you see above in the last line of the output, the CLI will prompt you to
-  publish the new package and app. We will do this later, so we enter "n" or
-  "no".
+  publish the new package and app. We recommend publishing the package and app.
 </Callout>
 
 The above command will do the following:
 
 - Create a Wasmer package config (`wasmer.toml`)
 - Create a app config (`app.yaml`)
-- Create a public directory that holds the website data
+- Create a **public** directory that holds the website data
 
 <Callout type="default" emoji="⚙️">
   As mentioned above, the default public directory is `public`. You **must**
@@ -165,22 +162,39 @@ $ pnpm run build
 
 Run the following command to deploy your site:
 
+### Deploy Your Site
+
+Once you have added all the necessary files to the public directory, it's time to update site.
+
+Run the following command to deploy your site:
+
 ```shell copy
-$ wasmer deploy
+wasmer deploy
+```
+
+```shell
+Loaded app from: /path/to/your/directory/app.yaml
+
+Publish new version of package '<your-username>/react-edge-tutorial'? yes
 Publishing package...
 [1/2] ⬆️   Uploading...
 [2/2] 📦  Publishing...
-Successfully published package `<your-wasmer-username>/<your-app-name>@0.1.0`
-Waiting for package to become available........
-Package '<your-wasmer-username>/<your-app-name>@0.1.0' published successfully!
+Successfully published package `<your-username>/react-edge-tutorial@0.1.1` # Notice the version number
+Waiting for package to become available.....
+Package '<your-username>/react-edge-tutorial@0.1.1' published successfully!
 
-Deploying app <your-app-name>...
+Deploying app <your-username>-react-edge-tutorial...
 
- ✅ App your-app-name was successfully deployed!
+ ✅ App <your-username>-react-edge-tutorial was successfully deployed!
 
-> App URL: https://<your-app-name>.wasmer.app
-> Versioned URL: https://exj0iotefyy5.id.wasmer.app
-> Admin dashboard: https://wasmer.io/apps/<your-wasmer-username>/<your-app-name>
+> App URL: https://<your-username>-react-edge-tutorial.wasmer.app
+> Versioned URL: https://v1piztzfz41v.id.wasmer.app # 🌐 You can access our URL too
+> Admin dashboard: https://wasmer.io/apps/<your-username>/<your-username>-react-edge-tutorial
+
+Waiting for the app to become reachable...
+(You can safely exit now with CTRL-C)
+.
+App is now reachable!
 ```
 
 > You can checkout our versioned URL above to access how our starter demo looks like.
