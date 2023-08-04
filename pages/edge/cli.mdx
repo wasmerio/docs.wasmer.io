@@ -12,17 +12,28 @@ Wasmer has two main commands for deploy:
 - `wasmer deploy`
 
 <Callout type="info" emoji="ℹ️">
-  **Note:** You must be logged in to Wasmer to use the `app` and `deploy` commands.
+  **Note:** You must be logged in to Wasmer to use the `app` and `deploy`
+  commands.
 </Callout>
-
 
 ### `wasmer app`
 
 It allows managing the apps
 
-#### `wasmer app create <package-to-deploy>`
+#### `wasmer app create`
 
-This command is used to create a new app deployment based on the `<package-to-deploy>` package.
+This command is used to create an app that will be deployed on the edge.
+
+This further provides you with options:
+
+1. Use an existing package, like a `static-web-server` for static website.
+2. Create your own custom app from scratch.
+
+You can also specify an app type with the `--type` flag. The available types are:
+
+- Static website
+- HTTP server
+- Browser shell **(coming soon)**
 
 #### `wasmer app list`
 
