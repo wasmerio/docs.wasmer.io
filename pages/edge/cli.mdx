@@ -18,7 +18,11 @@ Wasmer has two main commands for deploy:
 
 ### `wasmer app`
 
-It allows managing the apps
+It allows the user to:
+
+- Create an app
+- Get information about an app
+- List all of their apps
 
 #### `wasmer app create`
 
@@ -35,9 +39,81 @@ You can also specify an app type with the `--type` flag. The available types are
 - HTTP server
 - Browser shell **(coming soon)**
 
+#### `wasmer app get`
+
+This command is used to get the information about an app.
+
+**Arguments**
+
+- `ident`: The identifier of the app you want to get information about. This is an optional argument. If you do not provide an app identifier, it will automatically get that from your `app.yaml` file in your current directory. This is basically the `name` field in your `app.yaml` file.
+
+**Options**
+
+- `--format`: The format to use for the output. This defaults to `yaml`. Other options are `json` and `text`.
+- `--token`: The token to use for authentication. You can also use the `WASMER_TOKEN` environment variable. This defaults to the token in your `~/.wasmer/wasmer.toml` file.
+- `--verbose`: Show verbose output.
+- `--quiet`: Do not print progress messages.
+- `--color`: Whether to use colored output. Defaults to `auto`. Possible values are `auto`, `always`, and `never`.
+
+```shell
+$ wasmer app get wasmer/app-1
+Loaded app config from: /path/to/your/app.yaml
+---
+id: da_4X8AGot5YVP2
+name: app-1
+created_at: "2023-06-15T11:46:46.642510+00:00"
+description: ~
+active_version:
+  id: dav_3XwGTWtYue3X
+  created_at: "2023-08-04T11:36:47.959492+00:00"
+  version: v1
+  description: ~
+  yaml_config: "kind: wasmer.io/App.v1\nmeta:\n  description: ''\n  name: wasmer/app-1\nspec:\n  workload:\n    source: wasmer/app-1@0.34.1\n"
+  user_yaml_config: "---\nkind: wasmer.io/App.v0\nname: app-1\napp_id: da_4X8AGot5YVP2\npackage: wasmer/app-1@0.34.1\n"
+  config: "{\"kind\": \"wasmer.io/App.v1\", \"meta\": {\"description\": \"\", \"name\": \"wasmer/app-1\"}, \"spec\": {\"workload\": {\"source\": \"wasmer/app-1@0.34.1\"}}}"
+  json_config: "{\"kind\": \"wasmer.io/App.v1\", \"meta\": {\"description\": \"\", \"name\": \"wasmer/app-1\"}, \"spec\": {\"workload\": {\"source\": \"wasmer/app-1@0.34.1\"}}}"
+  url: "https://rp9hmipc5rz2.id.wasmer.app"
+  app:
+    id: da_4X8AGot5YVP2
+admin_url: "https://wasmer.io/apps/wasmer/app-1"
+owner:
+  global_name: wasmer
+url: "https://app-1.wasmer.app"
+aliases:
+  page_info:
+    has_next_page: false
+    end_cursor: YXJyYXbjp25uNMN0aW9uOjA=
+  edges:
+    - node:
+        name: app-1
+```
+
+##### `wasmer app info`
+
+This command is a less verbose version of `wasmer app get`. It will only show the app information that you might quickly need.
+
+**Arguments**
+
+- `ident`: The identifier of the app you want to get information about. This is an optional argument. If you do not provide an app identifier, it will automatically get that from your `app.yaml` file in your current directory. This is basically the `name` field in your `app.yaml` file.
+
+```shell
+$ wasmer app info wasmer/app-1
+Loaded app config from: /path/to/your/app.yaml
+App Info
+> App Name: app-1
+> App URL: https://app-1.wasmer.app
+> Versioned URL: https://rp9hmipc5rz2.id.wasmer.app
+> Admin dashboard: https://wasmer.io/apps/wasmer/app-1
+```
+
 #### `wasmer app list`
 
 This command will list all the apps you have deployed.
+
+**Options**
+
+- `--format`: The format to use for the output. This defaults to `table`. Other options are `json` and `text`.
+-
 
 ```shell
 $ wasmer app list
@@ -67,7 +143,7 @@ For a complete guide on deploying an app, check the [edge get started guide](/ed
 
 This is the help output from the Wasmer CLI for `wasmer app --help`:
 
-```
+```shell
 Usage: wasmer app <COMMAND>
 
 Commands:
