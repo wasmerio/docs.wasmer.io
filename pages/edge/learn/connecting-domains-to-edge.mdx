@@ -23,6 +23,14 @@ And it should be done! You can now access your app on `blogs.wasmer.io`.
 
 Connecting a root domain is a bit more complicated than connecting a subdomain because you can't create a CNAME record for a root domain. But there are some providers that allow you to create a CNAME record for a root domain. If your provider doesn't allow you to do that, you can use a service like [Cloudflare](https://www.cloudflare.com/) to create a CNAME record for your root domain.
 
+<Callout type="default" emoji="⚠️">
+  If your domain is not controlled by cloudflare you can set it up a transfer by
+  following the guide{" "}
+  <a href="https://developers.cloudflare.com/registrar/get-started/transfer-domain-to-cloudflare/">
+    here
+  </a>
+</Callout>
+
 <Callout type="info" emoji="ℹ️">
   Cloudflare does this by **CNAME flattening**. You can read more about it{" "}
   <a href="https://blog.cloudflare.com/introducing-cname-flattening-rfc-compliant-cnames-at-a-domains-root/">
