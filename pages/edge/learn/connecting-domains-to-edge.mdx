@@ -1,13 +1,12 @@
 import { Callout } from "nextra-theme-docs";
 
-# Connecting your domain to Wasmer Edge
+# Connecting Your Domain to Wasmer Edge
 
 ## Introduction
 
-For any functional website/server, you need a domain name. This is the address that people will use to access your services.
-For example, the domain name for this website is `wasmer.io` and the domain for our registry is `registry.wasmer.io`.
+For production workloads, you most likely want to use your own custom domain, instead of the \*.wasmer.app domains.
 
-In this guide, we will show you how to connect your domain to Wasmer Edge.
+This guide will explain how to connect your custom domains to your apps hosted on Wasmer Edge.
 
 ## Subdomain
 
@@ -21,10 +20,12 @@ And it should be done! You can now access your app on `blogs.wasmer.io`.
 
 ## Root domain
 
-Connecting a root domain is a bit more complicated than connecting a subdomain because you can't create a CNAME record for a root domain. But there are some providers that allow you to create a CNAME record for a root domain. If your provider doesn't allow you to do that, you can use a service like [Cloudflare](https://www.cloudflare.com/) to create a CNAME record for your root domain.
+Connecting a root domain is a bit more complicated than connecting a subdomain, because you can't create a CNAME record for a root domain.
+Some large DNS providers emulate root CNAME records. If your provider doesn't allow you to do that, you can use a service like [Cloudflare](https://www.cloudflare.com/).
+Note: this requires moving your entire DNS setup to Clouflare.
 
 <Callout type="default" emoji="⚠️">
-  If your domain is not controlled by cloudflare you can set it up a transfer by
+  If your domain is not controlled by Cloudflare you can transfer it by
   following the guide{" "}
   <a href="https://developers.cloudflare.com/registrar/get-started/transfer-domain-to-cloudflare/">
     here
@@ -46,7 +47,7 @@ You will need to create two additional records:
 
 ```yaml
 wasmer.io.              0       IN      CNAME   wasmer-website.wasmer.app
-wasmer.io.              0       IN      TXT     "cname:wasmer-website.wasmer.app."
+wasmer.io.              0       IN      TXT     "cname:wasmer-website.wasmer.app"
 ```
 
 And it should work now. You can now access your app on `wasmer.io`.
@@ -54,12 +55,10 @@ And it should work now. You can now access your app on `wasmer.io`.
 Let's breakdown the configuration:
 
 1. The first record is a CNAME record pointing to your app on wasmer edge.
-2. The second record is a TXT record which Wasmer Edge uses to verify that you own the domain and it needs to connect to your app.
+2. The second record is a TXT record, which Wasmer Edge uses to verify that you own the domain and how to map it to your app.
 
-## Future improvements
+This additional record is required because CNAME flattening will not allow Edge to see the original CNAME.
 
-We are working on making this process easier. We are planning to add features such as:
+## Looking Forward
 
-1. Adding custom edge nameservers to your domain.
-2. Adding a DNS provider to wasmer edge, So you can manage your DNS records from wasmer edge.
-3. Adding a field in `app.yaml` to specify the domain you want to connect to your app. (This would be the easiest way to connect your domain to your app on wasmer edge)
+We are working on making this process easier in the future. Follow the Edge feature announcements for updates!
