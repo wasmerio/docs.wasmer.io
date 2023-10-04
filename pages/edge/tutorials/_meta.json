@@ -1,3 +1,5 @@
 {
-  "react-static-site": "React Static Site"
+  "react-static-site": "React Static Site",
+  "js-worker": "JS Worker",
+  "py-worker": "Python Worker"
 }
