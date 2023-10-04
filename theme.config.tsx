@@ -48,6 +48,17 @@ const config: DocsThemeConfig = {
     toggleButton: true,
   },
   docsRepositoryBase: "https://github.com/wasmerio/docs.wasmer.io/tree/main",
+  banner: (() => {
+    return {
+      key: "2.0-release",
+      text: (
+        <a href="/edge/tutorials/py-worker" target="_self">
+          🎉 JS and Python workers are now supported on Wasmer Edge . Read the
+          full tutorial →
+        </a>
+      ),
+    };
+  })(),
   editLink: {
     text: "Edit this page on GitHub →",
   },
