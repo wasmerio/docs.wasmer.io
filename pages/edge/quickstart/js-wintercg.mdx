@@ -50,9 +50,9 @@ You directory composition should look like this:
   <FileTree.File name="app.yaml" />
 </FileTree>
 
-You index.js file should look like this:
+You `index.js` file should look like this:
 
-```js
+```js copy filename="src/index.js"
 async function handler(request) {
   const out = JSON.stringify({
     success: true,
@@ -66,7 +66,7 @@ async function handler(request) {
 addEventListener("fetch", handler); // Don't change this line
 ```
 
-You can change the content of the index.js file to your liking. But **don't** change the `addEventListener("fetch", handler);` line.
+You can change the content of the `index.js` file to your liking. But **don't** change the `addEventListener("fetch", handler);` line.
 
 ### Step 3.2: Testing your JavaScript Service Worker locally
 
