@@ -51,6 +51,39 @@ You directory composition should look like this:
   <FileTree.File name="app.yaml" />
 </FileTree>
 
+Your `main.py` file should look like this:
+
+```python copy filename="src/main.py"
+import os
+import json
+from http.server import SimpleHTTPRequestHandler, HTTPServer
+
+
+class CustomHandler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+
+        data = {
+            "message": "wasmer/python-http-server is running on Python!"
+        }
+        self.wfile.write(json.dumps(data).encode('utf-8'))
+
+
+if __name__ == "__main__":
+    host = os.environ.get('HOST', '127.0.0.1')
+
+    # Get the PORT environment variable if it's present; otherwise, default to 8000
+    port = int(os.environ.get('PORT', 80))
+
+    server = HTTPServer((host, port), CustomHandler)
+    print(f"Starting server on http://{host}:{port}")
+    server.serve_forever()
+```
+
+You can change the content of the `main.py` file to your liking.
+
 ### Step 3.2: Testing your Python Application locally
 
 Run the commands below to initialize files for Wasmer Edge:
