@@ -50,12 +50,32 @@ You directory composition should look like this:
   <FileTree.File name="app.yaml" />
 </FileTree>
 
+You index.js file should look like this:
+
+```js
+async function handler(request) {
+  const out = JSON.stringify({
+    success: true,
+    package: "wasmer/js-service-worker",
+  });
+  return new Response(out, {
+    headers: { "content-type": "application/json" },
+  });
+}
+
+addEventListener("fetch", handler); // Don't change this line
+```
+
+You can change the content of the index.js file to your liking. But **don't** change the `addEventListener("fetch", handler);` line.
+
 ### Step 3.2: Testing your JavaScript Service Worker locally
 
 Run the commands below to initialize files for Wasmer Edge:
 
 ```shell copy
 $ wasmer run . --net
+2023-10-05T09:46:19.513568Z  INFO wasmer_winter: starting webserver
+2023-10-05T09:46:19.514089Z  INFO wasmer_winter::server: starting server on 0.0.0.0:8080 listen=0.0.0.0:8080
 ```
 
 The above command will start a web server on `http://127.0.0.1:8080`.
