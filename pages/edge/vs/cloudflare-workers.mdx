@@ -1,0 +1,20 @@
+# Wasmer Edge vs Cloudflare Workers
+
+Wasmer Edge and Cloudflare Workers are both serverless platforms for running websites.
+
+### Similarities
+
+Wasmer Edge and Cloudflare Workers share this similarities:
+
+- **Affordable**
+- **Infinitely scalable**
+
+### Differences
+
+Wasmer Edge and Cloudflare Workers differ in significant ways:
+
+- Wasmer Edge **supports multithreaded applications**, while "multi-threading and shared memory are not permitted in [Cloudflare] Workers"
+- Wasmer Edge **can run Python, Rust**, and other languages without any JS glue code, while Cloudflare Workers can only run WebAssembly through JavaScript.
+  Example: Django can't run in Cloudflare workers.
+- Wasmer Edge **doesn't require code changes in your application** to run, while you need to adapt your JS code to use the custom Workers SDK to run.
+- Wasmer Edge **can allow any incoming TCP connection**, while Cloudflare Workers can only serve HTTP and websocket requests.
