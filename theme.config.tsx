@@ -53,8 +53,8 @@ const config: DocsThemeConfig = {
       key: "2.0-release",
       text: (
         <a href="/edge/tutorials/py-worker" target="_self">
-          🎉 JS and Python workers are now supported on Wasmer Edge . Read the
-          full tutorial →
+          🎉 JS Service Workers and Python applications are now supported on
+          Wasmer Edge . Read the full tutorial →
         </a>
       ),
     };
