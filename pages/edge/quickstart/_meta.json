@@ -1,4 +1,6 @@
 {
   "static-site": "Static Site",
-  "http-server": "HTTP Server"
+  "http-server": "HTTP Server",
+  "js-wintercg": "JS Service Worker",
+  "python": "Python"
 }
