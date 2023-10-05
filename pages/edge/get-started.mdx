@@ -18,11 +18,11 @@ This page will guide you through installing Wasmer, and deploying an already exi
 
 Creates an app based on an existing package on the [registry](../registry).
 
-Here we use <a href="https://wasmer.io/wasmer/hello-server" target="_blank">wasmer.io/wasmer/hello-server</a>,
+Here we use <a href="https://wasmer.io/wasmer/hello" target="_blank">wasmer.io/wasmer/hello</a>,
 a simple web server with a stub template page.
 
 ```bash
-wasmer app create wasmer/hello-server
+wasmer app create wasmer/hello
 ```
 
 This will create an `app.yaml` file with the following contents
@@ -30,7 +30,7 @@ This will create an `app.yaml` file with the following contents
 ```yaml copy filename="app.yaml"
 kind: wasmer.io/App.v0
 name: <your-username>-hello-world
-package: wasmer/hello-server
+package: wasmer/hello
 ```
 
 To redeploy after making changes, like upgrading the package, simply run
