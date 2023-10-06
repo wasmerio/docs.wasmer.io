@@ -33,16 +33,48 @@ Valid keys are:
 
 - `name` \(string\) **required**
 - `source` \(path\) **required**: path to the `.wasm` file
-- `abi` \(enum\): one of: `wasi`, `emscripten`, or `none`
+
+### \[module.bindings\]
+
+Definitions used by [Wasmer Pack][wasmer-pack] when generating bindings for this
+module.
+
+- `wai-version` \(string\) **required**: The version of [WAI][wai] being targeted (e.g. `"0.2.0"`)
+- `exports` \(string\): The path to a `*.wai` file defining the interface exposed by the module
+- `imports` \(string\[\]\): A list of `*.wai` files defining functionality the host will provide to the module
 
 ## \[\[command\]\]
 
 - `name` **required** \(string\): the name of the command, invoked via `wasmer run . --command=<command-name>`
 - `module` **required** \(string\): the name of the module this command is running.
-- `package` **required** \(string\): the package name that the module is in.
-- `main_args`
-- `package`
+- `runner` **required** \(string\): a URL or well-known name for the runner used to execute this command (e.g. `"wasi"`, `"wcgi"`, `"emscripten"`)
+- `annotations`: free-form command metadata that will be passed through to the runner as-is
+
+Note that the `module` may be either the name of a `[[module]]` in the current `wasmer.toml`, or it might come from a dependency. For example, `module = "python/python:python"` indicates the command uses the `python` module from the package's `python/python` dependency.
+
+It is valid (and often preferrable) for a `[command]` and `[module]` to have the same `name`.
+
+### \[command.annotations.wasi\]
+
+Annotations specific to the WASI runner.
+
+- `main-args` \(string\[\]\): command-line arguments passed to a command on startup
+- `env` \(string\[\]\): a list of `key=value` environment variables passed through to the command on startup
+
+### \[command.annotations.wcgi\]
+
+- `dialect` \(string\): the name of the CGI dialect being implemented. May be either `"rfc-3875"` (the default) or `"wcgi"`.
+
+The WCGI runner also respects the `[command.annotations.wasi]` annotations.
+
+### \[command.annotations.emscripten\]
+
+- `main-args` \(string\[\]\): command-line arguments passed in on startup
+- `env` \(string\[\]\): a list of `key=value` environment variables passed through to the instance on startup
 
 ## \[fs\]
 
 - `"location/on/wasm"="location/on/publishing/machine"`: bundle local files into the package and make them available on the WASI filesystem
+
+[wasmer-pack]: https://github.com/wasmerio/wasmer-pack
+[wai]: https://github.com/wasmerio/wai
