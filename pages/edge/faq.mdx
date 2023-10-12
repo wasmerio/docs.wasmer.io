@@ -1,0 +1,27 @@
+# FAQ
+
+This section contains frequently asked questions about Wasmer Edge.
+These questions were either asked on Discord or were felt to be important to include.
+
+## Does traffic ever get sent to more-geographically distant nodes that are already active ?
+
+**No**, this only happens within the same region (aka data center) at the moment, and will probably also remain that way, unless user configuration specifies something different - see below!
+
+## What is threshold for 'spill over' when nodes are overloaded? Are allocations to edge nodes based on vCPU or request volume ?
+
+The system will load balance dynamically based on server load - this is not something that you should assume any functional transparency about at the moment. The system will also dynamically determine how many instances of your app to start up in a given region/server.
+Note that we will add configuration for this, eg: you will be able to specify that you want at most X instances in a given region, or that each instance of your app should handle at most X concurrent requests, with new instances launched dynamically if that threshold is exceeded.
+
+## How long is the 'short idle period' before server termination. If post-request server-side processing is required, how can we prevent a shutdown? Is this determined by CPU usage, a timeout post-last request, or perhaps an interceptor in the WASIX VM monitoring for specific IO syscalls, such as `accept4` ?
+
+Currently this is a fixed value of a few minutes, but you shouldn't assume anything about this, it may change at any time, and things may get evicted under contention.
+What we will add (currently not implemented yet) is a flow like on Linux: instances will receive a SIGTERM , and will have some time to clean up and finish remaining work, with a hard termination only happening after a grace period.
+
+## Do we need utilities like pgBouncer ?
+
+It would probably be advisable.
+It's possible for multiple versions of your app to run on multiple servers in the same region, and for a bunch of new instances to get spawned , so you might have quite bursty connection counts.
+If you need more control, one of the features that we hope to finish in this quarter (before end of year) is persistent instances, which will keep running , and won't be dynamically spawned or terminated.
+
+> A note about database locality:
+> We will have configuration that allows you to restrict your app to certain regions, so if you want to keep your instances close to the location of your database, that will be possible.
