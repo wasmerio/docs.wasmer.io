@@ -9,8 +9,6 @@ The manifest file called `wasmer.toml` is required [to publish](./get-started.md
   run `wasmer init` in your directory and the CLI will guide you!
 </Callout>
 
-The manifest file contains 4 sections:
-
 ## \[package\]
 
 Valid keys are:
@@ -25,24 +23,135 @@ Valid keys are:
 - `homepage` \(url\)
 - `entrypoint` \(string\): The command to use by default
 
+```toml
+[package]
+name = "wasmer/wasm-pack"
+version = "0.7.1"
+description = "A code generator that lets you treat WebAssembly modules like native dependencies."
+license = "MIT"
+# OR
+license-file = "./LICENSE.md"
+readme = "./README.md"
+repository = "https://github.com/wasmerio/wasmer-pack"
+homepage = "https://wasmer.io/"
+entrypoint = "wasmer-pack"
+```
+
 ## \[dependencies\]
 
 - `"<namespace>/<name>" = "<version>"`
+
+```toml
+[dependencies]
+"sharrattj/coreutils" = "1.0.16"
+```
 
 ## \[\[module\]\]
 
 - `name` \(string\) **required**
 - `source` \(path\) **required**: path to the `.wasm` file
-- `abi` \(enum\): one of: `wasi`, `emscripten`, or `none`
+
+```toml
+[module]
+name = "wasmer-pack"
+source = "./target/wasm32-unknown-unknown/release/wasmer-pack.wasm"
+```
+
+### \[module.bindings\]
+
+Definitions used by [Wasmer Pack][wasmer-pack] when generating bindings for this
+module.
+
+- `wai-version` \(string\) **required**: The version of [WAI][wai] being targeted (e.g. `"0.2.0"`)
+- `exports` \(string\): The path to a `*.wai` file defining the interface exposed by the module
+- `imports` \(string\[\]\): A list of `*.wai` files defining functionality the host will provide to the module
+
+```toml
+[[module]]
+name = "wasmer-pack"
+...
+
+[module.bindings]
+wai-version = "0.2.0"
+exports = "./wasmer-pack.wai"
+imports = ["http-client.wai", "logging.wai"]
+```
 
 ## \[\[command\]\]
 
 - `name` **required** \(string\): the name of the command, invoked via `wasmer run . --command=<command-name>`
 - `module` **required** \(string\): the name of the module this command is running.
-- `package` **required** \(string\): the package name that the module is in.
-- `main_args`
-- `package`
+- `runner` **required** \(string\): a URL or well-known name for the runner used to execute this command (e.g. `"wasi"`, `"wcgi"`, `"emscripten"`)
+- `annotations`: free-form command metadata that will be passed through to the runner as-is
+
+Note that the `module` may be either the name of a `[[module]]` in the current `wasmer.toml`, or it might come from a dependency. For example, `module = "python/python:python"` indicates the command uses the `python` module from the package's `python/python` dependency.
+
+It is valid (and often preferrable) for a `[command]` and `[module]` to have the same `name`.
+
+```toml
+[[command]]
+name = "wasmer-pack"
+module = "wasmer-pack"
+runner = "wasi"
+```
+
+### \[command.annotations.wasi\]
+
+Annotations specific to the WASI runner.
+
+- `main-args` \(string\[\]\): command-line arguments passed to a command on startup
+- `env` \(string\[\]\): a list of `key=value` environment variables passed through to the command on startup
+
+```toml
+[[command]]
+name = "wasmer-pack"
+...
+
+[command.annotations.wasi]
+main-args = ["--verbose"]
+env = ["RUST_LOG=debug"]
+```
+
+### \[command.annotations.wcgi\]
+
+- `dialect` \(string\): the name of the CGI dialect being implemented. May be either `"rfc-3875"` (the default) or `"wcgi"`.
+
+The WCGI runner also respects the `[command.annotations.wasi]` annotations.
+
+```toml
+[[command]]
+name = "wasmer-pack"
+...
+
+[command.annotations.wcgi]
+dialect = "wcgi"
+```
+
+### \[command.annotations.emscripten\]
+
+- `main-args` \(string\[\]\): command-line arguments passed in on startup
+- `env` \(string\[\]\): a list of `key=value` environment variables passed through to the instance on startup
+
+```toml
+[[command]]
+name = "wasmer-pack"
+...
+
+[command.annotations.emscripten]
+main-args = ["--port=8080"]
+env = ["COMPATIBILITY_MODE=true"]
+```
+
 
 ## \[fs\]
 
 - `"location/on/wasm"="location/on/publishing/machine"`: bundle local files into the package and make them available on the WASI filesystem
+
+```toml
+[fs]
+"/cpython" = "./build"
+"/lib/python3.12" = "./lib"
+```
+
+[wasmer-pack]: https://github.com/wasmerio/wasmer-pack
+[wai]: https://github.com/wasmerio/wai
