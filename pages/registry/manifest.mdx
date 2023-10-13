@@ -25,14 +25,39 @@ Valid keys are:
 - `homepage` \(url\)
 - `entrypoint` \(string\): The command to use by default
 
+```toml
+[package]
+name = "wasmer/wasm-pack"
+version = "0.7.1"
+description = "A code generator that lets you treat WebAssembly modules like native dependencies."
+license = "MIT"
+# OR
+license-file = "./LICENSE.md"
+readme = "./README.md"
+repository = "https://github.com/wasmerio/wasmer-pack"
+homepage = "https://wasmer.io/"
+entrypoint = "wasmer-pack"
+```
+
 ## \[dependencies\]
 
 - `"<namespace>/<name>" = "<version>"`
+
+```toml
+[dependencies]
+"sharrattj/coreutils" = "1.0.16"
+```
 
 ## \[\[module\]\]
 
 - `name` \(string\) **required**
 - `source` \(path\) **required**: path to the `.wasm` file
+
+```toml
+[module]
+name = "wasmer-pack"
+source = "./target/wasm32-unknown-unknown/release/wasmer-pack.wasm"
+```
 
 ### \[module.bindings\]
 
@@ -42,6 +67,17 @@ module.
 - `wai-version` \(string\) **required**: The version of [WAI][wai] being targeted (e.g. `"0.2.0"`)
 - `exports` \(string\): The path to a `*.wai` file defining the interface exposed by the module
 - `imports` \(string\[\]\): A list of `*.wai` files defining functionality the host will provide to the module
+
+```toml
+[[module]]
+name = "wasmer-pack"
+...
+
+[module.bindings]
+wai-version = "0.2.0"
+exports = "./wasmer-pack.wai"
+imports = ["http-client.wai", "logging.wai"]
+```
 
 ## \[\[command\]\]
 
@@ -54,6 +90,13 @@ Note that the `module` may be either the name of a `[[module]]` in the current `
 
 It is valid (and often preferrable) for a `[command]` and `[module]` to have the same `name`.
 
+```toml
+[[command]]
+name = "wasmer-pack"
+module = "wasmer-pack"
+runner = "wasi"
+```
+
 ### \[command.annotations.wasi\]
 
 Annotations specific to the WASI runner.
@@ -61,20 +104,56 @@ Annotations specific to the WASI runner.
 - `main-args` \(string\[\]\): command-line arguments passed to a command on startup
 - `env` \(string\[\]\): a list of `key=value` environment variables passed through to the command on startup
 
+```toml
+[[command]]
+name = "wasmer-pack"
+...
+
+[command.annotations.wasi]
+main-args = ["--verbose"]
+env = ["RUST_LOG=debug"]
+```
+
 ### \[command.annotations.wcgi\]
 
 - `dialect` \(string\): the name of the CGI dialect being implemented. May be either `"rfc-3875"` (the default) or `"wcgi"`.
 
 The WCGI runner also respects the `[command.annotations.wasi]` annotations.
 
+```toml
+[[command]]
+name = "wasmer-pack"
+...
+
+[command.annotations.wcgi]
+dialect = "wcgi"
+```
+
 ### \[command.annotations.emscripten\]
 
 - `main-args` \(string\[\]\): command-line arguments passed in on startup
 - `env` \(string\[\]\): a list of `key=value` environment variables passed through to the instance on startup
 
+```toml
+[[command]]
+name = "wasmer-pack"
+...
+
+[command.annotations.emscripten]
+main-args = ["--port=8080"]
+env = ["COMPATIBILITY_MODE=true"]
+```
+
+
 ## \[fs\]
 
 - `"location/on/wasm"="location/on/publishing/machine"`: bundle local files into the package and make them available on the WASI filesystem
+
+```toml
+[fs]
+"/cpython" = "./build"
+"/lib/python3.12" = "./lib"
+```
 
 [wasmer-pack]: https://github.com/wasmerio/wasmer-pack
 [wai]: https://github.com/wasmerio/wai
