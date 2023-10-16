@@ -149,7 +149,7 @@ In our `app.yaml` we want to provide the same args as we did in the `wasmer.toml
 ```yaml
 ---
 kind: wasmer.io/App.v0
-name: wasmer-python-flask-server-worker
+name: wasmer-python-flask-server
 package: wasmer/python-flask-server@0.1.0
 cli_args: # This is the command we want the python runner to run on Wasmer Edge
   - -m
@@ -189,14 +189,14 @@ Deploying is the easiest part. Just run the following command:
 
 ```shell copy
 $ wasmer deploy
-Loaded app from: /Volumes/Work/Projects/wasmer-edge/python-flask/app.yaml
-Deploying app wasmer-python-flask-server-worker...
+Loaded app from: /.../wasmer-edge/python-flask/app.yaml
+Deploying app wasmer-python-flask-server...
 
- ✅ App dynamite-bud/wasmer-python-flask-server-worker was successfully deployed!
+ ✅ App dynamite-bud/wasmer-python-flask-server was successfully deployed!
 
-> App URL: https://wasmer-python-flask-server-worker.wasmer.app
+> App URL: https://wasmer-python-flask-server.wasmer.app
 > Versioned URL: https://2mzhyi8cqzxr.id.wasmer.app
-> Admin dashboard: https://wasmer.io/apps/wasmer-python-flask-server-worker
+> Admin dashboard: https://wasmer.io/apps/wasmer-python-flask-server
 
 Waiting for new deployment to become available...
 (You can safely stop waiting now with CTRL-C)
