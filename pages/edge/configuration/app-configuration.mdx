@@ -44,3 +44,40 @@ The `description` field is used to provide a description of the application. It 
 The `package` field is used to provide the primary workload to execute. It is **required** and must be a valid WebAssembly package identifier.
 
 - Required: `true`
+
+### `cli-args`:
+
+The `cli-args` field is used to provide additional arguments to the WebAssembly module. It is **optional**.
+
+- Type: `string[]`
+- Required: `false`
+
+> You'd use these in conjunction with your `cli-args` in your `wasmer.toml`
+
+### `env`:
+
+The `env` field is used to provide additional environment variables to the WebAssembly module. It is **optional**.
+
+- Type: `key-value[]`
+- Required: `false`
+
+## Sample Configuration
+
+This sample configuration is for a python based flask application.
+
+```yaml copy
+---
+kind: wasmer.io/App.v0
+name: wasmer-python-flask-server-worker
+package: wasmer/python-flask-server@0.1.0
+cli_args:
+  - -m
+  - flask
+  - --app
+  - /src/main
+  - run
+  - --debug
+  - --no-reload
+env:
+  PYTHONEXECUTABLE: /bin/python
+```
