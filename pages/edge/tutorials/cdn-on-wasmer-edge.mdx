@@ -1,0 +1,357 @@
+import { Steps, Callout, FileTree } from "nextra-theme-docs";
+import StaticSite from "@components/deploy/quickstart/StaticSite";
+import edgeReactImg from "@assets/deploy/tutorials/edge-react.png";
+import Install from "@components/install.mdx";
+import Login from "@components/login.mdx";
+import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
+
+# Creating a CDN on Wasmer Edge
+
+In this tutorial, we will create a CDN on Wasmer Edge. We'll be using the [`static-web-server`]()
+
+## Prerequisites
+
+The project requires the following tools to be installed on your system:
+
+- [Rust](https://www.rust-lang.org/tools/install)
+
+## Deploying a Static Site
+
+<Steps>
+
+<Install />
+
+<CliVersionCallout />
+
+<Login />
+
+### Initialize the project
+
+We'll initialize the project with the `static-site` template.
+
+Navigate to the directory where you want to create the project and run the following command:
+
+```bash
+$ wasmer app create
+```
+
+The above command will give you the following prompt:
+
+```bash
+App type:
+> Static website # Select Static website
+  HTTP server
+  Browser shell
+  JS Worker (experimental)
+  Python Worker
+Who should own this package?: wasmer
+No package found or specified.
+What should the package be called? It will be published under wasmer: <your-cdn-name> # This will be the package name of your CDN
+What should be the name of the app? <NAME>.wasmer.app: <your-cdn-name> # This will be the name of your CDN
+Would you like to publish the app now? no # Select no for now
+Writing app config to '/Volumes/Work/Projects/wasmer-edge/wasmer-edge-cdn/app.yaml'
+To (re)deploy your app, run 'wasmer deploy'
+```
+
+Select the above configuration mentioned in the comments and press enter.
+
+The above command will initialize a blank project with the following structure.
+
+<FileTree>
+  <FileTree.Folder name="your-top-level-dir" defaultOpen>
+    <FileTree.Folder name="public" defaultOpen>
+      <FileTree.File name="index.html" />
+    </FileTree.Folder>
+    <FileTree.File name="app.yaml" />
+    <FileTree.File name="wasmer.toml" />
+  </FileTree.Folder>
+</FileTree>
+
+### Changing configuration for CDN deployment
+
+Let's first delete the `index.html` file from the `public` directory.
+
+```bash
+$ rm public/index.html
+```
+
+Now as you might notice, this project uses the `static-web-server` package which is a static web server written in Rust.
+
+Most notably, it supports changing the compression level, cache control, cors, and more.
+All these configurations can be super useful when deploying a CDN.
+
+So, let's add a `config.toml` file in the `config` directory.
+
+```bash
+$ mkdir config
+$ touch config/config.toml
+```
+
+You can copy the following `config.toml`.
+
+```toml
+[general]
+
+#### Address & Root dir
+host = "::"
+port = 8080
+root = "./public"
+
+#### Logging
+log-level = "error"
+
+#### Cache Control headers
+cache-control-headers = true
+
+#### Auto Compression
+compression = true
+
+#### Error pages
+# Note: If a relative path is used then it will be resolved under the root directory.
+page404 = "./404.html"
+page50x = "./50x.html"
+
+#### HTTP/2 + TLS
+http2 = false
+http2-tls-cert = ""
+http2-tls-key = ""
+https-redirect = false
+https-redirect-host = "localhost"
+https-redirect-from-port = 80
+https-redirect-from-hosts = "localhost"
+
+#### CORS & Security headers
+# security-headers = true
+# cors-allow-origins = ""
+
+#### Directory listing
+directory-listing = false
+
+#### Directory listing sorting code
+directory-listing-order = 1
+
+#### Directory listing content format
+directory-listing-format = "html"
+
+#### Basic Authentication
+# basic-auth = ""
+
+#### File descriptor binding
+# fd = ""
+
+#### Worker threads
+threads-multiplier = 1
+
+#### Grace period after a graceful shutdown
+grace-period = 0
+
+#### Page fallback for 404s
+# page-fallback = ""
+
+#### Log request Remote Address if available
+log-remote-address = false
+
+#### Redirect to trailing slash in the requested directory uri
+redirect-trailing-slash = true
+
+#### Check for existing pre-compressed files
+compression-static = true
+
+#### Health-check endpoint (GET or HEAD `/health`)
+health = false
+
+#### List of index files
+# index-files = "index.html, index.htm"
+#### Maintenance Mode
+
+maintenance-mode = false
+# maintenance-mode-status = 503
+# maintenance-mode-file = "./maintenance.html"
+
+### Windows Only
+
+#### Run the web server as a Windows Service
+# windows-service = false
+
+
+[advanced]
+
+#### HTTP Headers customization (examples only)
+
+#### a. Oneline version
+# [[advanced.headers]]
+# source = "**/*.{js,css}"
+# headers = { Access-Control-Allow-Origin = "*" }
+
+#### b. Multiline version
+# [[advanced.headers]]
+# source = "/index.html"
+# [advanced.headers.headers]
+# Cache-Control = "public, max-age=36000"
+# Content-Security-Policy = "frame-ancestors 'self'"
+# Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+
+#### c. Multiline version with explicit key (dotted)
+# [[advanced.headers]]
+# source = "**/*.{jpg,jpeg,png,ico,gif}"
+# headers.Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+
+
+### URL Redirects (examples only)
+
+# [[advanced.redirects]]
+# source = "**/*.{jpg,jpeg}"
+# destination = "/images/generic1.png"
+# kind = 301
+
+# [[advanced.redirects]]
+# source = "/index.html"
+# destination = "https://static-web-server.net"
+# kind = 302
+
+### URL Rewrites (examples only)
+
+# [[advanced.rewrites]]
+# source = "**/*.{png,ico,gif}"
+# destination = "/assets/favicon.ico"
+## Optional redirection
+# redirect = 301
+
+# [[advanced.rewrites]]
+# source = "**/*.{jpg,jpeg}"
+# destination = "/images/sws.png"
+
+### Virtual Hosting
+
+# [[advanced.virtual-hosts]]
+## But if the "Host" header matches this...
+# host = "sales.example.com"
+## ...then files will be served from here instead
+# root = "/var/sales/html"
+
+# [[advanced.virtual-hosts]]
+# host = "blog.example.com"
+# root = "/var/blog/html"
+```
+
+<Callout type="info" emoji="ℹ️">
+  The above configuration is the configuration of the `static-web-server`
+  package. More info about it can be found
+  [here](https://static-web-server.net/configuration/config-file/).
+</Callout>
+
+Now, let's add the following configuration to the `wasmer.toml` file.
+
+```yaml
+[package]
+name = "<your-namespace>/<your-cdn-name>"
+version = "0.1.0"
+description = "<your-namespace>/<your-cdn-name> CDN on Wasmer Edge"
+
+[dependencies]
+"wasmer/static-web-server" = "^1"
+
+[fs]
+public = "public"
+config = "config" # 👈🏼 Add the config directory
+
+[[command]]
+name = "script"
+module = "wasmer/static-web-server-async:webserver"
+runner = "https://webc.org/runner/wasi"
+
+[command.annotations.wasi] # 👈🏼 Add config.toml as an argument for the webserver
+main-args = ["-w", "./config/config.toml"]
+```
+
+### Adding files to the CDN
+
+Now, let's add some files to the `public` directory.
+
+```bash
+$ touch public/index.html
+```
+
+I'll also add an image called `image.jpg` to the `public` directory.
+
+And now my `index.html` file looks like this:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <img src="./image.jpg" width="600" />
+  </body>
+</html>
+```
+
+You can also add other files like css, js, videos, pdfs, etc.
+
+You can view my app [here](https://dynamite-bud-sws-cdn.wasmer.app).
+
+### Deploying the CDN
+
+Now, let's deploy the CDN.
+
+```bash
+$ wasmer deploy
+```
+
+The above command will prompt you with the following:
+
+```bash
+Loaded app from: /path/to/your/dir/app.yaml
+
+Publish new version of package '<your-namespace>/<your-cdn-name>'? yes
+Publishing package...
+[1/2] ⬆️   Uploading...
+[2/2] 📦  Publishing...
+Successfully published package `<your-namespace>/<your-cdn-name>@0.1.0`
+Waiting for package to become available.....
+Package '<your-namespace>/<your-cdn-name>@0.1.0' published successfully!
+
+Deploying app <your-namespace>-<your-cdn-name>...
+
+ ✅ App <your-namespace>/<your-namespace>-<your-cdn-name> was successfully deployed!
+
+> App URL: https://dynamite-bud-sws-cdn.wasmer.app
+> Versioned URL: https://2qjh9iec55z4.id.wasmer.app
+> Admin dashboard: https://wasmer.io/apps/dynamite-bud-sws-cdn
+
+Waiting for new deployment to become available...
+(You can safely stop waiting now with CTRL-C)
+.
+New version is now reachable at https://dynamite-bud-sws-cdn.wasmer.app
+Deployment complete
+```
+
+<Callout type="info" emoji="ℹ️">
+  And now you can view your CDN at the URL mentioned above. You can also view
+  the admin dashboard of your CDN by visiting the URL mentioned above.
+</Callout>
+
+<Callout type="info" emoji="🌐">
+  You'll need to do `wasmer deploy` again if you add any new files to the
+  `public` directory.
+</Callout>
+
+<Callout type="warning" emoji="🚧">
+  The url of your CDN will be different from the one mentioned above.
+</Callout>
+
+</Steps>
+
+## Conclusion
+
+In this tutorial, we learned how to create a CDN on Wasmer Edge using the `static-web-server` package.
+
+## Further Reading
+
+- [How to deploy a static site on Wasmer Edge](/edge/quickstart/static-site)
+- [How to deploy a JS service worker on Wasmer Edge](/edge/quickstart/js-wintercg)
+- [Wasmer Edge](https://wasmer.io/products/edge)
