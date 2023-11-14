@@ -5,9 +5,9 @@ import Install from "@components/install.mdx";
 import Login from "@components/login.mdx";
 import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
 
-# Using Wasmer Edge as a CDN
+# Creating a CDN on Wasmer Edge
 
-In this tutorial, you will learn how to use Wasmer Edge as a CDN to host your static assets. We'll be using the [`static-web-server`](https://wasmer.io/wasmer/static-web-server)
+In this tutorial, we will create a CDN on Wasmer Edge. We'll be using the [`static-web-server`]()
 
 ## Prerequisites
 
@@ -46,8 +46,8 @@ App type:
   Python Worker
 Who should own this package?: wasmer
 No package found or specified.
-What should the package be called? It will be published under wasmer: <your-app-name> # This will be the package name of your CDN
-What should be the name of the app? <NAME>.wasmer.app: <your-app-name> # This will be the name of your app
+What should the package be called? It will be published under wasmer: <your-cdn-name> # This will be the package name of your CDN
+What should be the name of the app? <NAME>.wasmer.app: <your-cdn-name> # This will be the name of your CDN
 Would you like to publish the app now? no # Select no for now
 Writing app config to '/Volumes/Work/Projects/wasmer-edge/wasmer-edge-cdn/app.yaml'
 To (re)deploy your app, run 'wasmer deploy'
@@ -67,7 +67,7 @@ The above command will initialize a blank project with the following structure.
   </FileTree.Folder>
 </FileTree>
 
-### Changing configuration for the CDN
+### Changing configuration for CDN deployment
 
 Let's first delete the `index.html` file from the `public` directory.
 
@@ -78,7 +78,7 @@ $ rm public/index.html
 Now as you might notice, this project uses the `static-web-server` package which is a static web server written in Rust.
 
 Most notably, it supports changing the compression level, cache control, cors, and more.
-All these configurations can be super useful when configuring a CDN.
+All these configurations can be super useful when deploying a CDN.
 
 So, let's add a `config.toml` file in the `config` directory.
 
@@ -244,9 +244,9 @@ Now, let's add the following configuration to the `wasmer.toml` file.
 
 ```yaml
 [package]
-name = "<your-namespace>/<your-app-name>"
+name = "<your-namespace>/<your-cdn-name>"
 version = "0.1.0"
-description = "<your-namespace>/<your-app-name> CDN on Wasmer Edge"
+description = "<your-namespace>/<your-cdn-name> CDN on Wasmer Edge"
 
 [dependencies]
 "wasmer/static-web-server" = "^1"
@@ -264,7 +264,7 @@ runner = "https://webc.org/runner/wasi"
 main-args = ["-w", "./config/config.toml"]
 ```
 
-### Adding files for hosting
+### Adding files to the CDN
 
 Now, let's add some files to the `public` directory.
 
@@ -294,9 +294,9 @@ You can also add other files like css, js, videos, pdfs, etc.
 
 You can view my app [here](https://dynamite-bud-sws-cdn.wasmer.app).
 
-### Deploying the app
+### Deploying the CDN
 
-Now, let's deploy the app.
+Now, let's deploy the CDN.
 
 ```bash
 $ wasmer deploy
@@ -307,17 +307,17 @@ The above command will prompt you with the following:
 ```bash
 Loaded app from: /path/to/your/dir/app.yaml
 
-Publish new version of package '<your-namespace>/<your-app-name>'? yes
+Publish new version of package '<your-namespace>/<your-cdn-name>'? yes
 Publishing package...
 [1/2] ⬆️   Uploading...
 [2/2] 📦  Publishing...
-Successfully published package `<your-namespace>/<your-app-name>@0.1.0`
+Successfully published package `<your-namespace>/<your-cdn-name>@0.1.0`
 Waiting for package to become available.....
-Package '<your-namespace>/<your-app-name>@0.1.0' published successfully!
+Package '<your-namespace>/<your-cdn-name>@0.1.0' published successfully!
 
-Deploying app <your-namespace>-<your-app-name>...
+Deploying app <your-namespace>-<your-cdn-name>...
 
- ✅ App <your-namespace>/<your-namespace>-<your-app-name> was successfully deployed!
+ ✅ App <your-namespace>/<your-namespace>-<your-cdn-name> was successfully deployed!
 
 > App URL: https://dynamite-bud-sws-cdn.wasmer.app
 > Versioned URL: https://2qjh9iec55z4.id.wasmer.app
@@ -331,8 +331,8 @@ Deployment complete
 ```
 
 <Callout type="info" emoji="ℹ️">
-  And now you can view your Static files at the URL mentioned above. You can
-  also view the admin dashboard of your CDN by visiting the URL mentioned above.
+  And now you can view your CDN at the URL mentioned above. You can also view
+  the admin dashboard of your CDN by visiting the URL mentioned above.
 </Callout>
 
 <Callout type="info" emoji="🌐">
@@ -341,14 +341,14 @@ Deployment complete
 </Callout>
 
 <Callout type="warning" emoji="🚧">
-  The url of your project will be different from the one mentioned above.
+  The url of your CDN will be different from the one mentioned above.
 </Callout>
 
 </Steps>
 
 ## Conclusion
 
-In this tutorial, we learnt how to use Wasmer Edge as a CDN using the `static-web-server` package for hosting your static assets.
+In this tutorial, we learned how to create a CDN on Wasmer Edge using the `static-web-server` package.
 
 ## Further Reading
 
