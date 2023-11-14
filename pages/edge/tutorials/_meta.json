@@ -1,5 +1,4 @@
 {
   "react-static-site": "React Static Site",
-  "python-flask-server": "Python Flask Server",
-  "cdn-on-wasmer-edge": "CDN on Wasmer Edge"
+  "python-flask-server": "Python Flask Server"
 }
