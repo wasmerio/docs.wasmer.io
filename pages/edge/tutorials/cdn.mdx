@@ -116,34 +116,33 @@ main-args = ["-w", "/app/config.toml"]
 
 ### Adding files for hosting
 
-Now, let's add some files to the `public` directory.
+Firstly, I'll remove the `index.html` file from the `public` directory.
 
 ```bash
-$
-$ touch public/index.html
+$ rm public/index.html
 ```
 
-I'll also add an image called `image.jpg` to the `public` directory.
+And now, let's add some images in our `public` directory to host. I'll be using some free images from [unsplash](https://unsplash.com/).
 
-And now our `index.html` file looks like this:
+This is how the directory structure looks like now:
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <img src="./image.jpg" width="600" />
-  </body>
-</html>
-```
+<FileTree>
+  <FileTree.Folder name="your-top-level-dir" defaultOpen>
+    <FileTree.Folder name="public" defaultOpen>
+      <FileTree.File name="image1.jpg" />
+      <FileTree.File name="image2.jpg" />
+      <FileTree.File name="image3.jpg" />
+    </FileTree.Folder>
+    <FileTree.File name="app.yaml" />
+    <FileTree.File name="wasmer.toml" />
+  </FileTree.Folder>
+</FileTree>
 
 You can also add other files like css, js, videos, pdfs, etc.
 
-You can view our app [here](https://wasmer-edge-as-cdn.wasmer.app).
+<Callout type="warning" emoji="⚠️">
+  Maximum size of all the files combined should not exceed 500MB.
+</Callout>
 
 ### Deploying the app
 
@@ -194,6 +193,23 @@ Deployment complete
 <Callout type="warning" emoji="🚧">
   The url of your project will be different from the one mentioned above.
 </Callout>
+
+### Accessing the files
+
+You can access the files by visiting the URL of your project, followed by the file name.
+
+For example, if you want to access the `image1.jpg` file, you can visit the following URL:
+
+```bash
+https://wasmer-edge-as-cdn.wasmer.app/image1.jpg
+```
+
+The same goes for other files as well.
+
+```bash
+https://wasmer-edge-as-cdn.wasmer.app/image2.jpg
+https://wasmer-edge-as-cdn.wasmer.app/image3.jpg
+```
 
 </Steps>
 
