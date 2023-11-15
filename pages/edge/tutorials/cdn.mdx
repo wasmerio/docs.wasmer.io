@@ -76,14 +76,6 @@ All these configurations can be super useful when configuring a CDN.
 
 So, let's add a `config.toml` file in your top level directory for `static-web-server`'s configuration.
 
-<Callout type="info" emoji="ℹ️">
-  The below configuration is the configuration of the `static-web-server`
-  package. More info about it can be found
-  [here](https://static-web-server.net/configuration/config-file/).
-</Callout>
-
-You also need to update it with some changes listed below.
-
 ```toml
 [general]
 
@@ -91,9 +83,13 @@ You also need to update it with some changes listed below.
 host = "::"
 port = 8080
 root = "/app/public" # 👈🏼 Change the root directory to the public directory for static assets
-
-# ... Rest of the config
 ```
+
+<Callout type="info" emoji="ℹ️">
+  The above configuration is the default configuration of the
+  `static-web-server` package. More info about it can be found
+  [here](https://static-web-server.net/configuration/config-file/).
+</Callout>
 
 Now, let's add the following configuration to the `wasmer.toml` file.
 
