@@ -126,7 +126,7 @@ module = "wasmer/static-web-server:webserver"
 runner = "https://webc.org/runner/wasi"
 
 [command.annotations.wasi] # 👈🏼 Add config.toml as an argument for the webserver
-main-args = ["-w", "./config.toml"]
+main-args = ["-w", "config.toml"]
 ```
 
 ### Adding files for hosting
