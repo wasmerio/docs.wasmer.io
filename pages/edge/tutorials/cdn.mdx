@@ -69,22 +69,15 @@ The above command will initialize a blank project with the following structure.
 
 ### Changing configuration for the CDN
 
-Let's first delete the `public` directory.
-
-```bash
-$ rm -r public
-```
-
-Now as you might notice, this project uses the `static-web-server` package which is a static web server written in Rust.
+As you might notice, this project uses the `static-web-server` package which is a static web server written in Rust.
 
 Most notably, it supports changing the compression level, cache control, cors, and more.
 All these configurations can be super useful when configuring a CDN.
 
-So, let's add a `config.toml` file in the `app` directory.
+So, let's add a `config.toml` file.
 
 ```bash
-$ mkdir app
-$ touch app/config.toml
+$ touch config.toml
 ```
 
 You can copy the following `config.toml`.
@@ -95,7 +88,7 @@ You can copy the following `config.toml`.
 #### Address & Root dir
 host = "::"
 port = 8080
-root = "./public"
+root = "./app/public" # 👈🏼 Change the root directory to the public directory for static assets
 
 # ... Rest of the config
 ```
@@ -118,7 +111,7 @@ description = "<your-namespace>/<your-app-name> CDN on Wasmer Edge"
 "wasmer/static-web-server" = "^1"
 
 [fs]
-"." = "./app" # 👈🏼 Add the app directory as a volume mapping it to the root directory
+"/app" = "." # 👈🏼 Add the app directory as a volume mapping it to the root directory
 
 [[command]]
 name = "script"
@@ -126,16 +119,16 @@ module = "wasmer/static-web-server:webserver"
 runner = "https://webc.org/runner/wasi"
 
 [command.annotations.wasi] # 👈🏼 Add config.toml as an argument for the webserver
-main-args = ["-w", "config.toml"]
+main-args = ["-w", "./app/config.toml"]
 ```
 
 ### Adding files for hosting
 
-Now, let's add a `public` directory in our `app` and some files to the `public` directory.
+Now, let's add some files to the `public` directory.
 
 ```bash
-$ mkdir app/public
-$ touch app/public/index.html
+$
+$ touch public/index.html
 ```
 
 I'll also add an image called `image.jpg` to the `public` directory.
