@@ -95,7 +95,7 @@ You can copy the following `config.toml`.
 #### Address & Root dir
 host = "::"
 port = 8080
-root = "./app/public"
+root = "./public"
 
 # ... Rest of the config
 ```
@@ -118,15 +118,15 @@ description = "<your-namespace>/<your-app-name> CDN on Wasmer Edge"
 "wasmer/static-web-server" = "^1"
 
 [fs]
-"/app" = "./app"
+"." = "./app"
 
 [[command]]
 name = "script"
-module = "wasmer/static-web-server-async:webserver"
+module = "wasmer/static-web-server:webserver"
 runner = "https://webc.org/runner/wasi"
 
 [command.annotations.wasi] # 👈🏼 Add config.toml as an argument for the webserver
-main-args = ["-w", "/app/config.toml"]
+main-args = ["-w", "./config.toml"]
 ```
 
 ### Adding files for hosting
