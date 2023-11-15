@@ -88,7 +88,7 @@ You can copy the following `config.toml`.
 #### Address & Root dir
 host = "::"
 port = 8080
-root = "./app/public" # 👈🏼 Change the root directory to the public directory for static assets
+root = "/app/public" # 👈🏼 Change the root directory to the public directory for static assets
 
 # ... Rest of the config
 ```
@@ -119,7 +119,7 @@ module = "wasmer/static-web-server:webserver"
 runner = "https://webc.org/runner/wasi"
 
 [command.annotations.wasi] # 👈🏼 Add config.toml as an argument for the webserver
-main-args = ["-w", "./app/config.toml"]
+main-args = ["-w", "/app/config.toml"]
 ```
 
 ### Adding files for hosting
