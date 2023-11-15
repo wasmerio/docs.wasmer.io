@@ -118,7 +118,7 @@ description = "<your-namespace>/<your-app-name> CDN on Wasmer Edge"
 "wasmer/static-web-server" = "^1"
 
 [fs]
-"." = "./app"
+"." = "./app" # 👈🏼 Add the app directory as a volume mapping it to the root directory
 
 [[command]]
 name = "script"
