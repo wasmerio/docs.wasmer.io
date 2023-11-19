@@ -1,0 +1,277 @@
+import { Steps, Callout, FileTree } from "nextra-theme-docs";
+import { Card } from "nextra-theme-docs";
+import Install from "@components/install.mdx";
+import Login from "@components/login.mdx";
+import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
+
+# CGI apps on Wasmer Edge
+
+In this tutorial, you will learn how to deploy a CGI app on Wasmer Edge. We will
+be using the Rust's [CGI crate](https://crates.io/crates/cgi) to create a CGI app.
+
+We'll just make a simple `Hello, World!` CGI app.
+
+## What is CGI?
+
+CGI or Common Gateway Interface is a standard for running programs on a web server
+to generate dynamic content.
+CGI programs are often written in scripting languages like Perl, Python, or Ruby,
+but they can also be written in compiled languages like C, C++, or Rust.
+
+### CGI with Wasmer
+
+CGI works using the standard input and output streams. Wasmer maps the standard
+input and output streams to the HTTP request and response. You can read more about WCGI
+in our article, [Announcing WCGI](https://docs.wasmer.io/runtime/runners/wcgi).
+
+## Prerequisites
+
+The project requires the following tools to be installed on your system:
+
+- [Rust](https://www.rust-lang.org/tools/install)
+
+## Creating a CGI app
+
+<Steps>
+
+<Install />
+
+<Login />
+
+<CliVersionCallout />
+
+### Install the `wasm32-wasi` target:
+
+```bash
+rustup target add wasm32-wasi
+```
+
+This will install the `wasm32-wasi` target for the Rust compiler.
+
+### Initialize the project
+
+We'll initialize an empty rust project using the `cargo` command-line tool.
+
+```bash
+cargo init --bin hello-cgi
+```
+
+### Add the CGI crate
+
+```bash
+cargo add cgi
+```
+
+### Writing the CGI app
+
+We'll write a simple CGI app that prints `Hello, World!` to the standard output.
+This app also accepts a name as a body of the request and prints `Hello, {name}!`
+
+> **Note:** This cgi app will be wired to WCGI and will be served on the root path.
+
+```rust copy filename="src/main.rs"
+use cgi::{http::StatusCode, Request, Response};
+
+fn main() {
+    cgi::handle(handler);
+}
+
+fn handler(request: Request) -> Response {
+    let who = String::from_utf8_lossy(request.body());
+    let who = if who.trim().is_empty() {
+        "World"
+    } else {
+        who.trim()
+    };
+
+    cgi::text_response(StatusCode::OK, format!("Hello, {who}!"))
+}
+
+```
+
+### Wiring it up with WCGI
+
+We'll use the `wcgi` runner from Wasmer to run our CGI app.
+This wiring up is done automatically by the wasmer runtime and we just need to specify
+the runner.
+
+```toml copy filename="Cargo.toml"
+[package]
+name = "<your-namespace>/<your-package-name>"
+version = "0.1.0"
+description = "An application sample for WCGI"
+license = "MIT OR Apache-2.0"
+
+[[module]]
+name = "server"
+source = "target/wasm32-wasi/release/hello-cgi.wasm"
+abi = "wasi"
+
+[[command]]
+name = "server"
+module = "server"
+runner = "https://webc.org/runner/wcgi" # 👈🏼 This is the runner we'll be using
+
+[command.annotations.wasi]
+env = ["SCRIPT_NAME=rust_wcgi"] # This hack is required for now
+
+[command.annotations.wcgi]
+dialect = "rfc-3875" # This is the CGI dialect we'll be using
+```
+
+<Callout type="info" emoji="ℹ️">
+  <ol>
+    <li>
+      1. `your-namespace`: This is usually your username and also can be your
+      organization name.
+    </li>
+    <li>
+      2. `your-package-name`: This is the name of your package that'll be
+      published to the wasmer-registry.
+    </li>
+  </ol>
+</Callout>
+
+### Building the CGI app
+
+As you see above in the source property, in the `module` section. We use the release build in wasm32-wasi target.
+
+```bash copy
+cargo build --release --target wasm32-wasi
+```
+
+This will create a `hello-cgi.wasm` file in the `target/wasm32-wasi/release` directory.
+
+### Running the CGI app
+
+Now we can test our CGI app locally using the `wasmer` command-line.
+
+```bash copy
+wasmer run . --net
+```
+
+The above command will start a local server on port `8000`.
+
+To test the app, we can use `curl` to send a request to the server.
+
+```bash copy
+curl http://localhost:8000
+```
+
+The root path will return `Hello, World!` as we didn't specify any name in the body.
+
+```console
+Hello, World!
+```
+
+```bash copy
+curl -X POST -d "Wasmer" http://localhost:8000
+```
+
+The above command will send a `POST` request with the body `Wasmer` to the server.
+
+```console
+Hello, Wasmer!
+```
+
+### Deploying the CGI app
+
+For this we need to create a `app.yaml` in the root of the project.
+
+```yaml copy filename="app.yaml"
+---
+kind: wasmer.io/App.v0
+name: <your-app-name> # 👈🏼 This is the name of your app
+package: <your-namespace>/<your-package-name> # 👈🏼 This is the name of your package that you set above
+```
+
+This would be the final directory structure that you'll see:
+
+<FileTree>
+  <FileTree.Folder name="your-top-level-dir" defaultOpen>
+    <FileTree.Folder name="src" defaultOpen>
+      <FileTree.File name="main.rs" />
+    </FileTree.Folder>
+    <FileTree.File name="Cargo.toml" />
+    <FileTree.File name="app.yaml" />
+    <FileTree.File name="wasmer.toml" />
+  </FileTree.Folder>
+</FileTree>
+
+Now write the following command to deploy the app.
+
+```bash copy
+wasmer deploy
+```
+
+```console
+Loaded app from: /Volumes/Work/Projects/wasmer-edge/wcgi-rust-template/app.yaml
+
+Publish new version of package '<your-namespace>/<your-package-name>'? yes # 👈🏼 choose yes here
+Publishing package...
+[1/2] ⬆️   Uploading...
+[2/2] 📦  Publishing...
+Successfully published package `<your-namespace>/<your-package-name>@0.1.0`
+Waiting for package to become available.......
+Package 'wasmer/wcgi-rust-template@0.1.17' published successfully!
+
+Deploying app <your-app-name>...
+
+ ✅ App <your-namespace>/<your-app-name> was successfully deployed!
+
+> App URL: https://wasmer-wcgi-rust-template.wasmer.app # 👈🏼 This is the URL of our app
+> Versioned URL: https://rp9hwiqclq02.id.wasmer.app # 👈🏼 This is the versioned URL of our app
+> Admin dashboard: https://wasmer.io/apps/wasmer-wcgi-rust-template
+
+Waiting for new deployment to become available...
+(You can safely stop waiting now with CTRL-C)
+.
+New version is now reachable at https://wasmer-wcgi-rust-template.wasmer.app
+Deployment complete
+```
+
+### Testing the deployed app
+
+We can test the deployed app using `curl`.
+
+```bash copy
+curl https://wasmer-wcgi-rust-template.wasmer.app
+```
+
+```console
+Hello, World!
+```
+
+Works as expected!
+
+</Steps>
+
+## Conclusion
+
+In this tutorial, we learned how to deploy a CGI app on Wasmer Edge.
+
+## References
+
+- [Announcing WCGI](https://docs.wasmer.io/runtime/runners/wcgi)
+- [CGI crate](https://crates.io/crates/cgi)
+
+## Resources
+
+We've have also created a template repository for you to get started with CGI apps on Wasmer Edge.
+
+<Card
+  icon={
+    <svg viewBox="0 0 24 24" className=" transform scale-[120%] mr-2">
+      <path
+        fill="currentColor"
+        d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+      />
+    </svg>
+  }
+  title="wasmerio/wcgi-rust-template"
+  href="https://github.com/wasmerio/wcgi-rust-template"
+/>
+
+## Next steps
+
+- Try the [WCGI tutorial with PHP](https://github.com/wasmerio/wcgi-php-template)
