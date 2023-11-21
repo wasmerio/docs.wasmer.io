@@ -45,6 +45,13 @@ The `package` field is used to provide the primary workload to execute. It is **
 
 - Required: `true`
 
+### `debug`
+
+The `debug` field is used to enable debug mode for the application. This in turn will show detailed error messages if a request fails, instead of a generic the instance failed. It is **optional** and can be any boolean.
+
+- Required: `false`
+- Default: `false`
+
 ## Sample Configuration
 
 This sample configuration is for a python based flask application.
@@ -54,4 +61,5 @@ This sample configuration is for a python based flask application.
 kind: wasmer.io/App.v0
 name: wasmer-python-flask-server-myapp-example
 package: wasmer/python-flask-server-myapp-example@0.1.0
+debug: false
 ```
