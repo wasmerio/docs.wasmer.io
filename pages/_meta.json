@@ -8,6 +8,7 @@
   "install": "Install Wasmer",
   "runtime": "Runtime",
   "registry": "Registry",
+  "javascript-sdk": "JavaScript SDK",
   "edge": "Edge",
   "---": {
     "type": "separator"
