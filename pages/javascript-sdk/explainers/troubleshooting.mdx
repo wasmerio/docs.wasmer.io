@@ -1,0 +1,135 @@
+---
+title: Troubleshooting Common Problems
+---
+
+While the `@wasmer/sdk` is still in its experimental phase, there are a couple
+of limitations or gotchas to be aware of.
+
+## `SharedArrayBuffer` and Cross-Origin Isolation
+
+If you encounter the following warning in your console while using the
+`@wasmer/sdk` package, it indicates an issue with Cross-Origin Isolation:
+
+```
+WARN wasmer_js::tasks::scheduler: An error occurred while handling a message
+    error=Failed to execute 'postMessage' on 'Worker': SharedArrayBuffer transfer
+          requires self.crossOriginIsolated.
+```
+
+### Root Cause
+
+This issue arises due to security measures implemented in browsers following the
+Spectre and Meltdown vulnerabilities. These measures restrict the sharing of
+`SharedArrayBuffer` objects with Web Workers unless the execution context is
+deemed secure.
+
+The `@wasmer/sdk` uses a threadpool built on Web Workers and requires sharing
+the same `SharedArrayBuffer` across multiple workers to enable WASIX threads to
+access the same address space. This requirement is crucial even for running
+single-threaded WASIX programs because the SDK internals rely on
+`SharedArrayBuffer` for communication with Web Workers.
+
+### Solution
+
+To resolve this issue, your application must run in a secure context with
+Cross-Origin Isolation. This is achieved by setting specific HTTP response
+headers:
+
+1. **Set 'Cross-Origin-Opener-Policy' to 'same-origin'**: This header ensures
+  that your document does not share a browsing context group with cross-origin
+  documents.
+2. **Set 'Cross-Origin-Embedder-Policy' to 'require-corp'**: This header
+  requires all resources to be loaded with explicit CORS policies, enabling a
+  secure environment for `SharedArrayBuffer`.
+
+After setting these headers, reload your application and verify if the issue is
+resolved.
+
+## Instantiation Failed Due to Memory Import Mismatch
+
+If you encounter an error message similar to the one below when running
+WebAssembly modules with the `@wasmer/sdk`, it indicates an issue with memory
+imports:
+
+```
+ERROR wasmer_wasix::state::env: Instantiation failed
+    pid=1
+    error=RuntimeError: js: WebAssembly.Instance():
+        Import #54 module="env" function="memory":
+        memory import has 1 page which is smaller than the declared initial of 179
+```
+
+This error typically appears when attempting to run a package like `ffmpeg` in
+the following manner:
+
+```typescript
+import { init, Wasmer } from "@wasmer/sdk";
+
+await init();
+
+const pkg = await Wasmer.fromRegistry("wasmer/ffmpeg@1.0.5");
+const ffmpeg = pkg.commands["ffmpeg"].binary();
+const module = await WebAssembly.compile(ffmpeg);
+
+let instance = await run(module, {
+    program: "ffmpeg",
+    args: ["-i", "input.mp4", "-vf", `"transpose=2"`, "output.mp4"],
+});
+let result = await instance.wait();
+```
+
+### Root Cause
+
+The issue stems from how memory is allocated for the WebAssembly module. When
+using `WebAssembly.compile()` and `run()` directly, the browser doesn't provide
+detailed information about the memory requirements of the module, such as the
+number of pages needed.
+
+Wasmer has no way of knowing how much memory the WebAssembly module is importing
+(the `env.memory` import), so [it guesses][guesses] a minimum of 1 page and
+hopes for the best.
+
+Most of the time this works out fine, but some WebAssembly modules (like
+`ffmpeg`) are statically defined to require significantly more (in this case, at
+least 179 pages).
+
+### Solution
+
+To work around this, Wasmer has [a `wasm-types-polyfill`
+feature][wasm-types-polyfill], which parses the original `*.wasm` file to
+determine the correct amount of memory required. To utilize this workaround, you
+should pass the original `*.wasm` file's contents as a `Uint8Array` to the
+`run()` method.
+
+```typescript /ffmpeg,/
+import { init, Wasmer } from "@wasmer/sdk";
+
+await init();
+
+const pkg = await Wasmer.fromRegistry("wasmer/ffmpeg@1.0.5");
+const ffmpeg = pkg.commands["ffmpeg"].binary();
+
+let instance = await run(ffmpeg, {
+    program: "ffmpeg",
+    args: ["-i", "input.mp4", "-vf", `"transpose=2"`, "output.mp4"],
+});
+let result = await instance.wait();
+```
+
+A more straightforward and effective approach is to use the package's
+`entrypoint.run()` method, which automatically handles memory allocation
+correctly.
+
+Here is the recommended way to run a package's command:
+
+```typescript
+const pkg = await Wasmer.fromRegistry("ffmpeg/ffmpeg");
+const instance = await pkg.entrypoint.run({ args: [...] });
+const output = await instance.wait();
+```
+
+Using this approach ensures that the necessary memory is allocated for the
+WebAssembly module, thereby avoiding the instantiation error.
+
+[wasm-types-polyfill]: https://github.com/wasmerio/wasmer/blob/e6438738d884d6fb4297ca2af90ab04459ddbbfb/lib/api/src/js/module.rs#L91-L110
+[guesses]: https://github.com/wasmerio/wasmer/blob/e6438738d884d6fb4297ca2af90ab04459ddbbfb/lib/api/src/js/module.rs#L323-L328
