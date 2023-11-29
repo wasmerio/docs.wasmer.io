@@ -2,8 +2,12 @@
 title: Troubleshooting Common Problems
 ---
 
-While the `@wasmer/sdk` is still in its experimental phase, there are a couple
-of limitations or gotchas to be aware of.
+import { Callout } from "nextra-theme-docs";
+
+# Troubleshooting Common Problems
+
+This page contains several common problems that may be encountered while using
+the `@wasmer/sdk` package.
 
 ## `SharedArrayBuffer` and Cross-Origin Isolation
 
@@ -131,5 +135,94 @@ const output = await instance.wait();
 Using this approach ensures that the necessary memory is allocated for the
 WebAssembly module, thereby avoiding the instantiation error.
 
+## Undefined `__wbindgen_*` Reference
+
+When working with the `@wasmer/sdk` package, you might encounter the following
+JavaScript error:
+
+```
+Uncaught TypeError: Cannot read properties of undefined (reading '__wbindgen_add_to_stack_pointer')
+```
+
+This error typically occurs when trying to access `@wasmer/sdk` functionalities
+without properly initializing the SDK.
+
+### Root Cause
+
+The root cause of this issue is the premature usage of the `@wasmer/sdk`
+package's functions or methods before calling the `init()` function.
+
+The `init()` function is crucial as it loads the WebAssembly code that
+constitutes the core logic of the `@wasmer/sdk` and initializes internal states
+necessary for the package, including those set up by
+[`wasm-bindgen`][wasm-bindgen].
+
+### Solution
+
+To resolve this issue, ensure that `init()` is called and awaited at the
+beginning of your script or module where you intend to use the `@wasmer/sdk`.
+
+This setup should be done before any other interaction with the SDK's
+functionalities.
+
+```typescript
+import { init, Wasmer } from "@wasmer/sdk";
+
+async function main() {
+  // Ensure to await the initialization before using any SDK functionality
+  await init();
+
+  // After initialization, you can safely use the SDK's features
+  const pkg = await Wasmer.fromRegistry("some-package");
+  // ... rest of your code
+}
+
+main();
+```
+
+## Unable to Determine Hardware Concurrency
+
+When attempting to use the `@wasmer/sdk` package, you might encounter the
+following error:
+
+```
+Error: Unable to determine the hardware concurrency
+    at A.wbg.__wbg_new_ab87fd305ed9004b (/path/to/node_modules/@wasmer/sdk/dist/Library.cjs:11:44038)
+    ... [additional stack trace] ...
+  detailedMessage: 'Unable to determine the hardware concurrency',
+  causes: []
+```
+
+This error typically arises when executing `@wasmer/sdk` code within a Node.js
+environment.
+
+### Root Cause
+
+The `@wasmer/sdk` package is currently designed for browser environments and
+relies on specific browser features.
+
+The error is caused by the absence of the `navigator` object in Node.js, which
+`@wasmer/sdk` attempts to access to determine the hardware concurrency level
+(specifically, `navigator.hardwareConcurrency`). Since Node.js doesn't provide
+this browser-specific object, the SDK cannot function as expected.
+
+<Callout type="warning">
+  This is the first of several places where `@wasmer/sdk` is not yet compatible
+  with Node.js.
+
+  A future release of Node.js with
+  [nodejs/node#47769](https://github.com/nodejs/node/pull/47769) may resolve the
+  `navigator.hardwareConcurrency` issue only for `@wasmer/sdk` to fail at
+  another place where Node.js diverges from web APIs.
+</Callout>
+
+### Solution
+
+As of now, `@wasmer/sdk` does not support Node.js.
+
+To resolve this issue, you need to run your code in a supported browser
+environment rather than in Node.js.
+
 [wasm-types-polyfill]: https://github.com/wasmerio/wasmer/blob/e6438738d884d6fb4297ca2af90ab04459ddbbfb/lib/api/src/js/module.rs#L91-L110
 [guesses]: https://github.com/wasmerio/wasmer/blob/e6438738d884d6fb4297ca2af90ab04459ddbbfb/lib/api/src/js/module.rs#L323-L328
+[wasm-bindgen]: https://github.com/rustwasm/wasm-bindgen
