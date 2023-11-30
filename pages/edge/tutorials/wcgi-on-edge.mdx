@@ -91,9 +91,13 @@ fn handler(request: Request) -> Response {
 
 ### Wiring it up with WCGI
 
-We'll use the `wcgi` runner from Wasmer to run our CGI app.
-This wiring up is done automatically by the wasmer runtime and we just need to specify
-the runner.
+Let's create a `wasmer.toml` file in the root of the project. For integrating with WCGI,
+we'll use the `wcgi` runner from Wasmer to run our CGI app.This wiring up is done
+automatically by the wasmer runtime and we just need to specify the runner.
+
+```bash
+touch wasmer.toml
+```
 
 ```toml copy filename="Cargo.toml"
 [package]
@@ -158,11 +162,13 @@ To test the app, we can use `curl` to send a request to the server.
 curl http://localhost:8000
 ```
 
-The root path will return `Hello, World!` as we didn't specify any name in the body.
-
 ```console
 Hello, World!
 ```
+
+The root path will return `Hello, World!` as we didn't specify any name in the body.
+
+We can also send a `POST` request with a body to the server.
 
 ```bash copy
 curl -X POST -d "Wasmer" http://localhost:8000
@@ -229,6 +235,20 @@ Waiting for new deployment to become available...
 New version is now reachable at https://wasmer-wcgi-rust-template.wasmer.app
 Deployment complete
 ```
+
+<Callout type="info" emoji="ℹ️">
+  And now you can view your Static files at the URL mentioned above. You can
+  also view the admin dashboard of your CDN by visiting the URL mentioned above.
+</Callout>
+
+<Callout type="info" emoji="🌐">
+  You'll need to do `wasmer deploy` again if you add any new files to the
+  `public` directory.
+</Callout>
+
+<Callout type="warning" emoji="🚧">
+  The url of your project will be different from the one mentioned above.
+</Callout>
 
 ### Testing the deployed app
 
