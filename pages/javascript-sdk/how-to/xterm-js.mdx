@@ -2,26 +2,209 @@
 title: Connecting a Running Instance to XTerm.js
 ---
 
+# Connecting a Running Instance to XTerm.js
+
+
+Welcome to this hands-on guide where we will integrate `@wasmer/sdk` with
+xterm.js to create a functional Bash terminal in the browser. This powerful
+combination leverages the capabilities of WebAssembly and WASIX, enabling you to
+run Bash and core *nix utilities interactively in a web environment.
+
 The [Wasmer.sh][wasmer-sh] website is a real-world example of how the JavaScript
 SDK can be used to provide a real terminal in the browser.
-
-After reading this how-to guide, you should be able to...
-
-- Add an [Xterm.js][xterm-js] console to a web page
-- Run an instance of [`sharrattj/bash`][bash]
-- Transfer input from the XTerm.js console to the instance's `stdin` stream
-- Read output from the instance's `stdout` and `stderr` streams
-- Identify common errors
-
-Check out the
 
 import { Cards, Card } from "nextra-theme-docs";
 
 <Cards>
     <Card title="GitHub" href="https://github.com/wasmerio/wasmer-js/tree/main/examples/wasmer.sh" target="_blank" />
-    <Card title="Online" href="https://github.com/wasmerio/wasmer-js" target="_blank" />
+    <Card title="Try Me" href="https://github.com/wasmerio/wasmer-js" target="_blank" />
 </Cards>
 
+## Setting Up the Project
+
+First, let's set up our project environment. Create a new directory for your
+project and initialize it using `npm`.
+
+Once initialized, install `@wasmer/sdk`, `xterm`, and `xterm-addon-fit` by
+running:
+
+```sh copy
+npm install @wasmer/sdk xterm xterm-addon-fit
+```
+
+These packages are crucial; `@wasmer/sdk` is our WebAssembly runtime, while
+`xterm` and its add-on are used to create the terminal interface in the browser.
+
+## Installing esbuild
+
+Next, we'll use `esbuild` for bundling our application. It's a fast, modern
+bundler and minifier. Install `esbuild` and its necessary plugins:
+
+```sh copy
+npm install esbuild esbuild-plugin-postcss postcss --save-dev
+```
+
+## Creating the Terminal Interface
+
+In your project root, create an `index.html` file. This file will host our web
+terminal. It's a simple HTML document with a `div` element where the terminal
+interface will appear:
+
+```html filename="index.html" copy
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Wasmer Shell</title>
+    </head>
+    <body>
+        <div id="terminal"></div>
+        <script type="module" src="index.ts"></script>
+    </body>
+</html>
+```
+
+Then, import xterm's CSS in your TypeScript file for styling the terminal. This
+import is necessary for the terminal's visual appearance and functionality.
+
+```typescript filename="index.ts" copy
+import "xterm/css/xterm.css";
+```
+
+## Implementing the TypeScript Logic
+
+Now, we move to the core logic of our application in TypeScript. Start with
+importing necessary modules and initializing `@wasmer/sdk`:
+
+```typescript filename="index.ts" copy
+import { Wasmer, init, initializeLogger } from "@wasmer/sdk";
+```
+
+Call `init()` to load and set up the WebAssembly environment required by
+`@wasmer/sdk`. It's crucial to do this before using any other functionality of
+the SDK:
+
+```typescript filename="index.ts" copy
+await init();
+initializeLogger("info");
+```
+
+Set up your terminal configuration with `xterm.js`. Here we create a new
+terminal instance and apply the fit add-on for a responsive layout:
+
+```typescript filename="index.ts" copy
+import { Terminal } from "xterm";
+import { FitAddon } from "xterm-addon-fit";
+
+const term = new Terminal({ cursorBlink: true, convertEol: true });
+const fit = new FitAddon();
+term.loadAddon(fit);
+term.open(document.getElementById("terminal")!);
+fit.fit();
+```
+
+## Integrating Bash with the Terminal
+
+To integrate Bash, load the `sharrattj/bash` package using
+`Wasmer.fromRegistry`. This package contains a WASIX-compiled version of Bash
+and its utilities. Upon loading, connect stdin, stdout, and stderr of the Bash
+instance to the xterm instance:
+
+```typescript filename="index.ts" copy
+const pkg = await Wasmer.fromRegistry("sharrattj/bash");
+term.writeln("Starting...");
+
+const instance = await pkg.entrypoint!.run();
+connectStreams(instance, term);
+```
+
+The `connectStreams` function routes data between the Bash instance and the
+terminal. It ensures that user inputs and program outputs are correctly handled
+in the terminal:
+
+```typescript filename="index.ts" copy
+function connectStreams(instance, term) {
+    const stdin = instance.stdin.getWriter();
+    term.onData(data => stdin.write(encoder.encode(data)));
+    copyStream(instance.stdout, term);
+    copyStream(instance.stderr, term);
+}
+```
+
+## Configuring esbuild
+
+Create an `esbuild.config.js` file for your project's build configuration. This
+file specifies how esbuild should bundle and serve your TypeScript code:
+
+```javascript filename="esbuild.config.js" copy
+const esbuild = require('esbuild');
+const postcssPlugin = require('esbuild-plugin-postcss');
+
+esbuild.build({
+    entryPoints: ['index.ts'],
+    bundle: true,
+    outfile: 'dist/bundle.js',
+    plugins: [postcssPlugin()],
+    watch: process.argv.includes('--watch'),
+}).catch(() => process.exit(1));
+```
+
+## Running Your Application
+
+To build and run your application, define the following scripts in your `package.json`:
+
+```json copy
+"scripts": {
+    "dev": "esbuild --watch",
+    "build": "esbuild"
+}
+```
+
+These scripts provide quick commands to build your application (`npm run build`)
+and start a development server with live reloading (`npm run dev`).
+
+## Ensuring Proper Loading
+
+Before we test the application, ensure that the `@wasmer/sdk` initialization and
+the terminal mounting happen only after the page has loaded. We achieve this by
+wrapping our main function logic within an event listener for
+`DOMContentLoaded`:
+
+```typescript filename="index.ts"
+addEventListener("DOMContentLoaded", async () => {
+    await main();
+});
+
+async function main() {
+    // Initialization and terminal setup code...
+}
+```
+
+This approach ensures that our JavaScript logic executes only after the HTML
+document is fully parsed and ready, preventing any premature script execution
+errors.
+
+## Testing the Application
+
+Now, it's time to see your Bash terminal in action:
+
+1. **Build the Application**: Run `npm run build` to bundle your TypeScript code.
+2. **Open the Application**: Open the `index.html` file in your browser to see the terminal interface.
+
+You should see a functional Bash terminal running in your browser, capable of
+executing basic *nix commands.
+
+## Conclusion
+
+Congratulations! You've successfully integrated a WebAssembly-powered Bash
+terminal in the browser using `@wasmer/sdk` and xterm.js. This setup
+demonstrates the incredible capabilities of WebAssembly in bringing complex
+server-side applications like Bash to the web client.
+
+Feel free to explore and extend this application further. Perhaps you can
+integrate more utilities or enhance the UI/UX of the terminal. The possibilities
+are endless, and the power of WebAssembly makes it all possible in the browser.
 
 [wasmer-sh]: https://wasmer.sh/
 [xterm-js]: https://xtermjs.org/
