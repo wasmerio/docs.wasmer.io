@@ -1,4 +1,5 @@
 {
+    "xterm-js": "Creating an Interactive Terminal with XTerm.js",
     "run": "Creating and Running a WASIX Module",
     "package": "Creating and Running a Wasmer Package",
     "winterjs-codepen": "Making a Codepen for Wasmer's WinterJS"
