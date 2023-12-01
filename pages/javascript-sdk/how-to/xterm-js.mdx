@@ -4,7 +4,6 @@ title: Connecting a Running Instance to XTerm.js
 
 # Connecting a Running Instance to XTerm.js
 
-
 Welcome to this hands-on guide where we will integrate `@wasmer/sdk` with
 xterm.js to create a functional Bash terminal in the browser. This powerful
 combination leverages the capabilities of WebAssembly and WASIX, enabling you to
@@ -13,11 +12,11 @@ run Bash and core *nix utilities interactively in a web environment.
 The [Wasmer.sh][wasmer-sh] website is a real-world example of how the JavaScript
 SDK can be used to provide a real terminal in the browser.
 
-import { Cards, Card } from "nextra-theme-docs";
+import { Cards, Card, Callout } from "nextra-theme-docs";
 
 <Cards>
     <Card title="GitHub" href="https://github.com/wasmerio/wasmer-js/tree/main/examples/wasmer.sh" target="_blank" />
-    <Card title="Try Me" href="https://github.com/wasmerio/wasmer-js" target="_blank" />
+    <Card title="Try Me!" href="https://github.com/wasmerio/wasmer-js" target="_blank" />
 </Cards>
 
 ## Setting Up the Project
@@ -35,14 +34,27 @@ npm install @wasmer/sdk xterm xterm-addon-fit
 These packages are crucial; `@wasmer/sdk` is our WebAssembly runtime, while
 `xterm` and its add-on are used to create the terminal interface in the browser.
 
-## Installing esbuild
+## Installing Vite
 
-Next, we'll use `esbuild` for bundling our application. It's a fast, modern
-bundler and minifier. Install `esbuild` and its necessary plugins:
+Next, we'll use `vite` for bundling our application. It's a fast, modern
+bundler and minifier.
 
 ```sh copy
-npm install esbuild esbuild-plugin-postcss postcss --save-dev
+npm install vite --save-dev
 ```
+
+Let's also set up a couple of scripts to assist development.
+
+```json filename="package.json" copy
+"scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+}
+```
+
+These scripts provide quick commands to build your application (`npm run build`)
+and start a development server with live reloading (`npm run dev`).
 
 ## Creating the Terminal Interface
 
@@ -53,15 +65,18 @@ interface will appear:
 ```html filename="index.html" copy
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Wasmer Shell</title>
-    </head>
-    <body>
-        <div id="terminal"></div>
-        <script type="module" src="index.ts"></script>
-    </body>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wasmer Shell</title>
+    <script type="module" defer src="index.ts"></script>
+</head>
+
+<body>
+    <div id="terminal"></div>
+</body>
+
 </html>
 ```
 
@@ -75,125 +90,163 @@ import "xterm/css/xterm.css";
 ## Implementing the TypeScript Logic
 
 Now, we move to the core logic of our application in TypeScript. Start with
-importing necessary modules and initializing `@wasmer/sdk`:
+importing necessary modules:
 
 ```typescript filename="index.ts" copy
-import { Wasmer, init, initializeLogger } from "@wasmer/sdk";
-```
-
-Call `init()` to load and set up the WebAssembly environment required by
-`@wasmer/sdk`. It's crucial to do this before using any other functionality of
-the SDK:
-
-```typescript filename="index.ts" copy
-await init();
-initializeLogger("info");
-```
-
-Set up your terminal configuration with `xterm.js`. Here we create a new
-terminal instance and apply the fit add-on for a responsive layout:
-
-```typescript filename="index.ts" copy
+import { Instance, Wasmer, init, initializeLogger } from "@wasmer/sdk";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
+```
 
-const term = new Terminal({ cursorBlink: true, convertEol: true });
-const fit = new FitAddon();
-term.loadAddon(fit);
-term.open(document.getElementById("terminal")!);
-fit.fit();
+Next, let's create a `main()` function and initialize `@wasmer/sdk`.
+
+```typescript filename="index.ts" copy
+async function main() {
+    await init();
+
+    /* ... */
+}
+```
+
+<Callout>
+Call `init()` to load and set up the WebAssembly environment required by
+`@wasmer/sdk`. It's crucial to do this before using any other functionality of
+the SDK.
+</Callout>
+
+Inside `main()`, set up your terminal configuration with `xterm.js`. Here we
+create a new terminal instance and apply the fit add-on for a responsive layout:
+
+```typescript filename="index.ts" copy
+async function main() {
+    /* ... */
+
+    const term = new Terminal({ cursorBlink: true, convertEol: true });
+    const fit = new FitAddon();
+    term.loadAddon(fit);
+    term.open(document.getElementById("terminal")!);
+    fit.fit();
+
+    /* ... */
+}
 ```
 
 ## Integrating Bash with the Terminal
 
 To integrate Bash, load the `sharrattj/bash` package using
-`Wasmer.fromRegistry`. This package contains a WASIX-compiled version of Bash
+`Wasmer.fromRegistry()`. This package contains a WASIX-compiled version of Bash
 and its utilities. Upon loading, connect stdin, stdout, and stderr of the Bash
 instance to the xterm instance:
 
 ```typescript filename="index.ts" copy
-const pkg = await Wasmer.fromRegistry("sharrattj/bash");
-term.writeln("Starting...");
+async function main() {
+    /* ... */
 
-const instance = await pkg.entrypoint!.run();
-connectStreams(instance, term);
+    const pkg = await Wasmer.fromRegistry("sharrattj/bash");
+    term.writeln("Starting...");
+
+    const instance = await pkg.entrypoint!.run();
+    connectStreams(instance, term);
+}
 ```
 
-The `connectStreams` function routes data between the Bash instance and the
+The `connectStreams()` function routes data between the Bash instance and the
 terminal. It ensures that user inputs and program outputs are correctly handled
 in the terminal:
 
 ```typescript filename="index.ts" copy
-function connectStreams(instance, term) {
-    const stdin = instance.stdin.getWriter();
-    term.onData(data => stdin.write(encoder.encode(data)));
-    copyStream(instance.stdout, term);
-    copyStream(instance.stderr, term);
+const encoder = new TextEncoder();
+
+function connectStreams(instance: Instance, term: Terminal) {
+    const stdin = instance.stdin?.getWriter();
+    term.onData(data => stdin?.write(encoder.encode(data)));
+    instance.stdout.pipeTo(new WritableStream({ write: chunk => term.write(chunk) }));
+    instance.stderr.pipeTo(new WritableStream({ write: chunk => term.write(chunk) }));
 }
 ```
 
-## Configuring esbuild
+## Configuring the Dev Server
 
-Create an `esbuild.config.js` file for your project's build configuration. This
-file specifies how esbuild should bundle and serve your TypeScript code:
+Running `npm run dev` right now will show a terminal with a blinking cursor
+that doesn't seem to do anything. If you open up the dev tools, you'll see a
+message along the lines of this:
 
-```javascript filename="esbuild.config.js" copy
-const esbuild = require('esbuild');
-const postcssPlugin = require('esbuild-plugin-postcss');
-
-esbuild.build({
-    entryPoints: ['index.ts'],
-    bundle: true,
-    outfile: 'dist/bundle.js',
-    plugins: [postcssPlugin()],
-    watch: process.argv.includes('--watch'),
-}).catch(() => process.exit(1));
+```
+Library.mjs:11 Uncaught (in promise) Error: Unable to find "sharrattj/bash" in the registry
+    at A2.wbg.__wbg_new_ab87fd305ed9004b (Library.mjs:11:46367)
+    at 013772d2:0x2c846c
+    at 013772d2:0x3a271a
+    at 013772d2:0x143722
+    at 013772d2:0x3266e4
+    at 013772d2:0x3f1911
+    at 013772d2:0x3eac6c
+    at cA (Library.mjs:11:25455)
+    at C2 (Library.mjs:11:25290)
 ```
 
-## Running Your Application
+This is a pretty unhelpful error message, but we can make troubleshooting a lot
+easier by enabling logging just after the `await init()`.
 
-To build and run your application, define the following scripts in your `package.json`:
-
-```json copy
-"scripts": {
-    "dev": "esbuild --watch",
-    "build": "esbuild"
-}
-```
-
-These scripts provide quick commands to build your application (`npm run build`)
-and start a development server with live reloading (`npm run dev`).
-
-## Ensuring Proper Loading
-
-Before we test the application, ensure that the `@wasmer/sdk` initialization and
-the terminal mounting happen only after the page has loaded. We achieve this by
-wrapping our main function logic within an event listener for
-`DOMContentLoaded`:
-
-```typescript filename="index.ts"
-addEventListener("DOMContentLoaded", async () => {
-    await main();
-});
-
+```typescript filename="index.ts" copy
 async function main() {
-    // Initialization and terminal setup code...
+    await init();
+    initializeLogger("debug");
+
+    /* ... */
 }
 ```
 
-This approach ensures that our JavaScript logic executes only after the HTML
-document is fully parsed and ready, preventing any premature script execution
-errors.
+Hitting save and reloading the page now gives us some more useful information.
+
+```
+DEBUG from_registry{specifier="sharrattj/bash"}: wasmer_js::runtime: Initializing the global runtime
+DEBUG from_registry{specifier="sharrattj/bash"}: wasmer_js::tasks::scheduler: Spinning up the scheduler thread_id=0
+DEBUG from_registry{specifier="sharrattj/bash"}:from_registry:query{package=sharrattj/bash}:query_graphql: wasmer_wasix::runtime::resolver::wapm_source: Querying the GraphQL API request.url=https://registry.wasmer.io/graphql request.method=POST
+DEBUG from_registry{specifier="sharrattj/bash"}:from_registry:query{package=sharrattj/bash}:query_graphql: wasmer_js::tasks::scheduler: Sending message current_thread=0 scheduler_thread=0 msg=SpawnAsync(_)
+
+WARN from_registry{specifier="sharrattj/bash"}: wasmer_js::tasks::scheduler:
+        An error occurred while handling a message
+        error=Failed to execute 'postMessage' on 'Worker':
+            SharedArrayBuffer transfer requires self.crossOriginIsolated.
+
+DEBUG from_registry{specifier="sharrattj/bash"}:from_registry:query{package=sharrattj/bash}:query_graphql: wasmer_wasix::runtime::resolver::wapm_source: close
+DEBUG from_registry{specifier="sharrattj/bash"}:from_registry:query{package=sharrattj/bash}: wasmer_wasix::runtime::resolver::wapm_source: close
+DEBUG from_registry{specifier="sharrattj/bash"}:from_registry: wasmer_wasix::bin_factory::binary_package: close
+```
+
+I've formatted the log output for readability, but it looks like we've run into
+[`SharedArrayBuffer` and Cross-Origin Isolation][coi] issues!
+
+The fix is to make sure Vite's dev server sends the correct COOP and COEP
+headers through `vite.config.js`.
+
+```js filename="vite.config.js" copy
+import { defineConfig } from "vite";
+
+export default defineConfig({
+    server: {
+        headers: {
+            "Cross-Origin-Opener-Policy": "same-origin",
+            "Cross-Origin-Embedder-Policy": "require-corp",
+        },
+    },
+});
+```
 
 ## Testing the Application
 
 Now, it's time to see your Bash terminal in action:
 
 1. **Build the Application**: Run `npm run build` to bundle your TypeScript code.
-2. **Open the Application**: Open the `index.html` file in your browser to see the terminal interface.
+2. **Open the Application**: Open http://localhost:5173/ in your browser to see the terminal interface.
 
 You should see a functional Bash terminal running in your browser, capable of
 executing basic *nix commands.
+
+<Callout type="info">
+You might want to remove that `initializeLogger()` call at this point to avoid
+filling your console with spam.
+</Callout>
 
 ## Conclusion
 
@@ -209,3 +262,4 @@ are endless, and the power of WebAssembly makes it all possible in the browser.
 [wasmer-sh]: https://wasmer.sh/
 [xterm-js]: https://xtermjs.org/
 [bash]: https://wasmer.io/sharrattj/bash
+[coi]: http://localhost:3000/javascript-sdk/explainers/troubleshooting#sharedarraybuffer-and-cross-origin-isolation
