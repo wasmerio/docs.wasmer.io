@@ -49,6 +49,11 @@ headers:
 After setting these headers, reload your application and verify if the issue is
 resolved.
 
+If you are deploying your app to a server that doesn't allow setting the COOP
+and COEP headers directly (e.g. GitHub Pages) you may be able to use
+`coi-serviceworker` as a workaround. Check out [*Patching COOP/COEP headers for
+GitHub Pages Deployment*](/javascript-sdk/how-to/coop-coep-headers) for more.
+
 ## Instantiation Failed Due to Memory Import Mismatch
 
 If you encounter an error message similar to the one below when running
