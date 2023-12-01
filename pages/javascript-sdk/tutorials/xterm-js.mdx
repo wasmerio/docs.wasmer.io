@@ -2,27 +2,35 @@
 title: Creating an Interactive Terminal with XTerm.js
 ---
 
+import { Cards, Card, Callout, Steps } from "nextra-theme-docs";
+import GitHubLogo from "@components/GitHubLogo";
+
 # Creating an Interactive Terminal with XTerm.js
 
 Welcome to this hands-on guide where we will integrate `@wasmer/sdk` with
 xterm.js to create a functional Bash terminal in the browser. This powerful
 combination leverages the capabilities of WebAssembly and WASIX, enabling you to
-run Bash and core *nix utilities interactively in a web environment.
+run Bash and core Unix utilities interactively in a web environment.
 
 The [Wasmer.sh][wasmer-sh] website is a real-world example of how the JavaScript
 SDK can be used to provide a real terminal in the browser.
 
-import { Cards, Card, Callout } from "nextra-theme-docs";
-
 <Cards>
-    <Card title="GitHub" href="https://github.com/wasmerio/wasmer-js/tree/main/examples/wasmer.sh" target="_blank" />
-    <Card title="Try Me!" href="https://github.com/wasmerio/wasmer-js" target="_blank" />
+    <Card title="Try Me!" href="https://wasmer-examples-wasmer-sh.wasmer.app/" target="_blank" />
 </Cards>
 
-## Setting Up the Project
+<Steps>
+
+### Create the Project
 
 First, let's set up our project environment. Create a new directory for your
 project and initialize it using `npm`.
+
+```sh copy
+npm init -y
+```
+
+### Add Dependencies
 
 Once initialized, install `@wasmer/sdk`, `xterm`, and `xterm-addon-fit` by
 running:
@@ -34,7 +42,7 @@ npm install @wasmer/sdk xterm xterm-addon-fit
 These packages are crucial; `@wasmer/sdk` is our WebAssembly runtime, while
 `xterm` and its add-on are used to create the terminal interface in the browser.
 
-## Installing Vite
+### Install Vite
 
 Next, we'll use `vite` for bundling our application. It's a fast, modern
 bundler and minifier.
@@ -42,6 +50,8 @@ bundler and minifier.
 ```sh copy
 npm install vite --save-dev
 ```
+
+### Package Scripts
 
 Let's also set up a couple of scripts to assist development.
 
@@ -56,7 +66,7 @@ Let's also set up a couple of scripts to assist development.
 These scripts provide quick commands to build your application (`npm run build`)
 and start a development server with live reloading (`npm run dev`).
 
-## Creating the Terminal Interface
+### Create the UI
 
 In your project root, create an `index.html` file. This file will host our web
 terminal. It's a simple HTML document with a `div` element where the terminal
@@ -80,6 +90,8 @@ interface will appear:
 </html>
 ```
 
+### Add Styling
+
 Then, import xterm's CSS in your TypeScript file for styling the terminal. This
 import is necessary for the terminal's visual appearance and functionality.
 
@@ -87,7 +99,7 @@ import is necessary for the terminal's visual appearance and functionality.
 import "xterm/css/xterm.css";
 ```
 
-## Implementing the TypeScript Logic
+### Implement the TypeScript Logic
 
 Now, we move to the core logic of our application in TypeScript. Start with
 importing necessary modules:
@@ -97,6 +109,8 @@ import { Instance, Wasmer, init, initializeLogger } from "@wasmer/sdk";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 ```
+
+### Initialize the SDK
 
 Next, let's create a `main()` function and initialize `@wasmer/sdk`.
 
@@ -113,6 +127,8 @@ Call `init()` to load and set up the WebAssembly environment required by
 `@wasmer/sdk`. It's crucial to do this before using any other functionality of
 the SDK.
 </Callout>
+
+### Configure the Terminal
 
 Inside `main()`, set up your terminal configuration with `xterm.js`. Here we
 create a new terminal instance and apply the fit add-on for a responsive layout:
@@ -131,7 +147,7 @@ async function main() {
 }
 ```
 
-## Integrating Bash with the Terminal
+### Integrate Bash with the Terminal
 
 To integrate Bash, load the `sharrattj/bash` package using
 `Wasmer.fromRegistry()`. This package contains a WASIX-compiled version of Bash
@@ -165,7 +181,7 @@ function connectStreams(instance: Instance, term: Terminal) {
 }
 ```
 
-## Configuring the Dev Server
+### Take it for a Test Drive
 
 Running `npm run dev` right now will show a terminal with a blinking cursor
 that doesn't seem to do anything. If you open up the dev tools, you'll see a
@@ -217,6 +233,8 @@ DEBUG from_registry{specifier="sharrattj/bash"}:from_registry: wasmer_wasix::bin
 I've formatted the log output for readability, but it looks like we've run into
 [`SharedArrayBuffer` and Cross-Origin Isolation][coi] issues!
 
+### Configure your Dev Server
+
 The fix is to make sure Vite's dev server sends the correct COOP and COEP
 headers through `vite.config.js`.
 
@@ -233,11 +251,11 @@ export default defineConfig({
 });
 ```
 
-## Testing the Application
+### Test the Application
 
-Now, it's time to see your Bash terminal in action:
+Now, it's time to actually see your Bash terminal in action:
 
-1. **Build the Application**: Run `npm run build` to bundle your TypeScript code.
+1. **Build the Application**: Run `npm run dev` to bundle your TypeScript code.
 2. **Open the Application**: Open http://localhost:5173/ in your browser to see the terminal interface.
 
 You should see a functional Bash terminal running in your browser, capable of
@@ -247,6 +265,8 @@ executing basic *nix commands.
 You might want to remove that `initializeLogger()` call at this point to avoid
 filling your console with spam.
 </Callout>
+
+</Steps>
 
 ## Conclusion
 
@@ -258,6 +278,14 @@ server-side applications like Bash to the web client.
 Feel free to explore and extend this application further. Perhaps you can
 integrate more utilities or enhance the UI/UX of the terminal. The possibilities
 are endless, and the power of WebAssembly makes it all possible in the browser.
+
+### Resources
+
+<Card
+    icon={<GitHubLogo />}
+    title="wasmerio/wasmer-js"
+    href="https://github.com/wasmerio/wasmer-js/tree/main/examples/wasmer.sh"
+    target="_blank" />
 
 [wasmer-sh]: https://wasmer.sh/
 [xterm-js]: https://xtermjs.org/
