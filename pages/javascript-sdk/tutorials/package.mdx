@@ -1,13 +1,13 @@
-import { Card, Callout, Steps } from "nextra-theme-docs";
+import { Card, Callout, Steps, FileTree } from "nextra-theme-docs";
 import Install from "@components/install.mdx";
 import GitHubLogo from "@components/GitHubLogo";
 
 # Migrating the Editor to a Wasmer Package
 
-In [the previous tutorial][run], we created a basic Markdown editor by wiring
-a `<textarea>` up to a Markdown renderer compiled to WASI. Now, we're going to
-take things the next level by converting the renderer to a package and running
-it from [the Wasmer registry][registry].
+In [the previous tutorial][run], we created a basic Markdown editor by wiring a
+`<textarea>` up to a Markdown renderer compiled to WASI. Now, we're going to
+take things to the next level by converting the renderer to a package and
+running it from the [Wasmer registry][registry].
 
 <Steps>
 
@@ -28,10 +28,17 @@ NOTE: Initializing wasmer.toml file with metadata from Cargo.toml
 
 This should have created a `wasmer.toml` file.
 
-```sh
-$ ls
-Cargo.lock  Cargo.toml  src  target  wasmer.toml
-```
+<FileTree>
+  <FileTree.Folder name="markdown-renderer" defaultOpen>
+    <FileTree.File name="Cargo.toml" />
+    <FileTree.File name="Cargo.lock" />
+    <FileTree.File name="wasmer.toml" />
+    <FileTree.Folder name="src/" defaultOpen>
+      <FileTree.File name="main.rs" />
+    </FileTree.Folder>
+    <FileTree.Folder name="target/" />
+  </FileTree.Folder>
+</FileTree>
 
 ### Update Package Metadata
 
@@ -49,7 +56,7 @@ entrypoint = 'markdown-renderer'
 ...
 ```
 
-<Callout type="note">
+<Callout type="info">
 That `entrypoint` field is important! It tells the Wasmer SDK that the
 `markdown-renderer` command should be executed by default.
 </Callout>
