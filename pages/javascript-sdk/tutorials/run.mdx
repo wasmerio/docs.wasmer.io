@@ -1,7 +1,6 @@
-import { Cards, Card, Callout, Steps } from "nextra-theme-docs";
-import GitHubLogo from "@components/GitHubLogo";
+import { Callout, Steps } from "nextra-theme-docs";
 
-# Creating and Running a WASIX Module
+# Building a Web-Based Markdown Editor with WASIX and WebAssembly
 
 Welcome to this hands-on tutorial where we will build a web-based Markdown
 editor using WebAssembly and Wasmer's JavaScript SDK (`@wasmer/sdk`).
@@ -30,6 +29,9 @@ Once initialized, install `@wasmer/sdk` by running:
 npm install @wasmer/sdk
 ```
 
+The `@wasmer/sdk` package allows us to run WebAssembly modules in the browser,
+crucial running our Markdown renderer.
+
 ### Install Vite
 
 Next, we'll use `vite` for bundling our application. It's a fast, modern
@@ -55,7 +57,9 @@ and start a development server with live reloading (`npm run dev`).
 
 ### Create the UI
 
-While this isn't a UI tutorial, we still want our app to be presentable.
+While this isn't a UI tutorial, we still want our app to be presentable. We use
+CSS Grid for our layout because it provides a flexible and easy way to create
+complex layouts with minimal code.
 
 Paste the following into `index.html`:
 
@@ -133,7 +137,7 @@ ecosystem called [`pulldown-cmark`][pulldown-cmark].
 
 First, create a new Rust project:
 
-```console
+```sh
 $ cargo new --bin markdown-renderer
 $ cd markdown-renderer
 $ cargo add pulldown-cmark
@@ -161,7 +165,9 @@ STDOUT with `pulldown_cmark::html::write_html()`.
 
 ### Compile the Markdown Renderer to WebAssembly
 
-The next step is to compile this Rust program to WebAssembly.
+The next step is to compile this Rust program to WebAssembly. This will give us
+an executable that can be run anywhere Wasmer runs, although for our use case we
+are mostly concerned about running it in the browser.
 
 ```sh copy
 cargo build --release --target=wasm32-wasi
