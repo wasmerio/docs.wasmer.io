@@ -1,4 +1,8 @@
-import { Callout, Steps } from "nextra-theme-docs";
+import { Card, Callout, Steps } from "nextra-theme-docs";
+import Install from "@components/install.mdx";
+import GitHubLogo from "@components/GitHubLogo";
+import ImageLoader from "@components/ImageLoader";
+import previewUrl from "@assets/javascript-sdk/markdown-editor-preview.png";
 
 # Building a Web-Based Markdown Editor with WASIX and WebAssembly
 
@@ -269,10 +273,78 @@ async function main() {
 main();
 ```
 
-### Trying it Out
+### Take it for a Test Drive
 
 Our markdown editor should now be complete. Let's start up the dev server and
 have a look!
+
+If you run `npm run dev` right now and start writing text in the input box, you
+won't see anything appear on the right side of the window.  If you open up the
+dev tools, you'll probably see a message along the lines of this:
+
+```
+Library.mjs:11 Uncaught (in promise) Error: Write failed
+    at A.wbg.__wbg_new_ab87fd305ed9004b (Library.mjs:11:46497)
+    at 012cca42:0x2b7669
+    at 012cca42:0x3a9c74
+    at 012cca42:0x24c0bb
+    at 012cca42:0x312190
+    at 012cca42:0x3331c4
+    at 012cca42:0x3b0dae
+    at cA (Library.mjs:11:25455)
+    at C (Library.mjs:11:25290)
+```
+
+This is a pretty unhelpful error message, but we can make troubleshooting a lot
+easier by enabling logging just after the `await init()`.
+
+```typescript filename="index.ts" copy
+async function main() {
+    await init();
+    initializeLogger("debug");
+
+    /* ... */
+}
+```
+
+Hitting save and reloading the page now gives us some more useful information.
+
+```
+DEBUG run: wasmer_js::runtime: Initializing the global runtime
+DEBUG run: wasmer_js::tasks::scheduler: Spinning up the scheduler thread_id=0
+DEBUG run: wasmer_js::tasks::scheduler: Sending message current_thread=0 scheduler_thread=0 msg=SpawnWithModule { module: Module { name: None }, task: _ }
+WARN run: wasmer_js::tasks::scheduler:
+    An error occurred while handling a message
+    error=Failed to execute 'postMessage' on 'Worker':
+        SharedArrayBuffer transfer requires self.crossOriginIsolated.
+DEBUG wasmer_js::streams: EOF
+```
+
+I've formatted the log output for readability, but it looks like we've run into
+[`SharedArrayBuffer` and Cross-Origin Isolation][coi] issues!
+
+### Configure your Dev Server
+
+The fix is to make sure Vite's dev server sends the correct COOP and COEP
+headers through `vite.config.js`.
+
+```js filename="vite.config.js" copy
+import { defineConfig } from "vite";
+
+export default defineConfig({
+    server: {
+        headers: {
+            "Cross-Origin-Opener-Policy": "same-origin",
+            "Cross-Origin-Embedder-Policy": "require-corp",
+        },
+    },
+});
+```
+
+
+### Trying it Out
+
+Now that's fixed, let's restart the dev server and have a look!
 
 ```sh
 $ npm run dev
@@ -283,9 +355,17 @@ $ npm run dev
   ➜  press h + enter to show help
 ```
 
-![The Markdown Editor](./markdown-editor-preview.png)
+<ImageLoader alt="The Markdown Editor" img={previewUrl} />
 
 </Steps>
+
+### Resources
+
+<Card
+    icon={<GitHubLogo />}
+    title="Source Code"
+    href="https://github.com/wasmerio/wasmer-js/tree/main/examples/markdown-editor"
+    target="_blank" />
 
 [pulldown-cmark]: https://lib.rs/pulldown-cmark
 [rust]: https://rustup.rs/
