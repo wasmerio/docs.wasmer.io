@@ -1,6 +1,8 @@
 import { Card, Callout, Steps, FileTree } from "nextra-theme-docs";
 import Install from "@components/install.mdx";
 import GitHubLogo from "@components/GitHubLogo";
+import ImageLoader from "@components/ImageLoader";
+import previewUrl from "@assets/javascript-sdk/markdown-editor-preview.png";
 
 # Migrating the Editor to a Wasmer Package
 
@@ -186,7 +188,8 @@ $ npm run dev
   ➜  press h + enter to show help
 ```
 
-![The Markdown Editor](./markdown-editor-preview.png)
+
+<ImageLoader alt="The Markdown Editor" img={previewUrl} />
 
 <Callout type="info">
 If things don't seem to work, check the Dev Tools console. An error like this

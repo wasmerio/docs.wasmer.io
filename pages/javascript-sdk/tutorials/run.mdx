@@ -1,6 +1,8 @@
 import { Card, Callout, Steps } from "nextra-theme-docs";
 import Install from "@components/install.mdx";
 import GitHubLogo from "@components/GitHubLogo";
+import ImageLoader from "@components/ImageLoader";
+import previewUrl from "@assets/javascript-sdk/markdown-editor-preview.png";
 
 # Building a Web-Based Markdown Editor with WASIX and WebAssembly
 
@@ -353,7 +355,7 @@ $ npm run dev
   ➜  press h + enter to show help
 ```
 
-![The Markdown Editor](./markdown-editor-preview.png)
+<ImageLoader alt="The Markdown Editor" img={previewUrl} />
 
 </Steps>
 
