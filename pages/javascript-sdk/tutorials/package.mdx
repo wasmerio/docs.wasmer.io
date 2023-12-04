@@ -181,6 +181,29 @@ $ npm run dev
 
 ![The Markdown Editor](./markdown-editor-preview.png)
 
+<Callout type="info">
+If things don't seem to work, check the Dev Tools console. An error like this
+indicates we've run into [`SharedArrayBuffer` and Cross-Origin Isolation][coi]
+issues!
+
+```
+Uncaught (in promise) Error: Unable to find "wasmer-examples/markdown-renderer" in the registry
+    at A.wbg.__wbg_new_ab87fd305ed9004b (Library.mjs:11:46497)
+    at 012cca42:0x2b7669
+    at 012cca42:0x377e8b
+    at 012cca42:0x142c64
+    at 012cca42:0x312190
+    at 012cca42:0x3b79d0
+    at 012cca42:0x3b0dae
+    at cA (Library.mjs:11:25455)
+    at C (Library.mjs:11:25290)
+```
+
+The fix is to make the `vite` dev server set the `Cross-Origin-Opener-Policy`
+and `Cross-Origin-Embedder-Policy` headers. See [Configure the Dev Server][dev]
+for more.
+</Callout>
+
 </Steps>
 
 ### Resources
@@ -194,3 +217,5 @@ $ npm run dev
 [run]: ./run
 [registry]: /registry
 [wasix-runner]: /runtime/runners/wasix
+[coi]: /javascript-sdk/explainers/troubleshooting#sharedarraybuffer-and-cross-origin-isolation
+[dev]: ./run#configure-your-dev-server
