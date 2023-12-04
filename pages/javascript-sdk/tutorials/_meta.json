@@ -1,6 +1,4 @@
 {
     "run": "Building a Web-Based Markdown Editor with WASIX and WebAssembly",
-    "package": "Creating and Running a Wasmer Package",
-    "xterm-js": "Creating an Interactive Terminal with XTerm.js",
-    "winterjs-codepen": "Making a Codepen for Wasmer's WinterJS"
+    "xterm-js": "Creating an Interactive Terminal with XTerm.js"
 }
