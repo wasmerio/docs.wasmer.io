@@ -1,4 +1,6 @@
-import { Callout, Steps } from "nextra-theme-docs";
+import { Card, Callout, Steps } from "nextra-theme-docs";
+import Install from "@components/install.mdx";
+import GitHubLogo from "@components/GitHubLogo";
 
 # Building a Web-Based Markdown Editor with WASIX and WebAssembly
 
@@ -286,6 +288,14 @@ $ npm run dev
 ![The Markdown Editor](./markdown-editor-preview.png)
 
 </Steps>
+
+### Resources
+
+<Card
+    icon={<GitHubLogo />}
+    title="Source Code"
+    href="https://github.com/wasmerio/wasmer-js/tree/main/examples/markdown-editor"
+    target="_blank" />
 
 [pulldown-cmark]: https://lib.rs/pulldown-cmark
 [rust]: https://rustup.rs/

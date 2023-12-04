@@ -1,0 +1,196 @@
+import { Card, Callout, Steps } from "nextra-theme-docs";
+import Install from "@components/install.mdx";
+import GitHubLogo from "@components/GitHubLogo";
+
+# Migrating the Editor to a Wasmer Package
+
+In [the previous tutorial][run], we created a basic Markdown editor by wiring
+a `<textarea>` up to a Markdown renderer compiled to WASI. Now, we're going to
+take things the next level by converting the renderer to a package and running
+it from [the Wasmer registry][registry].
+
+<Steps>
+
+### Install the Wasmer Toolchain
+
+<Install />
+
+### Create a Wasmer Package
+
+We can use the `wasmer` CLI to create a new package. From the
+`markdown-renderer/` crate created in the previous tutorial, run the following:
+
+```sh
+$ wasmer init
+NOTE: Initializing wasmer.toml file with metadata from Cargo.toml
+  -> ./Cargo.toml
+```
+
+This should have created a `wasmer.toml` file.
+
+```sh
+$ ls
+Cargo.lock  Cargo.toml  src  target  wasmer.toml
+```
+
+### Update Package Metadata
+
+Make sure you update the `[package]` table in your `wasmer.toml` to refer to
+your user. I'll be publishing to the `wasmer-examples` namespace, but you'll
+probably want to use your own username here.
+
+```toml filename="wasmer.toml"
+[package]
+name = 'wasmer-examples/markdown-renderer'
+version = '0.1.0'
+description = 'Render markdown input to HTML'
+entrypoint = 'markdown-renderer'
+
+...
+```
+
+<Callout type="note">
+That `entrypoint` field is important! It tells the Wasmer SDK that the
+`markdown-renderer` command should be executed by default.
+</Callout>
+
+### Compile to WebAssembly
+
+Don't forget to compile the `markdown-renderer.wasm`, if you haven't already.
+
+```sh
+$ cargo build --target=wasm32-wasi --release
+    Finished release [optimized] target(s) in 0.10s
+```
+
+### Publishing to the Wasmer Registry
+
+Now our `wasmer.toml` is up to date, we can go ahead and publish to the Wasmer
+registry.
+
+
+```sh
+$ wasmer publish
+[1/2] ⬆️   Uploading...
+[2/2] 📦  Publishing...
+Successfully published package `wasmer-examples/markdown-renderer@0.1.0`
+```
+
+<Callout type="info">
+Publishing a package requires the `wasmer` CLI to be authenticated with the
+Wasmer registry.
+
+You can check your authentication status using the following command:
+
+```sh
+$ wasmer whoami
+logged into registry "https://registry.wasmer.io/graphql" as user "michael-f-bryan"
+```
+
+Otherwise, you will need to log in.
+
+```sh
+$ wasmer login
+Opening auth link in your default browser: https://wasmer.io/auth/cli?nonce_id=...&secret=...
+Waiting for session... Done!
+✅ Login for Wasmer user "michael-f-bryan" saved
+```
+</Callout>
+
+### Switch to the `wasmer-examples/markdown-renderer` Package
+
+Now, let's update the original code to use Wasmer packages instead of running
+`*.wasm` binaries directly.
+
+The code is almost identical, so I'll just explain the parts that have changed.
+
+First, we import the `Wasmer` and `Command` classes and remove the
+`markdownRendererUrl` import.
+
+```diff filename="index.ts"
+-import { init, runWasix } from "@wasmer/sdk";
+-import markdownRendererUrl from "./markdown-renderer/target/wasm32-wasi/release/markdown-renderer.wasm?url";
++import { init, Wasmer, Command } from "@wasmer/sdk";
+```
+
+Next, instead of passing a `fetch()` response to
+`WebAssembly.compileStreaming()`, we use `Wasmer.fromRegistry("...")` to load a
+package from the registry.
+
+```diff filename="index.ts"
+ async function initialize() {
+     await init();
+-    return WebAssembly.compileStreaming(fetch(markdownRendererUrl));
++    return await Wasmer.fromRegistry("wasmer-examples/markdown-renderer");
+ }
+```
+
+Next, we update the `renderMarkdown()` method to accept a `Command` rather than
+a `WebAssembly.Module`. A `Command` is an executable element inside a Wasmer
+package and will use [the WASIX runner][wasix-runner] under the hood.
+
+```diff filename="index.ts"
+-async function renderMarkdown(module: WebAssembly.Module, markdown: string) {
+-    const instance = await runWasix(module, {});
++async function renderMarkdown(cmd: Command, markdown: string) {
++    const instance = await cmd.run();
+     const stdin = instance.stdin.getWriter();
+     const encoder = new TextEncoder();
+-
+     await stdin.write(encoder.encode(markdown));
+     await stdin.close();
+
+@@ -29,12 +26,12 @@
+ }
+```
+
+Finally, we update `main()` to rename `module` to `pkg` and pass
+`pkg.entrypoint` to `renderMarkdown()`. We know the
+`wasmer-examples/markdown-renderer` package will always have an entrypoint (we
+wrote it!) so we can skip the `if (!pkg.entrypoint)` check with `!`.
+
+```diff filename="index.ts"
+ async function main() {
+-    const module = await initialize();
++    const pkg = await initialize();
+     const output = document.getElementById("html-output") as HTMLIFrameElement;
+     const markdownInput = document.getElementById("markdown-input") as HTMLTextAreaElement;
+
+     const debouncedRender = debounce(async () => {
+-        const renderedHtml = await renderMarkdown(module, markdownInput.value);
++        const renderedHtml = await renderMarkdown(pkg.entrypoint!, markdownInput.value);
+         if (renderedHtml) {
+             output.srcdoc = renderedHtml;
+         }
+```
+
+### Run It!
+
+And finally, we can use the `vite` dev server to try it out. The results should
+be identical to before because we haven't changed any of the underlying
+functionality.
+
+```sh
+$ npm run dev
+   VITE v5.0.4  ready in 107 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+```
+
+![The Markdown Editor](./markdown-editor-preview.png)
+
+</Steps>
+
+### Resources
+
+<Card
+    icon={<GitHubLogo />}
+    title="Source Code"
+    href="https://github.com/wasmerio/wasmer-js/tree/main/examples/markdown-editor-improved"
+    target="_blank" />
+
+[run]: ./run
+[registry]: /registry
+[wasix-runner]: /runtime/runners/wasix
