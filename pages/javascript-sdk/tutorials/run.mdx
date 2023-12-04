@@ -1,1 +1,286 @@
+import { Cards, Card, Callout, Steps } from "nextra-theme-docs";
+import GitHubLogo from "@components/GitHubLogo";
+
 # Creating and Running a WASIX Module
+
+Welcome to this hands-on tutorial where we will build a web-based Markdown
+editor using WebAssembly and Wasmer's JavaScript SDK (`@wasmer/sdk`).
+
+Markdown, a lightweight markup language, is popular for its simplicity and
+effectiveness in creating formatted text. In this tutorial, we will create an
+editor that allows users to write Markdown and see the rendered HTML in
+real-time.
+
+<Steps>
+
+### Create the Project
+
+First, let's set up our project environment. Create a new directory for your
+project and initialize it using `npm`.
+
+```sh copy
+npm init -y
+```
+
+### Add Dependencies
+
+Once initialized, install `@wasmer/sdk` by running:
+
+```sh copy
+npm install @wasmer/sdk
+```
+
+### Install Vite
+
+Next, we'll use `vite` for bundling our application. It's a fast, modern
+bundler and minifier.
+
+```sh copy
+npm install vite --save-dev
+```
+
+### Package Scripts
+
+Let's also set up a couple of scripts to assist development.
+
+```json filename="package.json" copy
+"scripts": {
+    "dev": "vite",
+    "build": "vite build",
+}
+```
+
+These scripts provide quick commands to build your application (`npm run build`)
+and start a development server with live reloading (`npm run dev`).
+
+### Create the UI
+
+While this isn't a UI tutorial, we still want our app to be presentable.
+
+Paste the following into `index.html`:
+
+```html filename="index.html" copy
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wasmer Markdown Editor</title>
+    <script type="module" defer src="./index.ts"></script>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div class="editor-container">
+        <textarea id="markdown-input" placeholder="Type your Markdown here..."></textarea>
+        <iframe id="html-output"></iframe>
+    </div>
+</body>
+
+</html>
+```
+
+Here's some CSS for `style.css`:
+
+```css filename="style.css" copy
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
+
+.editor-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 80%;
+    max-width: 1200px;
+    margin: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+}
+
+#markdown-input, #html-output {
+    border: 1px solid #ddd;
+    padding: 10px;
+    height: 400px;
+    overflow: auto;
+}
+
+#markdown-input {
+    resize: none;
+}
+
+#html-output {
+    background-color: #fff;
+    width: 100%;
+    border: none;
+}
+```
+
+### Creating a Markdown Renderer in Rust
+
+To render the Markdown to HTML, we'll use a powerful crate from the Rust
+ecosystem called [`pulldown-cmark`][pulldown-cmark].
+
+First, create a new Rust project:
+
+```console
+$ cargo new --bin markdown-renderer
+$ cd markdown-renderer
+$ cargo add pulldown-cmark
+```
+
+And add the following code to `src/main.rs`:
+
+```rs filename="markdown-renderer/src/main.rs" copy
+use pulldown_cmark::Parser;
+use std::io::Read;
+
+fn main() -> std::io::Result<()> {
+    let mut markdown_input = String::new();
+    std::io::stdin().read_to_string(&mut markdown_input)?;
+    let parser = Parser::new(&markdown_input);
+
+    pulldown_cmark::html::write_html(std::io::stdout(), parser)?;
+    Ok(())
+}
+```
+
+This program will read its STDIN into `markdown_input`, interpreting it as a
+UTF-8 string. The `markdown_input` is then parsed by the parser and rendered to
+STDOUT with `pulldown_cmark::html::write_html()`.
+
+### Compile the Markdown Renderer to WebAssembly
+
+The next step is to compile this Rust program to WebAssembly.
+
+```sh copy
+cargo build --release --target=wasm32-wasi
+```
+
+This should create a `markdown-renderer.wasm` file under `target/`:
+
+```sh
+$ file target/wasm32-wasi/release/*.wasm
+target/wasm32-wasi/release/markdown-renderer.wasm: WebAssembly (wasm) binary module version 0x1 (MVP)
+```
+
+<Callout type="info">
+If you haven't already, you may need to [install Rust][rust] and use `rustup` to
+add the `wasm32-wasi` target:
+
+```sh copy
+rustup target add wasm32-wasi
+```
+</Callout>
+
+### TypeScript Setup & Initialization
+
+Now we've got a `*.wasm` binary, let's start implementing the app's logic.
+
+The first thing we need to do is initialize `@wasmer/sdk` and load our
+`markdown-renderer.wasm` module.
+
+```ts filename="index.ts" copy
+import { init, runWasix } from "@wasmer/sdk";
+import markdownRendererUrl from "./markdown-renderer/target/wasm32-wasi/release/markdown-renderer.wasm?url";
+
+async function initialize() {
+    await init();
+    return WebAssembly.compileStreaming(fetch(markdownRendererUrl));
+}
+```
+
+<Callout type="info">
+This uses `vite`'s [explicit URL imports][explicit-url-imports] functionality to
+get a URL that will load our
+`./markdown-renderer/target/wasm32-wasi/release/markdown-renderer.wasm` file.
+
+If you aren't using `vite`, you will need to explicitly copy
+`markdown-renderer.wasm` to some sort of `public/` directory and make sure it
+is distributed with the rest of your app's files.
+</Callout>
+
+### Debounce Function
+
+Create a utility function that we can use to debounce render calls. This will
+help avoid flashes and jank as the `<iframe>` is constantly updated.
+
+```ts filename="index.ts" copy
+function debounce(func: (...args: any[]) => void, delay: number): (...args: any[]) => void {
+    let debounceTimer: ReturnType<typeof setTimeout>;
+
+    return function(...args: any[]) {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => func(...args), delay);
+    };
+}
+```
+
+### Markdown Rendering Logic
+
+```ts filename="index.ts" copy
+async function renderMarkdown(module: WebAssembly.Module, markdown: string) {
+    const instance = await runWasix(module, {});
+    const stdin = instance.stdin.getWriter();
+    const encoder = new TextEncoder();
+
+    await stdin.write(encoder.encode(markdown));
+    await stdin.close();
+
+    const result = await instance.wait();
+    return result.ok ? result.stdoutUtf8 : null;
+}
+```
+
+### Main Function
+
+```ts filename="index.ts" copy
+async function main() {
+    const module = await initialize();
+    const output = document.getElementById("html-output") as HTMLIFrameElement;
+    const markdownInput = document.getElementById("markdown-input") as HTMLTextAreaElement;
+
+    const debouncedRender = debounce(async () => {
+        const renderedHtml = await renderMarkdown(module, markdownInput.value);
+        if (renderedHtml) {
+            output.srcdoc = renderedHtml;
+        }
+    }, 500); // 500 milliseconds debounce period
+
+    markdownInput.addEventListener("input", debouncedRender);
+}
+
+main();
+```
+
+### Trying it Out
+
+Our markdown editor should now be complete. Let's start up the dev server and
+have a look!
+
+```sh
+$ npm run dev
+   VITE v5.0.4  ready in 107 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+```
+
+![The Markdown Editor](./markdown-editor-preview.png)
+
+</Steps>
+
+[pulldown-cmark]: https://lib.rs/pulldown-cmark
+[rust]: https://rustup.rs/
+[explicit-url-imports]: https://vitejs.dev/guide/assets#explicit-url-imports
