@@ -2,8 +2,114 @@
 title: The Threadpool
 ---
 
+import { Callout } from "nextra-theme-docs";
+
+# The Threadpool
+
 This might not be groundbreaking news, but concurrency is hard. That's even more
 the case in a security-conscious, traditionally single-threaded environment like
 the browser.
 
+The `@wasmer/sdk` package doesn't just provide an implementation of the
+`wasi_snapshot_preview1` namespace (i.e. "WASI"), it provides an abstraction for
+an entire operating system, complete with threads and processes. The mechanism
+that underpins all of this, and which is eventually used to execute code from a
+WebAssembly module or the runtime itself, is the WASIX threadpool.
 
+There are many moving components here:
+
+- The `wasmer_wasix::VirtualTaskManager` trait
+- Messages
+- The worker
+- The worker handle
+- The scheduler
+
+<Callout type="info">
+This information is accurate as of early December 2023 and all links will point
+to code from the [`v0.4.1`][v0.4.1] release of `@wasmer/sdk`.
+
+Don't take it as gospel, though. Although the overall flow should stay roughly
+the same (modulo a rewrite), the particulars will probably change from release
+to release as bugs are fixed and new functionality is added.
+
+This page is mainly intended to document the threadpool's high-level
+architecture and the challenges we encountered, so that future wanderers may
+learn from our experience.
+</Callout>
+
+## Some History
+
+## Components
+
+### The `wasmer_wasix::VirtualTaskManager` trait
+
+Similar to a native OS, the `wasmer_wasix` crate has a component in charge of
+scheduling work so it can be executed in parallel.
+
+The `VirtualTaskManager` trait has [the following definition][vtm]:
+
+```rs filename="lib/wasix/src/runtime/task_manager/mod.rs"
+pub trait VirtualTaskManager: Debug + Send + Sync + 'static {
+    /// Run an asynchronous operation on the thread pool.
+    fn task_shared(
+        &self,
+        task: Box<dyn FnOnce() -> BoxFuture<'static, ()> + Send + 'static>,
+    ) -> Result<(), WasiThreadError>;
+
+    /// Run a blocking WebAssembly operation on the thread pool.
+    fn task_wasm(&self, task: TaskWasm) -> Result<(), WasiThreadError>;
+
+    /// Run a blocking operation on the thread pool.
+    fn task_dedicated(
+        &self,
+        task: Box<dyn FnOnce() + Send + 'static>,
+    ) -> Result<(), WasiThreadError>;
+
+    /// Build a new Webassembly memory.
+    fn build_memory(
+        &self,
+        mut store: &mut StoreMut,
+        spawn_type: SpawnMemoryType,
+    ) -> Result<Option<Memory>, WasiThreadError> { ... }
+
+    /// Pause the current thread of execution.
+    fn sleep_now(
+        &self,
+        time: Duration,
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + Sync + 'static>>;
+
+    /// Returns the amount of parallelism that is possible on this platform.
+    fn thread_parallelism(&self) -> Result<usize, WasiThreadError>;
+
+    /// Schedule a blocking task to run on the threadpool, explicitly
+    /// transferring a [`Module`] to the task.
+    fn spawn_with_module(
+        &self,
+        module: Module,
+        task: Box<dyn FnOnce(Module) + Send + 'static>,
+    ) -> Result<(), WasiThreadError> { ... }
+}
+```
+
+The trait has two types of methods, methods for spawning work and extra
+utilities.
+
+### Messages
+
+### The Worker
+
+### The Worker Handle
+
+### The Scheduler
+
+
+## Challenges and Lessons Learned
+
+### Thread Safety & Soundness
+
+### Communicating With JavaScript Objects
+
+### Web Workers and `console.log()`
+
+[v0.4.1]: https://github.com/wasmerio/wasmer-js/releases/tag/wasmer-sdk-v0.4.1
+[vtm]: https://github.com/wasmerio/wasmer/blob/0265db1eb1ea574cf6c4f05a30d74f3c37c6d9da/lib/wasix/src/runtime/task_manager/mod.rs
