@@ -1,0 +1,5 @@
+{
+    "run": "Building a Web-Based Markdown Editor with WASIX and WebAssembly",
+    "package": "Migrating the Editor to a Wasmer Package",
+    "xterm-js": "Creating an Interactive Terminal with XTerm.js"
+}

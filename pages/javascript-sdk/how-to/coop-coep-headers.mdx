@@ -1,0 +1,55 @@
+---
+title: Patching COOP/COEP headers for GitHub Pages Deployment
+---
+
+# Patching COOP/COEP Headers for GitHub Pages Deployment
+
+## Introduction
+
+Deploying web applications on GitHub Pages that require Cross-Origin Isolation
+can be challenging due to lack of control over HTTP headers. This guide
+demonstrates using [`coi-serviceworker`][coi-gh] to patch
+[`Cross-Origin-Opener-Policy`][coop] (COOP) and
+[`Cross-Origin-Embedder-Policy`][coep] (COEP) headers, enabling features like
+`SharedArrayBuffer`.
+
+## Step 1: Prepare coi-serviceworker
+
+1. **Download**: Obtain `coi-serviceworker.js` from its [GitHub
+   repository][coi-gh] or via npm (`npm i --save coi-serviceworker`).
+2. **Place File**: Ensure `coi-serviceworker.js` is located next to your
+   project's index file or in a parent directory.
+
+## Step 2: Integrate with HTML
+
+- **Add Script Tag**: In your HTML file, include:
+   ```html
+   <script src="coi-serviceworker.js"></script>
+   ```
+- **First Load Behavior**: This script reloads the page on the first user visit,
+  registering a service worker that emulates COOP and COEP headers.
+
+## Step 3: Customization (Optional)
+
+- **Customize Behavior**: You can define a `window.coi` object to customize the
+  service worker's behavior. Options include `shouldRegister`, `shouldDeregister`,
+  `coepCredentialless`, `doReload`, and `quiet`. Check out the project's README
+  for more.
+
+## Step 4: Deploy to GitHub Pages
+
+- **Commit and Push**: Upload your changes to GitHub and enable GitHub Pages in
+  your repository settings.
+- **Test**: Verify that your application works correctly on GitHub Pages with
+  the required cross-origin isolation.
+
+## Notes
+
+- **HTTPS Requirement**: Your page must be served over HTTPS or localhost.
+- **Separate File**: `coi-serviceworker.js` must not be bundled with your app
+  and should be served from your origin.
+
+
+[coi-gh]: https://github.com/kairi003/coi-serviceworker/
+[coop]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy
+[coep]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy

@@ -1,0 +1,91 @@
+# The Wasmer JavaScript SDK
+
+The `@wasmer/sdk` package is Wasmer's SDK for JavaScript.
+
+Some functionality supported by `@wasmer/sdk`:
+
+- Executing WebAssembly modules compiled to [WASIX][wasix]
+- Includes **full** WASI support (filesystem access, environment variables,
+  command-line arguments, etc.)
+- Running packages from [the Wasmer registry](/registry)
+- Mounting directories into a WASIX instance and communicating with it while the
+  instance is running
+- Running multi-threaded WASIX programs
+- Spawning sub-processes using commands from the same package, side-loaded
+  packages (`uses`), or arbitrary packages from the Wasmer registry using the
+  virtual `wasmer run` command
+
+## Quickstart
+
+First, add the [`@wasmer/sdk`][wasmer-sdk] to your project.
+
+import { Tabs, Tab } from "nextra-theme-docs";
+
+<Tabs items={["npm", "yarn", "pnpm"]}>
+    <Tab>
+        ```sh copy
+        npm install -S @wasmer/sdk
+        ```
+    </Tab>
+    <Tab>
+        ```sh copy
+        yarn add @wasmer/sdk
+        ```
+    </Tab>
+    <Tab>
+        ```sh copy
+        pnpm add @wasmer/sdk
+        ```
+    </Tab>
+</Tabs>
+
+We'll be running version `3.12` of the `python/python`
+
+```ts copy showLineNumbers filename="index.ts"
+import { init, Wasmer } from "@wasmer/sdk";
+
+await init();
+
+const pkg = await Wasmer.fromRegistry("python/python@3.12");
+const instance = await pkg.entrypoint.run({
+    args: ["-c", "print('Hello, World!')"],
+});
+
+const { code, stdoutUtf8 } = await instance.wait();
+console.log(`Python exited with ${code}: ${stdoutUtf8}`);
+```
+
+Breaking this down line-by-line...
+
+Line 1 - imports the `Wasmer` class and `init()` function from the `@wasmer/sdk`
+package.
+
+Line 3 - here, the `init()` function is called and awaited. This function must
+be called once before using any functionality from `@wasmer/sdk` It sets up the
+necessary environment for running WebAssembly modules and instantiates the
+WebAssembly runtime.
+
+Line 5 - uses `Wasmer.fromRegistry()` to fetch the `python/python@3.12` package
+from the Wasmer registry and load it into memory, alongside any dependencies it
+may have.
+
+Line 6 - runs the `python/python@3.12` package's entrypoint (the `python`
+command) with the arguments `-c "print('Hello, World!")` and gets an `Instance`
+which can be used to communicate with the running process.
+
+Line 10 - waits until the python interpreter has exited, then extracts the
+`code` and `stdoutUtf8` values from the output so they can be printed to
+the console on line 11.
+
+## What Next?
+
+import { Cards, Card } from "nextra-theme-docs";
+
+<Cards>
+    <Card title="API Docs" href="https://wasmerio.github.io/wasmer-js" target="_blank" />
+    <Card title="GitHub" href="https://github.com/wasmerio/wasmer-js" target="_blank" />
+    <Card title="Troubleshooting Common Problems" href="/javascript-sdk/explainers/troubleshooting" />
+</Cards>
+
+[wasmer-sdk]: https://www.npmjs.com/package/@wasmer/sdk
+[wasix]: https://wasix.org/
