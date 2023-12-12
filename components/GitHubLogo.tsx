@@ -1,3 +1,4 @@
+import React from "react";
 
 export default function GitHubLogo() {
     return <svg viewBox="0 0 24 24" className=" transform scale-[120%] mr-2">
