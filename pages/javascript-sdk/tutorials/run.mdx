@@ -30,7 +30,7 @@ npm init -y
 Once initialized, install `@wasmer/sdk` by running:
 
 ```sh copy
-npm install @wasmer/sdk
+npm install --save @wasmer/sdk
 ```
 
 The `@wasmer/sdk` package allows us to run WebAssembly modules in the browser,
@@ -298,12 +298,13 @@ Library.mjs:11 Uncaught (in promise) Error: Write failed
 This is a pretty unhelpful error message, but we can make troubleshooting a lot
 easier by enabling logging just after the `await init()`.
 
-```typescript filename="index.ts" copy
-async function main() {
+```typescript filename="index.ts" copy /initializeLogger/
+import { init, runWasix, initializeLogger } from "@wasmer/sdk";
+
+async function initialize() {
     await init();
     initializeLogger("debug");
-
-    /* ... */
+    return WebAssembly.compileStreaming(fetch(markdownRendererUrl));
 }
 ```
 
