@@ -1,0 +1,210 @@
+---
+title: How to use filesystem in `@wasmer/sdk`?
+---
+
+# How to use filesystem in `@wasmer/sdk`?
+
+## Introduction
+
+The `@wasmer/sdk` provides a set of functions to interact with files and directories in the guest filesystem.
+
+The guest file system is a virtual file system that can be used by the WebAssembly module to read and write files and directories.
+
+### Analogous Example
+
+Let's say you're using the FFmpeg WebAssembly module to convert a video file from one format to another. You will need to store your input file somewhere so that the WASM module can use it. This is where the guest file system comes in. You'll store your input file in the guest file system, and then the WASM module will be able to read it and process it. When you're done processing then you can store your output file in the guest file system, and then you can read it from the host(JavaScript) side.
+
+## Usage
+
+### Instantiating a FileSystem
+
+```typescript
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+```
+
+The `Directory` class is used to create a virtual file system. You can create as many `Directory` instances as you want. But each `Directory` instance will have its own virtual file system.
+
+### Creating files in a directory ?
+
+```typescript
+import { Directory } from "@wasmer/sdk";
+
+const encoder = new TextEncoder("utf-8");
+
+const dir = new Directory();
+await dir.writeFile("/file.txt", encoder.encode("Hello, World!"));
+```
+
+The `writeFile` method is used to create a file in the virtual file system. The first argument is the path of the file, and the second argument is the content of the file.
+
+> The content of the file must be an `Uint8Array`.
+
+### Creating directories in a directory ?
+
+```typescript
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+await dir.createDir("/pictures");
+```
+
+The `createDir` method is used to create a directory in the virtual file system. The argument is the path of the directory.
+
+Now you can place files in the directory you just created like this:
+
+```typescript
+import { Directory } from "@wasmer/sdk";
+
+// reading an image file as a blob and converting it to an Uint8Array
+const response = await fetch("https://example.com/image.png");
+const blob = await response.blob();
+const arrayBuffer = await blob.arrayBuffer();
+const uint8Array = new Uint8Array(arrayBuffer);
+
+const dir = new Directory();
+await dir.createDir("/pictures");
+await dir.writeFile("/pictures/image.png", uint8Array);
+```
+
+### Reading files from a directory ?
+
+There are two ways to read files from a directory.
+
+#### 1. Using the `readFile` method.
+
+```typescript
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+// You perform some operations on the directory here and write the output to a file called `output.txt`
+const file = await dir.readFile("/output.txt");
+const decoder = new TextDecoder("utf-8");
+console.log(decoder.decode(file));
+```
+
+The `readFile` method is used to read a file from the virtual file system. The argument is the path of the file.
+
+#### 2. Using the `readTextFile` method.
+
+```typescript
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+// You perform some operations on the directory here and write the output to a file called `output.txt`
+const file = await dir.readTextFile("/output.txt");
+console.log(file);
+```
+
+The `readTextFile` method is used to read a file from the virtual file system as a UTF-8 string. The argument is the path of the file.
+
+### Reading directories from a directory ?
+
+This operation is analogous to the `ls` command in Linux.
+
+```typescript
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+await dir.createDir("/mydir");
+await dir.writeFile("/mydir/file.txt", new Uint8Array());
+await dir.createDir("/mydir/pictures");
+await dir.writeFile("/mydir/pictures/image.png", new Uint8Array());
+await dir.createDir("/mydir/videos");
+await dir.writeFile("/mydir/videos/video.mp4", new Uint8Array());
+
+const entries = await dir.readDir("/mydir");
+console.log(entries);
+```
+
+The `readDir` method is used to read the contents of a directory from the virtual file system. The argument is the path of the directory.
+
+The output of the above code will be:
+
+```json
+[
+  {
+    "name": "file.txt",
+    "type": "file"
+  },
+  {
+    "name": "pictures",
+    "type": "directory"
+  },
+  {
+    "name": "videos",
+    "type": "directory"
+  }
+]
+```
+
+### Using this directory with a WebAssembly module ?
+
+You'll often be using this directory with a WebAssembly module. You can do that like this:
+
+Let's consider a WebAssembly module such as `wasmer/python`. This module is used to run Python code in the browser. You'll need to provide files to this module so that it can run them. You can do that like this:
+
+```typescript
+import { Wasmer, Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+await dir.writeFile(
+  "/main.py",
+  new TextEncoder("utf-8").encode("print('Hello, World!')")
+);
+
+const pkg = await Wasmer.fromRegistry("wasmer/python");
+const instance = await pkg.entrypoint!.run({
+  args: ["/app/main.py"],
+  mount: { "/app": dir },
+});
+
+await instance.stdin?.close();
+let output = await instance.wait();
+
+console.log(output.stdout);
+```
+
+The `mount` option is used to provide a directory to the WebAssembly module. The `mount` option takes a `Directory` instance as its value.
+
+The same can also be done for a WebAssembly module instantiated from the user instead of the registry.
+
+```typescript
+import { runWasix, Directory } from "@wasmer/sdk";
+
+const python = await WebAssembly.compile(fs.readFileSync("./python.wasm"));
+
+const instance = await runWasix(python, {
+  program: "python",
+  args: ["/app/main.py"],
+  mount: {
+    "/app": {
+      "main.py": "print('Hello, World!')",
+    },
+  },
+});
+```
+
+> The `mount` option can also take a plain JavaScript object as its value. The keys of the object are the paths of the files and directories, and the values of the object are the contents of the files and directories.
+> This is specified as a `DirectoryInit` type alias in the TypeScript type definitions.
+
+### Removing files and directories from a `Directory` ?
+
+```typescript
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+await dir.createDir("/mydir");
+await dir.writeFile("/mydir/file.txt", new Uint8Array());
+
+await dir.removeFile("/mydir/file.txt");
+await dir.removeDir("/mydir");
+```
+
+The `removeFile` method is used to remove a file from the virtual file system. The argument is the path of the file.
+
+The `removeDir` method is used to remove a directory from the virtual file system. The argument is the path of the directory.
+
+> Note: The `removeDir` method will only remove empty directories. If you want to remove a directory that has files in it, then you'll have to remove the files first.
+> It's behavior is analogous to the `rmdir` command in Linux.
