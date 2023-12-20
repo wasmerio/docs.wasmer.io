@@ -1,0 +1,290 @@
+---
+title: Interacting with the Filesystem
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Interacting with the Filesystem
+
+
+The `@wasmer/sdk` package provides users with the ability to mount directories
+inside a running WASIX instance. This allows both the WASIX instance and a
+JavaScript user to communicate via a shared folder.
+
+Let's say you're using the FFmpeg WebAssembly module to convert a video file
+from one format to another. You will need to store your input file somewhere so
+that the WASIX program can use it. This is where a shared `Directory` comes in.
+You'll store your input file in the shared directory, and then the WASIX program
+will be able to read it and process it. When the processing is done, the output
+file can be written back to the shared directory so the JavaScript host can
+access it.
+
+## Instantiating a `Directory`
+
+```typescript copy
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+```
+
+The `Directory` class is used to create a directory that can be mounted inside a
+WASIX instance's file system. You can create as many `Directory` instances as
+you want.
+
+## Adding Files to a `Directory`
+
+The `writeFile()` method creates a new file in the specified directory, setting
+its content to the provided data. The first argument is the path of the file,
+and the second argument is the content of the file.
+
+```typescript copy
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+await dir.writeFile("/file.txt", "Hello, World!");
+```
+
+<Callout type="info">
+The content of the file may be a `string` or `Uint8Array`.
+</Callout>
+
+## Creating Sub-Directories
+
+The `createDir` method is used to create a directory in the virtual file system.
+The argument is the path of the directory.
+
+```typescript copy
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+await dir.createDir("/pictures");
+```
+
+Now you can place files in the directory you just created like this:
+
+```typescript copy
+import { Directory } from "@wasmer/sdk";
+
+// reading an image file as a blob and converting it to an Uint8Array
+const response = await fetch("https://example.com/image.png");
+const blob = await response.blob();
+const image = await blob.arrayBuffer();
+
+const dir = new Directory();
+await dir.createDir("/pictures");
+await dir.writeFile("/pictures/image.png", new Uint8Array(image));
+```
+
+## Reading Files from a `Directory`
+
+There are two ways to read files from a directory.
+
+### 1. The `readFile` Method
+
+The `readFile()` method will read the file's bytes back as a `Uint8Array`.
+
+```typescript copy
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+const bytes = await dir.readFile("/file.bin");
+```
+
+### 2. The `readTextFile` Method
+
+The `readTextFile()` method will read a file from the `Directory` and parse it as
+a UTF-8 string. The argument is the path of the file.
+
+```typescript copy
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+const text = await dir.readTextFile("/output.txt");
+```
+
+## Listing a Directory's Contents
+
+The `readDir()` method is analogous to the `ls` command in Linux. The argument
+is the path of the directory.
+
+```typescript copy
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+await dir.createDir("/mydir");
+await dir.writeFile("/mydir/file.txt", new Uint8Array());
+await dir.createDir("/mydir/pictures");
+await dir.writeFile("/mydir/pictures/image.png", new Uint8Array());
+await dir.createDir("/mydir/videos");
+await dir.writeFile("/mydir/videos/video.mp4", new Uint8Array());
+
+const entries = await dir.readDir("/mydir");
+console.log(entries);
+```
+
+The output of the above code will be:
+
+```json
+[
+  {
+    "name": "file.txt",
+    "type": "file"
+  },
+  {
+    "name": "pictures",
+    "type": "directory"
+  },
+  {
+    "name": "videos",
+    "type": "directory"
+  }
+]
+```
+
+## Mounting a Directory
+
+The primary way to use `Directory` is by mounting it in a Wasmer package or
+WASIX instance.
+
+Both `Command.run()` and `runWasix()` accept a `mount` option which accepts
+a mapping from paths to the `Directory` that should be mounted to that path.
+
+For example, this is how you can mount a `Directory` to `/app` and use the
+`cat` command from `sharrattj/coreutils` to print its contents.
+
+```typescript
+import { Wasmer, Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+await dir.writeFile("/file.txt", "Hello, World!");
+
+const pkg = await Wasmer.fromRegistry("sharrattj/coreutils");
+const cat = pkg.commands["cat"];
+const instance = await cat.run({
+  args: ["/app/file.txt"],
+  mount: { "/app": dir },
+});
+let output = await instance.wait();
+
+console.log(output.stdout); // Hello, World!
+```
+
+The same can also be done for a WebAssembly module instantiated from the user
+instead of the registry.
+
+```typescript
+import { runWasix, Directory } from "@wasmer/sdk";
+
+const python = await WebAssembly.compile(fs.readFileSync("./python.wasm"));
+
+const instance = await runWasix(python, {
+  program: "python",
+  args: ["/app/main.py"],
+  mount: {
+    "/app": {
+      "main.py": "print('Hello, World!')",
+    },
+  },
+});
+```
+
+## `DirectoryInit` Shorthand
+
+As a shortcut for initializing a `Directory` when all contents are known
+up-front, you may provide the `new Directory()` constructor with a mapping from
+file paths to their contents. The TypeScript type definitions use the
+`DirectoryInit` type alias to represent this mapping.
+
+```ts copy
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory({
+  "/file.txt": "Hello, World!",
+  "/path/to/nested/file.bin": new Uint8Array(),
+});
+```
+
+<Callout type="info">
+As well as a `Directory` instance, both `Command.run()` and `runWasix()` accept
+the `DirectoryInit` shorthand when specifying mounts.
+
+This is useful when you don't need to hang on to the `Directory` handle or
+access the `Directory` while the WASIX instance is running.
+</Callout>
+
+## Removing Files and Directories from a `Directory`
+
+The `removeFile` method is used to remove a file from the `Directory`. The
+argument is the path of the file.
+
+The `removeDir` method is used to remove a directory from the `Directory`. The
+argument is the path of the directory.
+
+```typescript
+import { Directory } from "@wasmer/sdk";
+
+const dir = new Directory();
+await dir.createDir("/mydir");
+await dir.writeFile("/mydir/file.txt", new Uint8Array());
+
+await dir.removeFile("/mydir/file.txt");
+await dir.removeDir("/mydir");
+```
+
+<Callout type="warning">
+The `removeDir` method will only remove empty directories. If you want to
+remove a directory that has files in it, then you'll have to remove the files
+first. Its behavior is analogous to the `rmdir` command in Linux.
+</Callout>
+
+## Kitchen Sink
+
+Here is a comprehensive example of the `Directory` API.
+
+It includes:
+
+- Creating an empty `Directory`
+- Mounting directories inside the newly spawned `python` instance
+- Using the `DirectoryInit` shorthand to simplify passing in the `/src/main.py`
+- Reading back the generated `/out/version.txt`
+
+```typescript copy
+import { init, Directory, Wasmer } from "@wasmer/sdk";
+
+// Initialize the Wasmer SDK
+await init();
+
+// Download the Python package
+const python = await Wasmer.fromRegistry("python/python");
+
+// The script to be executed
+const script = `
+import sys
+
+with open("/out/version.txt", "w") as f:
+  f.write(sys.version)
+`;
+// A shared directory where the output will be written
+const out = new Directory();
+
+// Running the Python script
+const instance = await python.entrypoint!.run({
+  args: ["/src/main.py"],
+  mount: {
+    "/out": out,
+    "/src": {
+      "main.py": script,
+    }
+  },
+});
+const output = await instance.wait();
+
+if (!output.ok) {
+  throw new Error(`Python failed with exit code ${output.code}: ${output.stderr}`);
+}
+
+// Read the version string back
+const pythonVersion = await out.readTextFile("/version.txt");
+console.log(pythonVersion) // 3.11.6 (main, Oct  2 2023, 13:45:54) [Clang 15.0.0 (clang-1500.0.40.1)]
+```
+
