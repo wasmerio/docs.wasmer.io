@@ -2,7 +2,7 @@
 title: Troubleshooting Common Problems
 ---
 
-import { Callout } from "nextra-theme-docs";
+import { Callout, Steps } from "nextra-theme-docs";
 
 # Troubleshooting Common Problems
 
@@ -228,6 +228,80 @@ As of now, `@wasmer/sdk` does not support Node.js.
 To resolve this issue, you need to run your code in a supported browser
 environment rather than in Node.js.
 
-[wasm-types-polyfill]: https://github.com/wasmerio/wasmer/blob/e6438738d884d6fb4297ca2af90ab04459ddbbfb/lib/api/src/js/module.rs#L91-L110
+## ReferenceError: `document is not defined`
+
+When making a production build of your app, you might encounter an issue where
+worker threads fail to start up due to a `ReferenceError` exception.
+
+```
+Uncaught (in promise) ReferenceError: document is not defined
+    at index-bnmRepzq.js:1:21
+    at index-bnmRepzq.js:1:708
+```
+
+### Root Cause
+
+This issue arises because Web Workers do not have access to the DOM, and any
+attempt by the worker threads to access DOM elements will result in a crash.
+
+Something to be aware of is that each Web Worker in the threadpool will import
+`@wasmer/sdk` on startup to bring in the rest of its business logic.
+
+In production mode, a bundle often includes all dependencies, causing the
+`@wasmer/sdk` import to also execute top-level code from your dependencies. Some
+dependencies, like `xterm.js`, will [interact with the DOM][create-element] and
+inadvertently crash the worker.
+
+### Solution
+
+To resolve this issue, `@wasmer/sdk` should be dynamically imported, ensuring
+that the bundler puts it in a separate chunk from `xterm.js`. This approach
+prevents the worker from executing the DOM-related code in `xterm.js` and allows
+it to start up successfully.
+
+Here's how you can implement the fix:
+
+<Steps>
+
+### Modify your import statement
+
+Change the static import of `@wasmer/sdk` to a dynamic one. This tells the
+bundler to separate it into its own chunk, avoiding the unintentional execution
+of DOM-related code.
+
+```typescript
+// Before
+import { Wasmer, init, initializeLogger, Instance } from "@wasmer/sdk/dist/WasmerSDKBundled.js";
+
+// After
+const { Wasmer, init, initializeLogger } = await import("@wasmer/sdk/dist/WasmerSDKBundled");
+```
+
+### Update your `vite.config.js`
+
+Ensure your Vite configuration doesn't add its own code top-level which might
+trigger a similar error.
+
+```js filename="vite.config.js" copy
+build: {
+    modulePreload: {
+        polyfill: false,
+    },
+},
+```
+
+### Rebuild and redeploy
+
+After making these changes, rebuild your app in production mode and redeploy it.
+</Steps>
+
+<Callout type="info">
+For a real-world example of this, check out the diff for
+[`wasmerio/wasmer-js#374`][pr-374] on GitHub.
+</Callout>
+
+[create-element]: https://github.com/xtermjs/xterm.js/blob/b3737d6ff0821b08ee791c6d261e35a3cf5cd317/src/common/Color.ts#L117
 [guesses]: https://github.com/wasmerio/wasmer/blob/e6438738d884d6fb4297ca2af90ab04459ddbbfb/lib/api/src/js/module.rs#L323-L328
+[pr-374]: https://github.com/wasmerio/wasmer-js/pull/374
 [wasm-bindgen]: https://github.com/rustwasm/wasm-bindgen
+[wasm-types-polyfill]: https://github.com/wasmerio/wasmer/blob/e6438738d884d6fb4297ca2af90ab04459ddbbfb/lib/api/src/js/module.rs#L91-L110
