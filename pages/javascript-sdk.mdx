@@ -1,3 +1,7 @@
+import { Cards, Card } from "nextra-theme-docs";
+import { Tabs, Tab } from "nextra-theme-docs";
+import GitHubLogo from "@components/GitHubLogo.tsx";
+
 # The Wasmer JavaScript SDK
 
 The `@wasmer/sdk` package is Wasmer's SDK for JavaScript.
@@ -18,8 +22,6 @@ Some functionality supported by `@wasmer/sdk`:
 ## Quickstart
 
 First, add the [`@wasmer/sdk`][wasmer-sdk] to your project.
-
-import { Tabs, Tab } from "nextra-theme-docs";
 
 <Tabs items={["npm", "yarn", "pnpm"]}>
     <Tab>
@@ -79,11 +81,14 @@ on line 11.
 
 ## What Next?
 
-import { Cards, Card } from "nextra-theme-docs";
-
 <Cards>
     <Card title="API Docs" href="https://wasmerio.github.io/wasmer-js" target="_blank" />
-    <Card title="GitHub" href="https://github.com/wasmerio/wasmer-js" target="_blank" />
+    <Card
+        icon={<GitHubLogo />}
+        title="wasmerio/wasmer-js"
+        href="https://github.com/wasmerio/wasmer-js"
+        target="_blank"
+    />
     <Card title="Troubleshooting Common Problems" href="/javascript-sdk/explainers/troubleshooting" />
 </Cards>
 
