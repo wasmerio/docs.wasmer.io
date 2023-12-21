@@ -101,7 +101,7 @@ Now, we move to the core logic of our application in TypeScript. Start with
 importing necessary modules:
 
 ```typescript filename="index.ts" copy
-import { Instance, Wasmer, init, initializeLogger } from "@wasmer/sdk";
+import type { Instance } from "@wasmer/sdk";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 ```
@@ -112,13 +112,23 @@ Next, let's create a `main()` function and initialize `@wasmer/sdk`.
 
 ```typescript filename="index.ts" copy
 async function main() {
+    const { Wasmer, init, initializeLogger } = await import("@wasmer/sdk");
+
     await init();
 
     /* ... */
 }
 ```
 
-<Callout>
+<Callout type="warning">
+You have may noticed that we're using a dynamic import (`await import("@wasmer/sdk")`) to pull in `@wasmer/sdk` rather than a "normal" `import { ... } from "@wasmer/sdk"`.
+
+This is a workaround for a bad interaction between bundlers, `xterm`, and the
+`@wasmer/sdk` threadpool. See [ReferenceError: `document is not
+defined``][document-undefined] for more details.
+</Callout>
+
+<Callout type="info">
 Call `init()` to load and set up the WebAssembly environment required by
 `@wasmer/sdk`. It's crucial to do this before using any other functionality of
 the SDK.
@@ -287,3 +297,4 @@ are endless, and the power of WebAssembly makes it all possible in the browser.
 [xterm-js]: https://xtermjs.org/
 [bash]: https://wasmer.io/sharrattj/bash
 [coi]: /javascript-sdk/explainers/troubleshooting#sharedarraybuffer-and-cross-origin-isolation
+[document-undefined]: /javascript-sdk/explainers/troubleshooting#referenceerror-document-is-not-defined
