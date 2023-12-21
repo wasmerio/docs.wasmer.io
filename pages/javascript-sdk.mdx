@@ -51,8 +51,8 @@ const instance = await pkg.entrypoint.run({
     args: ["-c", "print('Hello, World!')"],
 });
 
-const { code, stdoutUtf8 } = await instance.wait();
-console.log(`Python exited with ${code}: ${stdoutUtf8}`);
+const { code, stdout } = await instance.wait();
+console.log(`Python exited with ${code}: ${stdout}`);
 ```
 
 Breaking this down line-by-line...
@@ -74,8 +74,8 @@ command) with the arguments `-c "print('Hello, World!")` and gets an `Instance`
 which can be used to communicate with the running process.
 
 Line 10 - waits until the python interpreter has exited, then extracts the
-`code` and `stdoutUtf8` values from the output so they can be printed to
-the console on line 11.
+`code` and `stdout` values from the output so they can be printed to the console
+on line 11.
 
 ## What Next?
 
