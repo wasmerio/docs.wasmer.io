@@ -10,6 +10,8 @@
   "registry": "Registry",
   "javascript-sdk": "JavaScript SDK",
   "edge": "Edge",
+  "wai": "WAI",
+  "wasmer-pack": "Wasmer Pack",
   "---": {
     "type": "separator"
   },
