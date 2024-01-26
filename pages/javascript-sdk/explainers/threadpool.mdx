@@ -38,9 +38,95 @@ architecture and the challenges we encountered, so that future wanderers may
 learn from our experience.
 </Callout>
 
-## Some History
+## Constraints & Requirements
 
-## Components
+WASIX imposes a number of requirements on the implementation of a threadpool,
+and browser environments impose even more. To understand why we implemented
+the threadpool the way we did, we'll need to explain some extra context.
+
+### JavaScript is Single-Threaded
+
+All JavaScript code runs in a single-threaded environment, where JavaScript
+values are managed by the runtime's garbage collector and there is an event loop
+that will execute code in response to events (mouse clicks, you can read another
+chunk from a HTTP response, a promise resolved, etc.).
+
+This allows concurrency where multiple tasks can make progress at the same time,
+but you don't get parallelism. Under this paradigm, only piece of code can ever
+run at a time, and the runtime uses magic (async/await and promises) to rapidly
+jump between tasks.
+
+If you want to have true parallelism, where the computer is doing multiple
+things at the exact same time, you need to use a mechanism called [The Web
+Worker API][workers].
+
+A Web Worker works by creating an entirely new JavaScript runtime on another OS
+thread and executing the `*.js` file you pass to it. The original runtime and
+newly created runtime are completely sandboxed and can't access each other's
+memory.
+
+In Rust, we would say that JavaScript values are `!Send` and `!Sync`.
+
+<Callout type="warning" emoji="⚠️">
+The [`JsValue`][jsvalue] created that [`wasm-bindgen`][wasm-bindgen] gives Rust
+access to is fundamentally just an index into some table in the "current"
+JavaScript runtime, so it shares the same `JsValue: !Send + !Sync` limitation.
+Method calls and property accesses are implemented by calling host functions
+which use JavaScript to do the actual work - it's all just smoke and mirrors.
+
+Importantly, this means unsafely passing a `JsValue` to another JavaScript
+environment (e.g. by using `unsafe impl Send for ...` and passing it via Rust's
+linear memory) will mean that trying to use the `JsValue` will mean you access a
+different JavaScript object that just happens to be on the same index as the
+original object on the original runtime.
+</Callout>
+
+### Communicating Between JavaScript Environments
+
+Instead of communicating via shared memory, JavaScript environments can
+communicate by sending messages between them and their parent using the
+[`postMessage()`][post-message] API. This accepts a JavaScript object and will
+create a copy of the object inside the receiving runtime, which will be given
+access to this object via a [`message`][message-event] event.
+
+Using `postMessage()` with Web Workers looks something like this:
+
+```js filename="main.js"
+const first = document.querySelector("#number1");
+const second = document.querySelector("#number2");
+const result = document.querySelector(".result");
+
+const myWorker = new Worker("worker.js");
+
+[first, second].forEach(input => {
+    input.onchange = function() {
+        myWorker.postMessage([first.value, second.value]);
+        console.log("Message posted to worker");
+    }
+})
+
+myWorker.onmessage = function(e) {
+    result.textContent = e.data;
+    console.log("Message received from worker");
+}
+```
+
+```js filename="worker.js"
+onmessage = function(e) {
+    console.log("Worker: Message received from main script");
+    const result = e.data[0] * e.data[1];
+    console.log("Worker: Posting message back to main script");
+    postMessage(`Result: ${result}`);
+}
+```
+
+The `postMessage()` API comes with a couple of core limitations, though.
+
+First off, **not everything can be passed to `postMessage()`**.
+
+Secondly, **communication is only between a Worker and the JavaScript
+environment that created it.**
+
 
 ### The `wasmer_wasix::VirtualTaskManager` trait
 
@@ -92,8 +178,21 @@ pub trait VirtualTaskManager: Debug + Send + Sync + 'static {
 }
 ```
 
-The trait has two types of methods, methods for spawning work and extra
-utilities.
+If we want to use WASIX in the browser, we need to somehow adapt our threadpool
+implementation to match the `wasmer_wasix::VirtualTaskManager` interface.
+
+
+The `VirtualTaskManager` trait was designed to work within limitations imposed
+by the browser, so it provides a pretty fat, [leaky][leaky-abstractions]
+abstraction. You can see the browser-specific details leaking through in the
+form of `spawn_with_module()` and `task_wasm()` which need to be dedicated
+methods because they need to transfer JavaScript objects to the threadpool's
+worker threads[^leaky-details].
+
+[^leaky-details]: A `wasmer::Module` is just a wrapper around `js_sys::WebAssembly::Module`.
+      Similarly, `wasmer_wasix::TaskWasm` contains a `wasmer::Module` with the
+      WebAssembly module's compiled code and a `js_sys::WebAssembly::Memory`
+      which contains its address space.
 
 ### Messages
 
@@ -414,11 +513,17 @@ impl Drop for ConsoleLogger {
 ```
 
 [asyncify-light]: https://github.com/wasmerio/wasmer/blob/fc7c89fb1bfecc332d9f26238740e14c1df605cd/lib/wasix/src/syscalls/mod.rs#L480-L523
-[v0.6.0]: https://github.com/wasmerio/wasmer-js/releases/tag/wasmer-sdk-v0.6.0
-[vtm]: https://github.com/wasmerio/wasmer/blob/0265db1eb1ea574cf6c4f05a30d74f3c37c6d9da/lib/wasix/src/runtime/task_manager/mod.rs
-[spawn-local]: https://docs.rs/wasm-bindgen-futures/latest/wasm_bindgen_futures/fn.spawn_local.html
-[futures-block-on]: https://docs.rs/futures/latest/futures/executor/fn.block_on.html
-[web-http-client-spawn-js]: https://github.com/wasmerio/wasmer/blob/fc7c89fb1bfecc332d9f26238740e14c1df605cd/lib/wasix/src/http/web_http_client.rs#L88-L116
-[tracing-wasm]: https://docs.rs/tracing-wasm
 [fs-api]: https://developer.mozilla.org/en-US/docs/Web/API/File_System_API
 [fs-trait]: https://github.com/wasmerio/wasmer/blob/fc7c89fb1bfecc332d9f26238740e14c1df605cd/lib/virtual-fs/src/lib.rs#L93-L108
+[futures-block-on]: https://docs.rs/futures/latest/futures/executor/fn.block_on.html
+[message-event]: https://developer.mozilla.org/en-US/docs/Web/API/Worker/message_event
+[post-message]: https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage
+[spawn-local]: https://docs.rs/wasm-bindgen-futures/latest/wasm_bindgen_futures/fn.spawn_local.html
+[tracing-wasm]: https://docs.rs/tracing-wasm
+[v0.6.0]: https://github.com/wasmerio/wasmer-js/releases/tag/wasmer-sdk-v0.6.0
+[vtm]: https://github.com/wasmerio/wasmer/blob/0265db1eb1ea574cf6c4f05a30d74f3c37c6d9da/lib/wasix/src/runtime/task_manager/mod.rs
+[web-http-client-spawn-js]: https://github.com/wasmerio/wasmer/blob/fc7c89fb1bfecc332d9f26238740e14c1df605cd/lib/wasix/src/http/web_http_client.rs#L88-L116
+[workers]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
+[jsvalue]: https://docs.rs/wasm-bindgen/latest/wasm_bindgen/struct.JsValue.html
+[wasm-bindgen]: https://github.com/rustwasm/wasm-bindgen
+[leaky-abstractions]: https://www.joelonsoftware.com/2002/11/11/the-law-of-leaky-abstractions/

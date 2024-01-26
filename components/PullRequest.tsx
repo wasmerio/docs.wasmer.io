@@ -13,7 +13,7 @@ export default function PullRequest({ repository, number, name }: Props) {
 
     return (
         <span title={name} className={styles.pr}>
-            <a href={link} target="_blank">{text}</a>
+            <a href={link} rel="noreferrer" target="_blank">{text}</a>
         </span>
     )
 }
