@@ -13,6 +13,10 @@ kind: wasmer.io/App.v0
 name: my-sample-site
 description: A sample site for demonstration (optional)
 package: wasmer/my-sample-site
+
+# Specify environment variables
+env:
+  MY_VAR: "my-value123"
 ```
 
 ## Fields
@@ -41,9 +45,25 @@ The `description` field is used to provide a description of the application. It 
 
 ### `package`
 
-The `package` field is used to provide the primary workload to execute. It is **required** and must be a valid WebAssembly package identifier.
+The `package` field is used to specify the name of the package to deploy.
+It is **required** and must specify a package published to the Wasmer registry.
+
+Note: if you have a wasmer.toml in the same directory as the `app.yaml`, `wasmer deploy` will automatically prompt you to publish a new version of the package.
 
 - Required: `true`
+
+### `env`
+
+Specify environment variables for the app.
+Must be a key-value map.
+
+Example:
+```yaml
+env:
+  MY_VAR: "my-value123"
+```
+
+- Required: `false`
 
 ### `debug`
 
@@ -62,4 +82,6 @@ kind: wasmer.io/App.v0
 name: wasmer-python-flask-server-myapp-example
 package: wasmer/python-flask-server-myapp-example@0.1.0
 debug: false
+env:
+  MY_VAR: "my-value123"
 ```
