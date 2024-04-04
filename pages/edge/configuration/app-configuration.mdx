@@ -128,7 +128,10 @@ Fields for `scaling`:
 - #### `mode`: Required
   Possible values : `single_concurrency`
 
-  In this mode, the application will always have 1 instance
+  In this mode, Edge will only send a single request to each running Webassembly instance at a time. Instances are still reused for multiple requests, but only one after the other. Multiple instances will be started and shut down dynamically, depending on the incoming volume of requests.
+  **This is not the preferred deployment mode!**
+  It will not scale as well as instances handling multiple requests at once.
+  Use this mode i your application does not support handling multiple requests concurrently, like synchronous Python, PHP, ...
 
 ## Sample Configuration
 
