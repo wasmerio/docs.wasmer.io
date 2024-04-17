@@ -6,20 +6,39 @@ Wasmer Edge's configuration is stored in a `app.yaml` file in the root of your p
 
 ## Example
 
-For a basic static site this file contains the following information:
-
 ```yaml copy
+# Required fields
+
 kind: wasmer.io/App.v0
+# username or namespace
+owner: my-account
+# App name
 name: my-sample-site
-description: A sample site for demonstration (optional)
+# Package to run
 package: wasmer/my-sample-site
 
-# Specify environment variables
+# OPTIONAL fields
+
+# Description displayed in the dashboard/CLI
+description: A sample site for demonstration
+
+# Enable debug mode
+# If true, http responses will have more detailed error information.
+debug: true
+
+# Environment variables
 env:
   MY_VAR: "my-value123"
+
+# CLI arguments passed to the binary
+cli_args:
+  - arg1
+  - arg2
 ```
 
 ## Fields
+
+Detailed description of all available fields.
 
 ### `kind`
 
@@ -65,6 +84,19 @@ env:
 
 - Required: `false`
 
+### `cli_args`
+
+Specify command line arguments passed to the application.
+
+Example:
+```yaml
+cli_args:
+  - arg1
+  - arg2
+```
+
+- Required: `false`
+
 ### `debug`
 
 The `debug` field is used to enable debug mode for the application. This in turn will show detailed error messages if a request fails, instead of a generic error. It is **optional** and can be any boolean.
@@ -72,16 +104,38 @@ The `debug` field is used to enable debug mode for the application. This in turn
 - Required: `false`
 - Default: `false`
 
-## Sample Configuration
+### `scaling`
 
-This sample configuration is for a python based flask application.
+App scaling behaviour.
 
-```yaml copy
----
-kind: wasmer.io/App.v0
-name: wasmer-python-flask-server-myapp-example
-package: wasmer/python-flask-server-myapp-example@0.1.0
-debug: false
-env:
-  MY_VAR: "my-value123"
+#### `scaling.mode`
+
+Scaling mode for the app.
+
+**NOTE**: You should usually stick to the default behaviour,
+which is enabled when no scaling mode is specified.
+Only use the below modes if you you are sure they are appropriate!
+
+Available values:
+
+* `<unset>`
+
+  If no scaling mode is specified, Edge will send multiple requests to each instance, and also scale up additional instances if required.
+  This is the default, and the recommended mode if your program can handle multiple requests concurrently (Rust, Go, ...).
+
+* `single_concurrency`
+
+  Special scaling mode for apps that only support **a single request at a time**.
+  You should enable this mode if your app can not handle multiple requests concurrently.
+
+  Only a single request will be sent to each instance at a time.
+  Edge will dynamically scale up additional instances of your app as required by the incoming request volume, and shut them down when they are no longer needed.
+  This mode is appropriate for single-threaded synchronous Python/PHP/Ruby/...
+
+Example:
+```yaml
+scaling:
+  mode: single_concurrency
 ```
+
+- Required: `false`
