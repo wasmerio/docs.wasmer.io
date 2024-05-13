@@ -1,217 +1,206 @@
 import { Callout } from "nextra-theme-docs";
 
-# `wasmer app` and `wasmer deploy` CLI
+# The `app` CLI subcommand
+Wasmer provides you with CLI commands to deploy and manage your applications on the Edge, 
+namely the `wasmer app` subcommand.
 
-Wasmer provides you with commands in their CLI to deploy and manage your applications on the edge.
-
-## Usage
-
-Wasmer has two main commands for deploy:
-
-- `wasmer app`
-- `wasmer deploy`
-
-<Callout type="info" emoji="ℹ️">
-  **Note:** You must be logged in to Wasmer to use the `app` and `deploy`
-  commands.
+<Callout type="info">
+  **Note:** To deploy apps on Wasmer Edge, users need an account. When
+  deploying an app, users are prompted to login if they did not already. 
 </Callout>
 
-### `wasmer app`
+## Create
 
-It allows the user to:
-
-- Create an app
-- Get information about an app
-- List all of their apps
-
-#### `wasmer app create`
-
-This command is used to create an app that will be deployed on the edge.
-
-This further provides you with options:
-
-1. Use an existing package, like a `static-web-server` for static website.
-2. Create your own custom app from scratch.
-
-You can also specify an app type with the `--type` flag. The available types are:
-
-- Static website
-- HTTP server
-- Browser shell **(coming soon)**
-
-#### `wasmer app get`
-
-This command is used to get the information about an app.
-
-**Arguments**
-
-- `ident`: The identifier of the app you want to get information about. This is an optional argument. If you do not provide an app identifier, it will automatically get that from your `app.yaml` file in your current directory. This is basically the `name` field in your `app.yaml` file.
-
-**Options**
-
-- `--format`: The format to use for the output. This defaults to `yaml`. Other options are `json` and `text`.
-- `--token`: The token to use for authentication. You can also use the `WASMER_TOKEN` environment variable. This defaults to the token in your `~/.wasmer/wasmer.toml` file.
-- `--verbose`: Show verbose output.
-- `--quiet`: Do not print progress messages.
-- `--color`: Whether to use colored output. Defaults to `auto`. Possible values are `auto`, `always`, and `never`.
+Before deploying an app, one must be created: to this end, the wasmer CLI
+provides the `wasmer app create` command.
 
 ```shell
-$ wasmer app get wasmer/app-1
-Loaded app config from: /path/to/your/app.yaml
----
-id: da_4X8AGot5YVP2
-name: app-1
-created_at: "2023-06-15T11:46:46.642510+00:00"
-description: ~
-active_version:
-  id: dav_3XwGTWtYue3X
-  created_at: "2023-08-04T11:36:47.959492+00:00"
-  version: v1
-  description: ~
-  yaml_config: "kind: wasmer.io/App.v1\nmeta:\n  description: ''\n  name: wasmer/app-1\nspec:\n  workload:\n    source: wasmer/app-1@0.34.1\n"
-  user_yaml_config: "---\nkind: wasmer.io/App.v0\nname: app-1\napp_id: da_4X8AGot5YVP2\npackage: wasmer/app-1@0.34.1\n"
-  config: "{\"kind\": \"wasmer.io/App.v1\", \"meta\": {\"description\": \"\", \"name\": \"wasmer/app-1\"}, \"spec\": {\"workload\": {\"source\": \"wasmer/app-1@0.34.1\"}}}"
-  json_config: "{\"kind\": \"wasmer.io/App.v1\", \"meta\": {\"description\": \"\", \"name\": \"wasmer/app-1\"}, \"spec\": {\"workload\": {\"source\": \"wasmer/app-1@0.34.1\"}}}"
-  url: "https://rp9hmipc5rz2.id.wasmer.app"
-  app:
-    id: da_4X8AGot5YVP2
-admin_url: "https://wasmer.io/apps/wasmer/app-1"
-owner:
-  global_name: wasmer
-url: "https://app-1.wasmer.app"
-aliases:
-  page_info:
-    has_next_page: false
-    end_cursor: YXJyYXbjp25uNMN0aW9uOjA=
-  edges:
-    - node:
-        name: app-1
-```
+$ wasmer app create --help
+Create a new Edge app
 
-##### `wasmer app info`
-
-This command is a less verbose version of `wasmer app get`. It will only show the app information that you might quickly need.
-
-**Arguments**
-
-- `ident`: The identifier of the app you want to get information about. This is an optional argument. If you do not provide an app identifier, it will automatically get that from your `app.yaml` file in your current directory. This is basically the `name` field in your `app.yaml` file.
-
-```shell
-$ wasmer app info wasmer/app-1
-Loaded app config from: /path/to/your/app.yaml
-App Info
-> App Name: app-1
-> App URL: https://app-1.wasmer.app
-> Versioned URL: https://rp9hmipc5rz2.id.wasmer.app
-> Admin dashboard: https://wasmer.io/apps/wasmer/app-1
-```
-
-#### `wasmer app list`
-
-This command will list all the apps you have deployed.
-
-**Options**
-
-- `--format`: The format to use for the output. This defaults to `table`. Other options are `json` and `text`.
--
-
-```shell
-$ wasmer app list
-+------------------------------+---------+----------------------------------+-----------------+
-| App                          | Version | Created                          | Id              |
-+=============================================================================================+
-|         wasmer/app-1         | v11     | 2023-03-01T16:43:19.828000+00:00 | da_DR9EIBt1**** |
-|------------------------------+---------+----------------------------------+-----------------|
-|         wasmer/app-2         | v1      | 2023-05-19T16:05:44.461405+00:00 | da_onBBIbtX**** |
-|------------------------------+---------+----------------------------------+-----------------|
-|         wasmer/app-3         | v15     | 2023-05-26T12:10:05.777287+00:00 | da_pKWgIvtQ**** |
-+------------------------------+---------+----------------------------------+-----------------+
-```
-
-### `wasmer deploy`
-
-This command is used to deploy an app. Running this command will automatically publish an app to the registry and then deploy it to the edge.
-Once you have an `app.yaml` file, you can deploy it with the following command:
-
-```shell
-$ wasmer deploy
-```
-
-For a complete guide on deploying an app, check the [edge get started guide](/edge/get-started).
-
-## Help
-
-This is the help output from the Wasmer CLI for `wasmer app --help`:
-
-```shell
-Usage: wasmer app <COMMAND>
-
-Commands:
-  get   Show an app
-  list  List apps
-  logs  Show an app
-  init  Initialize apps with templates
-  help  Print this message or the help of the given subcommand(s)
+Usage: wasmer-dev app create [OPTIONS]
 
 Options:
-  -h, --help  Print help
-➜  ~ wasmer app --help
-Manage Wasmer Edge apps
+  -t, --type <type>
+          Possible values:
+          - http:           A HTTP server
+          - static-website: A static website
+          - browser-shell:  Wraps another package to run in the browser
+          - js-worker:      Winter-js based JS-Worker
+          - py-application: Python worker
 
-Usage: wasmer app <COMMAND>
+      --deploy
+          Whether or not to deploy the application once it is created.
+          
+		  If selected, this might entail the step of publishing the package
+		  related to the application. By default, the application is not
+		  deployed and the package is not published.
 
-Commands:
-  get   Show an app
-  list  List apps
-  logs  Show an app
-  init  Initialize apps with templates
-  help  Print this message or the help of the given subcommand(s)
-
-Options:
-  -h, --help  Print help
-```
-
-This is the help output from the Wasmer CLI for `wasmer deploy --help`:
-
-```
-Usage: wasmer deploy [OPTIONS] [PATH]
-
-Arguments:
-  [PATH]
-          The path to a YAML file with the deploy config
-
-Options:
-      --token <TOKEN>
-          [env: WASMER_TOKEN=]
-
-      --registry <REGISTRY>
-
-
-  -f, --format <FORMAT>
-          Output format. (json, text)
-
-          [default: yaml]
+  -v, --verbose...
+          Generate verbose output (repeat for more verbosity)
 
       --no-validate
           Skip local schema validation
 
-      --publish-package
-          Automatically publish the package referenced by this app.
-
-          Only works if the corresponding wasmer.toml is in the same directory.
-
-      --non-interactive
-          Do not prompt for user input
-
-  -h, --help
-          Print help (see a summary with '-h')
+  ...
 ```
 
-The arguments for this command are:
+This subcommand offers a wide range of flags, mostly to make `wasmer app
+create` functional as a non-interactive command as well.
 
-- `--token`: The token to use for authentication. You can also use the `WASMER_TOKEN` environment variable. This defaults to the token in your `~/.wasmer/wasmer.toml` file.
-- `--registry`: The registry to use. This defaults to the active registry in your `~/.wasmer/wasmer.toml` file.
-- `--format`: The format to use for the output. This defaults to `yaml`.
-- `--no-validate`: Skip local schema validation.
-- `--publish-package`: Automatically publish the package referenced by this app. Only works if the corresponding `wasmer.toml` is in the same directory.
-- `--non-interactive`: Do not prompt for user input.
+In the interactive case, the user will be guided through the steps to create an
+app: entering the name of the owner of the app (if not
+provided via the `--owner` flag) and the name of the app (if not provided via
+the `--name` flag).
+
+Once the metadata about the app are available, the user must decide the _kind_
+of app they want to deploy. 
+
+```shell
+$ wasmer app create  
+...
+? What would you like to deploy? ›
+  Start with a template
+❯ Choose an existing package
+```
+
+{/* [TODO]: Add link to templates list */}
+
+Templates allow users to kickstart their custom application from one of the
+available boilerplates like a static website, a php application, a javascript
+worker and much more. Another possibility is that of creating an app from an
+existing package: for example, as a starting step, the user can create the app
+from an existing package, like
+[`wasmer/hello`](https://wasmer.io/wasmer/hello).
+
+```shell
+$ wasmer app create 
+...
+✔ What would you like to deploy? · Choose an existing package
+✔ What is the name of the package? · wasmer/hello
+```
+The result of this action is that the CLI will create a file called `app.yaml`
+in the current working directory: 
+```
+kind: wasmer.io/App.v0
+name: <YOUR-APP-NAME>
+owner: <YOUR-NAME> 
+package: wasmer/hello
+```
+
+This file contains all the necessary informations required to deploy your app
+to Wasmer Edge. To learn more about this configuration file, refer to the
+[dedicated _Learn_ page](/edge/learn/apps). After having everything in place -
+whether it is from templates or pre-existing packages - the command will ask
+the user if they want to _deploy_ their app.
+
+## Deploy
+To deploy an app to the Wasmer Edge, the user can use the `wasmer app deploy` command.
+
+<Callout type="info">
+  **Note:** The `wasmer app deploy` command has a _top level alias_, namely
+  `wasmer deploy`: running any of the two commands will result in the execution
+  of the same program. 
+</Callout>
+
+```shell
+$ wasmer app deploy --help
+Deploy an app to Wasmer Edge
+
+Usage: wasmer app deploy [OPTIONS]
+
+Options:
+
+      --publish-package
+          Automatically publish the package referenced by this app.
+          
+          Only works if the corresponding wasmer.toml is in the same directory.
+
+      --path <PATH>
+          The path to the app.yaml file
+
+      --no-wait
+          Do not wait for the app to become reachable
+      
+      --owner <OWNER>
+          Specify the owner (user or namespace) of the app.
+          
+		  If specified via this flag, the owner will be overridden.  Otherwise,
+		  the `app.yaml` is inspected and, if there is no `owner` field in the
+		  spec file, the user will be prompted to select the correct owner. If
+		  no owner is found in non-interactive mode the deployment will fail.
+      ...
+```
+
+The `wasmer app deploy` subcommand has many flags, but does not have any
+mandatory argument. Its objective is that of loading the user-provided data -
+thus, possibly, [publishing](/registry/cli) a package as well - in Wasmer Edge
+and providing the needed informations for the user to manage their application.
+
+Based on the kind of app the user wants to deploy, the `wasmer app deploy`
+command carries out different actions. In a nutshell, from the CLI perspective,
+there are two kinds of deployment - just as mentioned above for the `wasmer app
+create` command - which entail two different flows. 
+
+In one case the user refers to a package already existing in the registry - in
+this case [the `package` field](/edge/configuration/app-configuration#package)
+in the `app.yaml` file will refer to an identifier of the package (e.g.
+`wasmer/hello`). In the other case, when the user has a custom local package
+that they want to upload and use, the `package` field will contain the path to
+the package's manifest.
+
+In the latter case, the `wasmer app deploy` command recognizes that the user
+might want to edit some of the metadata about the package and, if needed,
+prompts the user to decide on that regard. One example is that of the package
+version: in interactive mode, if the `--bump` flag was not given, the user will
+be asked if a patch version bump is needed. This, however, is not the only way
+to specify the version of a package: for a deeper dive into this matter, check
+out the [`publish` page](/registry/cli). 
+
+Once these matters are decided upon, this deployment flow concludes just as the
+former: your app is available!
+
+```
+Deploying app <YOUR-APP-NAME> (<YOUR-NAME>) to Wasmer Edge...
+
+App <YOUR-APP-NAME> (<YOUR-NAME>) was successfully deployed 🚀
+https://<YOUR-APP-NAME>-<YOUR-NAME>.wasmer.app
+
+→ Unique URL: https://2mzhyi8cle7r.id.wasmer.app
+→ Dashboard:  https://wasmer.io/apps/<YOUR-NAME>/<YOUR-APP-NAME>
+
+Waiting for new deployment to become available...
+(You can safely stop waiting now with CTRL-C)
+.
+𖥔 Deployment complete, new version reachable at https://<YOUR-APP-NAME>-<YOUR-NAME>.wasmer.app
+```
+
+## Managing apps
+Once an app is deployed, the `wasmer` CLI provides a number of tools to manage
+it. 
+
+### Gathering informations about apps
+In order to fetch structured informations about your app, you can use the
+`wasmer app get` and the `wasmer app info` commands. The former provides the
+user with a number of informations about the app structured as a YAML value,
+ranging from the identifier of the app to the raw value of the `app.yaml`
+config file used to create the app. 
+The `wasmer app info` command provides a synthesis of these informations, in
+particular the app name, the owner of the app, and relevant URLs.
+
+```
+$ wasmer app info       
+  App Info  
+→ Name: <YOUR-APP-NAME> 
+→ Owner: <YOUR-NAME> 
+→ URL: https://<YOUR-APP-NAME>-<YOUR-NAME>.wasmer.app
+→ Unique URL: https://2mzhyi8cle7r.id.wasmer.app
+→ Dashboard: https://wasmer.io/apps/<YOUR-NAME>/<YOUR-APP-NAME>
+```
+
+Both these apps have the same user-facing structure: the user can provide an
+app specifier in a format such as `your-name/your-app` or as the app
+identifier, which is persisted in the `app.yaml` file upon deploying.
+
+### Listing your apps 
+In order to show all the apps linked to your account, you can use the `wasmer app list` command.
