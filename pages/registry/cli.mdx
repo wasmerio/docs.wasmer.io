@@ -27,67 +27,42 @@ Commands:
 
 ## Publishing a package
 Once a [package manifest](/registry/manifest) is ready, the user can publish
-the package to the registry. In the Wasmer CLI, publishing a package involves
-two steps: _pushing_ the package and _tagging_ it - that is, uploading the
-package to the selected registry and giving it a name and a version the user
-can use to refer to the package. 
+the package to the registry. In the Wasmer CLI, publishing a package is an easy
+operation that involves just one command: `wasmer publish`.
 
-Both these steps come with a dedicated CLI subcommand - `wasmer package push`
-and `wasmer package tag`, in order.
+<Callout type="info">
+  **Note:** The `wasmer publish` command is a _top level alias_ of 
+  `wasmer package publish`: running any of the two commands will result in the execution
+  of the same program. 
+</Callout>
 
-### Pushing a package
-Let's start checking out the help message of the `push` subcommand:
-```
-$ wasmer package push --help
-
-Push a package to the registry. The result of this operation is that the hash
-of the package can be used to reference the pushed package.
-
-Usage: wasmer package push [OPTIONS] [path]
+```shell
+$ wasmer package publish
+Usage: wasmer package publish [OPTIONS] [path]
 
 Arguments:
   [path]
-		  Directory containing the `wasmer.toml`, or a custom *.toml manifest
-		  file. Defaults to current working directory. [default: .]
-  ...
+          Directory containing the `wasmer.toml`, or a custom *.toml manifest file.
+          
+          Defaults to current working directory.
+          
+          [default: .]
 ```
 
 The (non mandatory) argument this command needs is the path to the directory
 containing the manifest of the package. By default, the current working is
 searched for a `wasmer.toml`. Once a (valid) manifest is found, the package is
-built locally and uploaded to the repository. As a result, the hash of the
-uploaded package is shown to the user. 
-
-<Callout type="info">
-  **Note:** While the `push` command is not concerned with the name of the
-  package, every package still needs an owner and, if not available in the
-  package's manifest and not given via the `--namespace` flag, users will be
-  prompted to input the name of the owner of the package to push.
-</Callout>
-
-### Tagging the package
-The next conceptual step in this flow is that of tagging the package, that is,
-assigning a name and a version to the package. 
-```
-λ  new wasmer package tag --help
-Tag an existing package
-
-Usage: wasmer package tag [OPTIONS] <hash> [path]
-
-Arguments:
-  <hash>
-          The hash of the package to tag
-  ...
-```
-The `tag` command has a mandatory argument: the hash of the package to tag. 
-The command allows users to provide the relevant informations to tag the package 
-via command flags (`--name`, `--namespace`, `--version`), but these informations can 
-be synthesized via the manifest or, if the informations are not given and the program 
-is running interactively, can be provided via prompts: 
+built locally and uploaded to the repository. The next conceptual step in this
+flow is that of tagging the package, that is, assigning a name and a version to
+the package. The command allows users to provide the relevant informations to
+tag the package via command flags (`--name`, `--namespace`, `--version`), but
+these informations can be synthesized via the manifest or, if the informations
+are not given and the program is running interactively, can be provided via
+prompts: 
 
 ```shell 
-$ wasmer package tag sha256:02a439ea59b023ecedaecf31d3e8fc8fb881fcc00e88b1a25080b37a126f3cb9
-✔ Found package in the registry (02a439e)
+$ wasmer package publish 
+...
 ✔ Choose a package name · my-package
 ✔ Choose a namespace · edoardo
 ✔ Enter the package version · 0.1.0
@@ -97,13 +72,4 @@ $ wasmer package tag sha256:02a439ea59b023ecedaecf31d3e8fc8fb881fcc00e88b1a25080
 Once the process is completed, the user can refer to the package using the
 `namespace/name@version` format.
 
-### The `publish` command
-In a nutshell, the `wasmer package publish` command is equivalent to `wasmer
-package push` followed by `wasmer package tag`.
-
-<Callout type="info">
-  **Note:** The `wasmer package publish` command has a _top level alias_, namely
-  `wasmer publish`: running any of the two commands will result in the execution
-  of the same program. 
-</Callout>
 

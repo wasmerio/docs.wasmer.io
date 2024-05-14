@@ -11,14 +11,15 @@ namely the `wasmer app` subcommand.
 
 ## Create
 
-Before deploying an app, one must be created: to this end, the wasmer CLI
-provides the `wasmer app create` command.
+Before deploying an app, one must be created. The Wasmer CLI allows users to
+intentionally create an app, but if a user runs `wasmer app deploy` without an
+app available, the app creation process will be triggered.
 
 ```shell
 $ wasmer app create --help
 Create a new Edge app
 
-Usage: wasmer-dev app create [OPTIONS]
+Usage: wasmer app create [OPTIONS]
 
 Options:
   -t, --type <type>
@@ -95,11 +96,11 @@ whether it is from templates or pre-existing packages - the command will ask
 the user if they want to _deploy_ their app.
 
 ## Deploy
-To deploy an app to the Wasmer Edge, the user can use the `wasmer app deploy` command.
+To deploy an app to the Wasmer Edge, the user can use the `wasmer deploy` command.
 
 <Callout type="info">
-  **Note:** The `wasmer app deploy` command has a _top level alias_, namely
-  `wasmer deploy`: running any of the two commands will result in the execution
+  **Note:** The `wasmer deploy` command is a _top level alias_ of 
+  `wasmer app deploy`: running any of the two commands will result in the execution
   of the same program. 
 </Callout>
 
