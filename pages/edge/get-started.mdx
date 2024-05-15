@@ -6,41 +6,93 @@ import Login from "../../components/login.mdx";
 
 # Get Started with Wasmer Edge
 
-This page will guide you through installing Wasmer, and deploying an already existing package to Wasmer Edge infrastructure.
+The process to get started with Wasmer Edge is extremely short and intuitive: just install 
+the CLI and run a single command. In this page we show this two steps in detail. 
 
 <Steps>
  
 <Install />
 
-<Login />
+### Run `wasmer deploy`
+This command will make sure that everything is inplace for you to deploy your
+app: it will guide you through the login, the creation of the app and its deployment.
 
-### Deploy a package
-
-Creates an app based on an existing package on the [registry](../registry).
-
-Here we use <a href="https://wasmer.io/wasmer/hello" target="_blank">wasmer.io/wasmer/hello</a>,
-a simple web server with a stub template page.
-
-```bash
-wasmer app create wasmer/hello
+```shell
+$ wasmer deploy                                             
+? Do you want to login now? (y/n) › y 
+....
 ```
 
-This will create an `app.yaml` file with the following contents
+Once you are logged in, the same command will detect that no app is already
+available in the current directory and prompt you to create a new one, first choosing the owner 
+of the app..
 
-```yaml copy filename="app.yaml"
-kind: wasmer.io/App.v0
-name: <your-username>-hello-world
-package: wasmer/hello
+```shell
+$ wasmer deploy                                             
+...
+Login for Wasmer user <you> saved
+It seems you are trying to create a new app!
+? Who should own this app? ›
+❯ <you> 
 ```
 
-To redeploy after making changes, like upgrading the package, simply run
-`wasmer deploy` in a directory with an `app.yaml` file.
+then the name of the app..
 
-### Next Steps
+```shell
+$ wasmer deploy                                             
+...
+✔ Who should own this app?  · <you>
+? What should be the name of the app? › <your app name> 
+````
 
-- Read one of the more detailed quickstart guides:
-  - [Deploy a static site](./quickstart/static-site)
-  - [Deploy a Rust webserver](./quickstart/http-server)
-- Explore the [Learn](/edge/learn/apps) section
+..and finally the _kind_ of app you want to deploy:
+```shell
+$ wasmer deploy                                             
+...
+✔ Who should own this app?  · <you>
+✔ What should be the name of the app?  · <your app name> 
+? What would you like to deploy? ›
+❯ Start with a template
+  Choose an existing package
+```
+
+To get a grasp of this process, we suggest you to choose to create the app from 
+[an existing package](https://wasmer.io/wasmer/hello): 
+
+```shell
+$ wasmer deploy                                             
+...
+✔ Who should own this app? · <you> 
+✔ What should be the name of the app? · <your-app-name> 
+✔ What would you like to deploy? · Choose an existing package
+✔ What is the name of the package? · wasmer/hello
+```
+
+Once this last step to create an app is finished, the same command will deploy
+your first app, without having you execute any other!
+
+```shell
+$ wasmer deploy                                             
+...
+✔ Who should own this app? · <your-app> 
+✔ What should be the name of the app? · <your-app-name> 
+✔ What would you like to deploy? · Choose an existing package
+✔ What is the name of the package? · wasmer/hello
+✔ Do you want to deploy the app now? · yes
+
+Deploying app <your-app-name> (<you>) to Wasmer Edge...
+
+App <your-app-name> (<you>) was successfully deployed 🚀
+https://<your-app-name>-<you>.wasmer.app
+
+...
+
+𖥔 Deployment complete, new version reachable at https://<your-app-name>-<you>.wasmer.app
+```
 
 </Steps>
+
+The `deploy` command is a one-stop-shop for multiple functionalities needed to
+deploy apps on Wasmer Edge. To learn more about the commands available in the
+CLI to manage your Wasmer Edge apps, refer to the [dedicated _CLI_
+page](/edge/cli)!
