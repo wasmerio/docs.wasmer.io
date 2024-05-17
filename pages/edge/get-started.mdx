@@ -14,18 +14,12 @@ the CLI and run a single command. In this page we show this two steps in detail.
 <Install />
 
 ### Run `wasmer deploy`
-This command will make sure that everything is inplace for you to deploy your
-app: it will guide you through the login, the creation of the app and its deployment.
+This command will make sure that everything is in place for you to deploy your
+app: it will guide you through the creation of the app and its deployment.
 
-```shell
-$ wasmer deploy                                             
-? Do you want to login now? (y/n) › y 
-....
-```
-
-Once you are logged in, the same command will detect that no app is already
-available in the current directory and prompt you to create a new one, first choosing the owner 
-of the app..
+If you run it in an empty directory, the command will detect that no app is
+already available and will prompt you to create a new one, first choosing the
+owner of the app..
 
 ```shell
 $ wasmer deploy                                             
@@ -57,15 +51,16 @@ $ wasmer deploy
 ```
 
 To get a grasp of this process, we suggest you to choose to create the app from 
-[an existing package](https://wasmer.io/wasmer/hello): 
+a template:
 
 ```shell
 $ wasmer deploy                                             
 ...
 ✔ Who should own this app? · <you> 
 ✔ What should be the name of the app? · <your-app-name> 
-✔ What would you like to deploy? · Choose an existing package
-✔ What is the name of the package? · wasmer/hello
+✔ What would you like to deploy? · Start with a template
+✔ Selected template · Static website (demo url https://static-website-sample.wasmer.app/)
+✶ Downloading package.. 
 ```
 
 Once this last step to create an app is finished, the same command will deploy
@@ -78,6 +73,7 @@ $ wasmer deploy
 ✔ What should be the name of the app? · <your-app-name> 
 ✔ What would you like to deploy? · Choose an existing package
 ✔ What is the name of the package? · wasmer/hello
+✔ Unpacked template
 ✔ Do you want to deploy the app now? · yes
 
 Deploying app <your-app-name> (<you>) to Wasmer Edge...
@@ -85,9 +81,13 @@ Deploying app <your-app-name> (<you>) to Wasmer Edge...
 App <your-app-name> (<you>) was successfully deployed 🚀
 https://<your-app-name>-<you>.wasmer.app
 
-...
+→ Unique URL: https://<app-id>.id.wasmer.app
+→ Dashboard:  https://wasmer.io/apps/<you>/<your-app-name>
 
-𖥔 Deployment complete, new version reachable at https://<your-app-name>-<you>.wasmer.app
+Waiting for new deployment to become available...
+(You can safely stop waiting now with CTRL-C)
+.
+𖥔 Deployment complete
 ```
 
 </Steps>
