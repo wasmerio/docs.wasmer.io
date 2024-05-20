@@ -5,12 +5,13 @@ import Login from "@components/login.mdx";
 import GitHubLogo from "@components/GitHubLogo.tsx";
 import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
 
-# Quickstart guide for deploying a Python Application
+# Quickstart guide for a Python application
 
-In this guide, you'll learn the process of deploying a python application on Wasmer Edge.
-We'll be deploying a basic http server written in python.
+In this guide, you'll learn the process of deploying a Python application on Wasmer Edge, 
+in particular a Python http server.
+We will cover installation of the CLI, setting up a new Python HTTP server, and deploying it.
 
-## Deploying a Python Application
+## Deploying a Python application
 
 <Steps>
 
@@ -18,42 +19,72 @@ We'll be deploying a basic http server written in python.
 
 <CliVersionCallout />
 
-<Login />
+### Initialize the local directory 
 
-### Step 3.1: Initialize the Python Application Starter template
+With the CLI installed, let's create a new Python application! We begin 
+creating a new empty directory - after that, we will need to run a single command. 
 
-```shell copy
-$ wasmer app create
-App type:
-  Static website
-  HTTP server
-  Browser shell
-  JS Worker (experimental)
-> Python Application
+```bash
+$ mkdir my-python-http-server 
+$ cd my-python-http-server
+$ wasmer deploy --template=python-http-server             
+It seems you are trying to create a new app!
+✔ Who should own this app? · <you> 
+✔ What should be the name of the app? · <your-app-name> 
+✔ Unpacked template
+✔ Do you want to deploy the app now? · yes
+Loading local package (manifest path: <current-working-directory>)
+✔ Correctly built package locally
+✔ Package correctly uploaded
+✔ Succesfully pushed release to namespace <you> on the registry 
+Deploying app <your-app-name> (<you>) to Wasmer Edge...
+
+App <your-app-name> (<you>) was successfully deployed 🚀
+https://<your-app-name>-<you>.wasmer.app
+
+→ Unique URL: https://<app_id>.id.wasmer.app
+→ Dashboard:  https://wasmer.io/apps/<you>/<your-app-name>
+
+Waiting for new deployment to become available...
+(You can safely stop waiting now with CTRL-C)
+.
+𖥔 Deployment complete
 ```
 
-<Callout type="info" emoji="ℹ️">
-  This is an interactive command. You can also use the `--type` flag to specify
-  the app type.
-</Callout>
+The `wasmer deploy --template=python-http-server` command will prompt you for the following:
 
-Further you will be prompted to enter your package name and app name. You can choose any name you like.
+- **App owner**: This is the owner of the app. It can be your username
+  or an organization; if you're logged in, the command will prompt you to
+  choose from your namespaces: by default, it will be your username.
+- **App name**: This is the name of your app. By default, it will be the name
+  of the current directory. 
 
-<Callout type="warning" emoji="🚧">
-  The app names should be globally unique across all apps on the registry.
-</Callout>
+The above command will do the following:
 
-You directory composition should look like this:
+- Download the template from the registry 
+- Deploy it to Wasmer Edge with the user-provided informations
+
+Let's check it: 
+```shell
+$ curl https://<your-app-name>-<you>.wasmer.app
+{"message": "Python app is running with Wasmer!"}% 
+```
+
+### Update the app 
+Your directory should now look like this:
 
 <FileTree>
   <FileTree.Folder name="src" defaultOpen>
     <FileTree.File name="main.py" />
   </FileTree.Folder>
   <FileTree.File name="wasmer.toml" />
+  <FileTree.File name="README.md" />
+  <FileTree.File name="LICENSE" />
   <FileTree.File name="app.yaml" />
 </FileTree>
 
-Your `main.py` file should look like this:
+To illustrate the lifecycle of an app, let's edit the `main.py` file 
+in the `src` folder: 
 
 ```python copy filename="src/main.py"
 import os
@@ -68,7 +99,8 @@ class CustomHandler(SimpleHTTPRequestHandler):
         self.end_headers()
 
         data = {
-            "message": "wasmer/python-http-server is running on Python!"
+            "message": "wasmer/python-http-server is running on Python!", # <-- Notice the comma!
+            "hello": "world" # <- New line
         }
         self.wfile.write(json.dumps(data).encode('utf-8'))
 
@@ -84,60 +116,71 @@ if __name__ == "__main__":
     server.serve_forever()
 ```
 
-You can change the content of the `main.py` file to your liking.
+Let's re-deploy our Python HTTP server:
 
-### Step 3.2: Testing your Python Application locally
+```shell
+$ wasmer deploy
+Loading local package (manifest path: <current-working-directory>)
+✔ Correctly built package locally
+✔ Package correctly uploaded
+✔ Succesfully pushed release to namespace <you> on the registry 
+Deploying app <your-app-name> (<you>) to Wasmer Edge...
 
-Run the commands below to initialize files for Wasmer Edge:
+App <your-app-name> (<you>) was successfully deployed 🚀
+https://<your-app-name>-<you>.wasmer.app
 
-```shell copy
-$ wasmer run . --net --env PORT=4333
-Starting server on http://127.0.0.1:4333
+→ Unique URL: https://<app_id>.id.wasmer.app
+→ Dashboard:  https://wasmer.io/apps/<you>/<your-app-name>
+
+Waiting for new deployment to become available...
+(You can safely stop waiting now with CTRL-C)
+.
+𖥔 Deployment complete
 ```
-
-The above command will start a web server on `http://127.0.0.1:4333`.
 
 Let's try to cURL the server:
 
 ```shell copy
-$ curl http://127.0.0.1:4333
-"message": "wasmer/python-http-server is running on Python!"
+$ curl https://<your-app-name>-<you>.wasmer.app
+{"message": "Python app is running with Wasmer!", "hello": "world"}% 
 ```
 
-### Step 3.3: Deploying your Python Application
+### Testing your Python application locally
 
-Deploying is the easiest part. Just run the following command:
-
+To run your Python application locally simply run 
 ```shell copy
-$ wasmer deploy
-Deploying app wasmer/python-http-server...
+$ wasmer run . --net --env PORT=9090
+Starting server on http://127.0.0.1:9090
+``````
 
- ✅ App wasmer/python-http-server was successfully deployed!
-
-> App URL: https://wasmer-python-http-server.wasmer.app
-> Versioned URL: https://rkkh7ikcgv1r.id.wasmer.app
-> Admin dashboard: https://wasmer.io/apps/wasmer/wasmer-python-http-server
-```
+This will start a local server on  `http://localhost:9090`.
 
 <Callout type="info" emoji="ℹ️">
-  You must be in the directory holding the `wasmer.toml` and `app.yaml` config
-  files.
+  You can see all the available options with `wasmer run --help` or click
+  [here](/runtime/cli/) to see the full documentation. 
 </Callout>
 
-<Callout type="transparent" emoji="💁">
-  You can view the above info again using `wasmer app info`.
-</Callout>
+Let's try to cURL the server:
+
+```shell copy
+$ curl http://127.0.0.1:9090
+{"message": "Python app is running with Wasmer!"}% 
+```
 
 </Steps>
 
 ## Conclusion
 
-Congratulations! You have successfully deployed your python application on Wasmer Edge.
+Congratulations! You have successfully deployed a Python HTTP server on Wasmer Edge 🚀.
+
+> Tip: To make changes to your Python HTTP server, simply modify the `main.py` file
+> in the `src` directory and run `wasmer deploy` again to deploy the changes.
+
 
 ### Resources
 
 <Card
   icon={<GitHubLogo />}
-  title="wasmerio/edge-py-http-server"
-  href="https://github.com/wasmerio/python-http-example"
+  title="wasmer-examples/python-wasmer-starter"
+  href="https://github.com/wasmer-examples/python-wasmer-starter"
 />
