@@ -5,13 +5,12 @@ import Login from "@components/login.mdx";
 import GitHubLogo from "@components/GitHubLogo.tsx";
 import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
 
-# Quickstart guide for a Python application
+# Quickstart guide for a PHP application
 
-In this guide, you'll learn the process of deploying a Python application on Wasmer Edge, 
-in particular a Python http server.
-We will cover installation of the CLI, setting up a new Python HTTP server, and deploying it.
+In this guide, you'll learn the process of deploying a PHPapplication on Wasmer Edge.
+We will cover installation of the CLI, setting up a new PHP application, and deploying it.
 
-## Deploying a Python application
+## Deploying a PHP application 
 
 <Steps>
 
@@ -21,13 +20,13 @@ We will cover installation of the CLI, setting up a new Python HTTP server, and 
 
 ### Initialize the local directory 
 
-With the CLI installed, let's create a new Python application! We begin 
+With the CLI installed, let's create a new PHP application! We begin 
 creating a new empty directory - after that, we will need to run a single command. 
 
 ```bash
-$ mkdir my-python-http-server 
-$ cd my-python-http-server
-$ wasmer deploy --template=python-http-server             
+$ mkdir my-php-application 
+$ cd my-php-application
+$ wasmer deploy --template=php-starter
 It seems you are trying to create a new app!
 ✔ Who should own this app? · <you> 
 ✔ What should be the name of the app? · <your-app-name> 
@@ -51,7 +50,7 @@ Waiting for new deployment to become available...
 𖥔 Deployment complete
 ```
 
-The `wasmer deploy --template=python-http-server` command will prompt you for the following:
+The `wasmer deploy --template=php-starter` command will prompt you for the following:
 
 - **App owner**: This is the owner of the package. It can be your username
   or an organization; if you're logged in, the command will prompt you to
@@ -67,56 +66,48 @@ The above command will do the following:
 Let's check it: 
 ```shell
 $ curl https://<your-app-name>-<you>.wasmer.app
-{"message": "Python app is running with Wasmer!"}% 
+1	=>	PHP code tester Sandbox Online
+emoji	=>	😀 😃 😄 😁 😆
+2	=>	5
+5	=>	89009
+Random number	=>	<random!>
+PHP Version	=>	8.3.4
 ```
 
 ### Update the app 
+
 Your directory should now look like this:
 
+
 <FileTree>
-  <FileTree.Folder name="src" defaultOpen>
-    <FileTree.File name="main.py" />
+  <FileTree.Folder name="app" defaultOpen>
+    <FileTree.File name="index.php" />
+    <FileTree.File name="info.php" />
   </FileTree.Folder>
-  <FileTree.File name="wasmer.toml" />
   <FileTree.File name="README.md" />
-  <FileTree.File name="LICENSE" />
   <FileTree.File name="app.yaml" />
+  <FileTree.File name="wasmer.toml" />
 </FileTree>
 
-To illustrate the lifecycle of an app, let's edit the `main.py` file 
-in the `src` folder: 
+To illustrate the lifecycle of an app, let's edit the `index.php` file 
+in the `app` folder: 
 
-```python copy filename="src/main.py"
-import os
-import json
-from http.server import SimpleHTTPRequestHandler, HTTPServer
+```php copy filename="app/index.php"
+<?php
+// Enter your code here, enjoy!
+$array = array("1" => "PHP code tester Sandbox Online",
+    "emoji" => "😀 😃 😄 😁 😆", 5 , 5 => 89009,
+    "Random number" => rand(100,999),
+    "PHP Version" => phpversion(), 	// <- Notice the comma! 
+	"Hello" => "World" 	// <- New line 
+);
 
-
-class CustomHandler(SimpleHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-
-        data = {
-            "message": "wasmer/python-http-server is running on Python!", # <-- Notice the comma!
-            "hello": "world" # <- New line
-        }
-        self.wfile.write(json.dumps(data).encode('utf-8'))
-
-
-if __name__ == "__main__":
-    host = os.environ.get('HOST', '127.0.0.1')
-
-    # Get the PORT environment variable if it's present; otherwise, default to 8000
-    port = int(os.environ.get('PORT', 80))
-
-    server = HTTPServer((host, port), CustomHandler)
-    print(f"Starting server on http://{host}:{port}")
-    server.serve_forever()
+foreach( $array as $key => $value ){
+    echo $key."\t=>\t".$value."\n";
+}
 ```
 
-Let's re-deploy our Python HTTP server:
+Now, simply run `wasmer deploy` again:
 
 ```shell
 $ wasmer deploy
@@ -138,49 +129,59 @@ Waiting for new deployment to become available...
 𖥔 Deployment complete
 ```
 
-Let's try to cURL the server:
-
-```shell copy
+Let's check it again:
+```shell
 $ curl https://<your-app-name>-<you>.wasmer.app
-{"message": "Python app is running with Wasmer!", "hello": "world"}% 
+1	=>	PHP code tester Sandbox Online
+emoji	=>	😀 😃 😄 😁 😆
+2	=>	5
+5	=>	89009
+Random number	=>	286
+PHP Version	=>	8.3.4
+Hello	=>	World
 ```
 
-### Testing your Python application locally
+### Testing your PHP application locally
+To test your PHP application locally simply run
 
-To run your Python application locally simply run 
 ```shell copy
-$ wasmer run . --net --env PORT=9090
-Starting server on http://127.0.0.1:9090
-``````
-
-This will start a local server on  `http://localhost:9090`.
+$ wasmer run . --net 
+Starting server on http://127.0.0.1:8000
+````
 
 <Callout type="info" emoji="ℹ️">
   You can see all the available options with `wasmer run --help` or click
   [here](/runtime/cli/) to see the full documentation. 
 </Callout>
 
+
 Let's try to cURL the server:
 
 ```shell copy
-$ curl http://127.0.0.1:9090
-{"message": "Python app is running with Wasmer!"}% 
+$ curl http://127.0.0.1:8000
+1	=>	PHP code tester Sandbox Online
+emoji	=>	😀 😃 😄 😁 😆
+2	=>	5
+5	=>	89009
+Random number	=>	286
+PHP Version	=>	8.3.4
+Hello	=>	World
 ```
 
 </Steps>
 
 ## Conclusion
 
-Congratulations! You have successfully deployed a Python HTTP server on Wasmer Edge 🚀.
+Congratulations! You have successfully deployed a PHP application on Wasmer Edge 🚀.
 
-> Tip: To make changes to your Python HTTP server, simply modify the `main.py` file
-> in the `src` directory and run `wasmer deploy` again to deploy the changes.
+> Tip: To make changes to your PHP application, simply modify the `index.php` file
+> in the `app` directory and run `wasmer deploy` again to deploy the changes.
 
 
 ### Resources
 
 <Card
   icon={<GitHubLogo />}
-  title="wasmer-examples/python-wasmer-starter"
-  href="https://github.com/wasmer-examples/python-wasmer-starter"
+  title="wasmer-examples/php-wcgi-starter"
+  href="https://github.com/wasmer-examples/php-wcgi-starter"
 />
