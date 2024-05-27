@@ -6,9 +6,17 @@ import { Callout } from "nextra-theme-docs";
 
 ## Usage
 
+### Create a package
+
+Creating a package is very simple, just run:
+
+```bash
+wasmer init
+```
+
 ### Publish a package to Wasmer
 
-Publishing a package to Wasmer is as simple as running the following command:
+Once you set up the values in your [`wasmer.toml` manifest](/registry/manifest), publishing a package to Wasmer is as simple as running the following command:
 
 ```bash
 wasmer publish
@@ -58,22 +66,17 @@ Usage: wasmer publish [OPTIONS] [PACKAGE_PATH]
 Arguments:
   [PACKAGE_PATH]
           Directory containing the `wasmer.toml`, or a custom *.toml manifest file.
-
           Defaults to current working directory.
 
 Options:
       --registry <REGISTRY>
           Registry to publish to
-
       --dry-run
           Run the publish logic without sending anything to the registry server
-
       --quiet
           Run the publish command without any output
-
       --package-name <PACKAGE_NAME>
           Override the package of the uploaded package in the wasmer.toml
-
       --version <VERSION>
           Override the package version of the uploaded package in the wasmer.toml
 

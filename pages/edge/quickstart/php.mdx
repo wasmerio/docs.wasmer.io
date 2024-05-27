@@ -1,17 +1,16 @@
 import { Steps, Callout, FileTree } from "nextra-theme-docs";
 import { Card, Cards } from "nextra-theme-docs";
-import GitHubLogo from "@components/GitHubLogo.tsx";
 import Install from "@components/install.mdx";
 import Login from "@components/login.mdx";
+import GitHubLogo from "@components/GitHubLogo.tsx";
 import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
 
-# Quickstart guide for a JS service worker
+# Quickstart guide for a PHP application
 
-In this guide, you'll learn the process of deploying a JS service
-worker on Wasmer Edge. We will cover installation of the CLI, setting up a new
-Javascript worker, and deploying it.
+In this guide, you'll learn the process of deploying a PHPapplication on Wasmer Edge.
+We will cover installation of the CLI, setting up a new PHP application, and deploying it.
 
-## Deploying a JS service worker
+## Deploying a PHP application 
 
 <Steps>
 
@@ -20,13 +19,14 @@ Javascript worker, and deploying it.
 <CliVersionCallout />
 
 ### Initialize the local directory 
-With the CLI installed, let's create a new JS service worker! We begin 
+
+With the CLI installed, let's create a new PHP application! We begin 
 creating a new empty directory - after that, we will need to run a single command. 
 
 ```bash
-$ mkdir my-js-worker 
-$ cd my-js-worker
-$ wasmer deploy --template=js-worker
+$ mkdir my-php-application 
+$ cd my-php-application
+$ wasmer deploy --template=php-starter
 It seems you are trying to create a new app!
 ✔ Who should own this app? · <you> 
 ✔ What should be the name of the app? · <your-app-name> 
@@ -50,7 +50,7 @@ Waiting for new deployment to become available...
 𖥔 Deployment complete
 ```
 
-The `wasmer deploy --template=js-worker` command will prompt you for the following:
+The `wasmer deploy --template=php-starter` command will prompt you for the following:
 
 - **App owner**: This is the owner of the app. It can be your username
   or an organization; if you're logged in, the command will prompt you to
@@ -66,42 +66,41 @@ The above command will do the following:
 Let's check it: 
 ```shell
 $ curl https://<your-app-name>-<you>.wasmer.app
-{"success":true,"package":"wasmer/js-worker-starter"}%   
+1	=>	PHP code tester Sandbox Online
+emoji	=>	😀 😃 😄 😁 😆
+2	=>	5
+5	=>	89009
+Random number	=>	<random!>
+PHP Version	=>	8.3.4
 ```
 
 ### Update the app 
+
 Your directory should now look like this:
 
+
 <FileTree>
-  <FileTree.Folder name="src" defaultOpen>
-    <FileTree.File name="index.js" />
+  <FileTree.Folder name="app" defaultOpen>
+    <FileTree.File name="index.php" />
+    <FileTree.File name="info.php" />
   </FileTree.Folder>
-  <FileTree.File name="wasmer.toml" />
   <FileTree.File name="README.md" />
   <FileTree.File name="app.yaml" />
+  <FileTree.File name="wasmer.toml" />
 </FileTree>
 
-To illustrate the lifecycle of an app, let's edit the `index.js` file 
-in the `public` folder: 
+To illustrate the lifecycle of an app, let's edit the `index.php` file 
+in the `app` folder: 
 
-```js copy filename="src/index.js"
-async function handler(request) {
-  const out = JSON.stringify({
-	hello: "world", 	// <- New line 
-    success: true,
-    package: "wasmer/js-worker-starter",
-  });
-  return new Response(out, {
-    headers: { "content-type": "application/json" },
-  });
-}
-
-addEventListener("fetch", (fetchEvent) => {
-  fetchEvent.respondWith(handler(fetchEvent.request));
-});
+```php copy filename="app/index.php"
+<?php 
+  echo 'Hello World!';   
+  var_dump($_SERVER); 
+?>
 ```
 
 Now, simply run `wasmer deploy` again:
+
 ```shell
 $ wasmer deploy
 Loading local package (manifest path: <current-working-directory>)
@@ -125,42 +124,50 @@ Waiting for new deployment to become available...
 Let's check it again:
 ```shell
 $ curl https://<your-app-name>-<you>.wasmer.app
-{"hello": "world", "success":true,"package":"wasmer/js-worker-starter"}%   
+Hello World! <more text..>
 ```
 
-### Testing your JS service worker locally
-
-To run your worker locally, simply run
+### Testing your PHP application locally
+To test your PHP application locally simply run
 
 ```shell copy
-$ wasmer run . --net
-2023-10-05T09:46:19.513568Z  INFO wasmer_winter: starting webserver
-2023-10-05T09:46:19.514089Z  INFO wasmer_winter::server: starting server on 0.0.0.0:8080 listen=0.0.0.0:8080
-```
+$ wasmer run . --net 
+Starting server on http://127.0.0.1:8000
+````
 
-The above command will start a web server on `http://127.0.0.1:8080`.
+<Callout type="info" emoji="ℹ️">
+  You can see all the available options with `wasmer run --help` or click
+  [here](/runtime/cli/) to see the full documentation. 
+</Callout>
+
 
 Let's try to cURL the server:
 
 ```shell copy
-$ curl http://127.0.0.1:8080
-{"success":true,"package":"wasmer/js-service-worker"}
+$ curl http://127.0.0.1:8000
+1	=>	PHP code tester Sandbox Online
+emoji	=>	😀 😃 😄 😁 😆
+2	=>	5
+5	=>	89009
+Random number	=>	286
+PHP Version	=>	8.3.4
+Hello	=>	World
 ```
 
 </Steps>
 
 ## Conclusion
 
-Congratulations! You have successfully deployed a JS service worker on Wasmer Edge 🚀.
+Congratulations! You have successfully deployed a PHP application on Wasmer Edge 🚀.
 
-> Tip: To make changes to your JS service worker, simply modify the `index.js` file in the
-> `src` directory and run `wasmer deploy` again to deploy the changes.
+> Tip: To make changes to your PHP application, simply modify the `index.php` file
+> in the `app` directory and run `wasmer deploy` again to deploy the changes.
 
 
 ### Resources
 
 <Card
   icon={<GitHubLogo />}
-  title="wasmer-examples/edge-js-service-worker"
-  href="https://github.com/wasmer-examples/js-service-worker-example"
+  title="wasmer-examples/php-wasmer-starter"
+  href="https://github.com/wasmer-examples/php-wasmer-starter"
 />

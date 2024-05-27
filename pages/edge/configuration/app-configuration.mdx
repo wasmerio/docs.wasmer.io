@@ -6,16 +6,39 @@ Wasmer Edge's configuration is stored in a `app.yaml` file in the root of your p
 
 ## Example
 
-For a basic static site this file contains the following information:
-
 ```yaml copy
+# Required fields
+
 kind: wasmer.io/App.v0
+# username or namespace
+owner: my-account
+# App name
 name: my-sample-site
-description: A sample site for demonstration (optional)
+# Package to run
 package: wasmer/my-sample-site
+
+# OPTIONAL fields
+
+# Description displayed in the dashboard/CLI
+description: A sample site for demonstration
+
+# Enable debug mode
+# If true, http responses will have more detailed error information.
+debug: true
+
+# Environment variables
+env:
+  MY_VAR: "my-value123"
+
+# CLI arguments passed to the binary
+cli_args:
+  - arg1
+  - arg2
 ```
 
 ## Fields
+
+Detailed description of all available fields.
 
 ### `kind`
 
@@ -41,9 +64,38 @@ The `description` field is used to provide a description of the application. It 
 
 ### `package`
 
-The `package` field is used to provide the primary workload to execute. It is **required** and must be a valid WebAssembly package identifier.
+The `package` field is used to specify the name of the package to deploy.
+It is **required** and must specify a package published to the Wasmer registry.
+
+Note: if you have a wasmer.toml in the same directory as the `app.yaml`, `wasmer deploy` will automatically prompt you to publish a new version of the package.
 
 - Required: `true`
+
+### `env`
+
+Specify environment variables for the app.
+Must be a key-value map.
+
+Example:
+```yaml
+env:
+  MY_VAR: "my-value123"
+```
+
+- Required: `false`
+
+### `cli_args`
+
+Specify command line arguments passed to the application.
+
+Example:
+```yaml
+cli_args:
+  - arg1
+  - arg2
+```
+
+- Required: `false`
 
 ### `debug`
 
@@ -52,14 +104,84 @@ The `debug` field is used to enable debug mode for the application. This in turn
 - Required: `false`
 - Default: `false`
 
-## Sample Configuration
+### `health_checks`
 
-This sample configuration is for a python based flask application.
+The `health_checks` field is used to check if an application is working correctly. If the healthchecks fail, edge will restart the application. It is **optional** and its an array of healtcheck objects
 
-```yaml copy
----
-kind: wasmer.io/App.v0
-name: wasmer-python-flask-server-myapp-example
-package: wasmer/python-flask-server-myapp-example@0.1.0
-debug: false
+- Required: `false`
+
+Currently only supported healthcheck type is `http`. It executes an http request against the application. All the supported 
+
+##### Example healthcheck
 ```
+health_checks:
+  - http:
+      method: get
+      path: /
+      interval: 30s
+      timeout: 10s
+      unhealthy_threshold: 2
+      healthy_threshold: 1
+      expected_status_codes:
+        - 200
+      # below are optional
+      expected_body_includes: Hello World
+      expected_body_regex: ".*Wasmer.*"
+```
+Fields for http healthcheck:
+- #### `method`: Required
+  HTTP method to use. 
+- #### `path`: Required
+  Path to send request to. 
+- #### `interval`: Required
+  Duration between each request
+- #### `timeout`: Required
+  Timeout duration for requests
+- #### `unhealthy_threshold`: Required
+  After `unhealthy_threshold` amount of failure of the http requests, app is considered unhealthy and will be restarted
+- #### `healthy_threshold`: Required
+  After `healthy_threshold` amount of failure of the http requests, app is considered healthy and will be restarted
+- #### `expected_status_codes`: Required
+  If the application returns these status codes, then the request will be count as successful
+- #### `expected_body_includes`:
+  If this is specified, response body should include the string defined in this field to be count as successful
+- #### `expected_body_regex`:
+  If this is specified, response body should be able to match the regular expression defined in this field to be count as successful
+
+So in the example above, if the application fails two consequent request, application will be restarted. It will be keep restarted until it successfully responds to one request
+
+### `scaling`
+
+The `scaling` field is used to configure how your application scales on Edge.
+
+#### `scaling.mode`
+
+Scaling mode for the app.
+
+**NOTE**: You should usually stick to the default behaviour,
+which is enabled when no scaling mode is specified.
+Only use the below modes if you you are sure they are appropriate!
+
+Available values:
+
+* `<unset>`
+
+  If no scaling mode is specified, Edge will send multiple requests to each instance, and also scale up additional instances if required.
+  This is the default, and the recommended mode if your program can handle multiple requests concurrently (Rust, Go, ...).
+
+* `single_concurrency`
+
+  Special scaling mode for apps that only support **a single request at a time**.
+  You should enable this mode if your app can not handle multiple requests concurrently.
+
+  Only a single request will be sent to each instance at a time.
+  Edge will dynamically scale up additional instances of your app as required by the incoming request volume, and shut them down when they are no longer needed.
+  This mode is appropriate for single-threaded synchronous Python/PHP/Ruby/...
+
+Example:
+```yaml
+scaling:
+  mode: single_concurrency
+```
+
+- Required: `false`

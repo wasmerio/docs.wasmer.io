@@ -1,0 +1,153 @@
+import { Steps, Callout, FileTree } from "nextra-theme-docs";
+import { Card, Cards } from "nextra-theme-docs";
+import GitHubLogo from "@components/GitHubLogo.tsx";
+import Install from "@components/install.mdx";
+import Login from "@components/login.mdx";
+import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
+
+# Quickstart guide for a Rust HTTP server 
+
+In this quickstart guide, you'll learn how to deploy an HTTP server on the Wasmer Edge.
+We will be using Rust's popular [Axum](https://github.com/tokio-rs/axum) framework to create a simple HTTP server.
+
+## Prerequisites
+
+The project requires the following tools to be installed on your system:
+
+- [Rust](https://www.rust-lang.org/tools/install)
+- [Wasmer CLI](/install)
+- [`WASIX`](http://wasix.org/docs/language-guide/rust/installation)
+
+## Deploying an HTTP Server
+
+<Steps>
+
+<Install />
+
+<CliVersionCallout />
+
+### Initialize the local directory 
+
+With the CLI installed, let's create a new Axum application! We begin 
+creating a new empty directory - after that, we will need to run a single command. 
+
+```bash
+$ mkdir my-axum-server
+$ cd my-axum-server
+$ wasmer deploy --template=axum-starter
+It seems you are trying to create a new app!
+✔ Who should own this app? · <you> 
+✔ What should be the name of the app? · <your-app-name> 
+
+✔ Unpacked template
+
+NOTE: The selected template has a `BUILD.md` file.
+This means there are likely additional build 
+steps that you need to perform before deploying
+the app:
+ 
+# Building the application
+1. Install [WASIX](https://wasix.org/docs/language-guide/rust/installation)
+2. Build the application: `cargo wasix build --release`
+
+After taking the necessary steps to build your application, re-run `wasmer deploy`
+```
+
+You can see, as prompted by the command, that we'll need a couple more steps
+before deploying the server, namely actually _building_ the application: we
+assume you installed the [`WASIX`](https://wasix.org/docs/language-guide/rust/installation) toolchain. We need to build the HTTP server
+using `cargo wasix`:
+
+```
+$ cargo wasix build --release
+...
+Compiling wasmer-hello v0.1.0 (/.../Wasmer/edge-quickstart/wasmer-hello)
+Finished dev [unoptimized + debuginfo] target(s) in 10.69s
+info: Post-processing WebAssembly files
+```
+
+<Callout type="default" emoji="🚨">
+  It might happen that your build fails. This is due to different libraries
+  that needs to be used to achieve WASIX compatibility: one of the easiest
+  "gotchas" is forgetting to update your lock file with `cargo update`.
+</Callout>
+
+Now, Your directory structure should look like this:
+
+<FileTree>
+  <FileTree.Folder name="wasmer-hello" defaultOpen>
+    <FileTree.Folder name="src" defaultOpen>
+      <FileTree.File name="main.rs" />
+    </FileTree.Folder>
+    <FileTree.Folder name="target">
+    </FileTree.Folder>
+    <FileTree.File name="Cargo.toml" />
+    <FileTree.File name="wasmer.toml" />
+    <FileTree.File name="app.yaml" />
+    <FileTree.File name="LICENSE" />
+    <FileTree.File name="README.md" />
+    <FileTree.File name="BUILD.md" />
+  </FileTree.Folder>
+</FileTree>
+
+Once the application itself was correctly built, you can re-run `wasmer deploy`:
+```shell
+$ wasmer deploy 
+It seems you are trying to create a new app!
+✔ Who should own this app? · <you> 
+✔ What should be the name of the app? · <your-app-name> 
+✔ Unpacked template
+✔ Do you want to deploy the app now? · yes
+Loading local package (manifest path: <current-working-directory>)
+✔ Correctly built package locally
+✔ Package correctly uploaded
+✔ Succesfully pushed release to namespace <you> on the registry 
+Deploying app <your-app-name> (<you>) to Wasmer Edge...
+
+App <your-app-name> (<you>) was successfully deployed 🚀
+https://<your-app-name>-<you>.wasmer.app
+
+→ Unique URL: https://<app_id>.id.wasmer.app
+→ Dashboard:  https://wasmer.io/apps/<you>/<your-app-name>
+
+Waiting for new deployment to become available...
+(You can safely stop waiting now with CTRL-C)
+.
+𖥔 Deployment complete
+
+```
+
+Let's check it:
+```shell
+$ curl https://<your-app-name>-<you>.wasmer.app
+Hello, Axum ❤️ WASIX!
+```
+
+### Test the server locally
+
+We can test out server locally by running the following command:
+
+import TerminalLeft from "@components/deploy/quickstart/TerminalLeft.mdx";
+import TerminalRight from "@components/deploy/quickstart/TerminalRight.mdx";
+
+| Terminal 1       | Terminal 2        |
+| ---------------- | ----------------- |
+| <TerminalLeft /> | <TerminalRight /> |
+
+</Steps>
+
+## Conclusion
+
+Congratulations! You have successfully deployed an Axum server on Wasmer Edge 🚀.
+
+> Tip: To make changes to your Axum server, simply modify the `main.rs` file
+> in the `app` directory and run `wasmer deploy` again to deploy the changes.
+
+
+### Resources
+
+<Card
+  icon={<GitHubLogo />}
+  title="wasmer-examples/axum-starter"
+  href="https://github.com/wasmer-examples/axum-starter"
+/>

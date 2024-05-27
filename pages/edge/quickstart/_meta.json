@@ -1,6 +1,7 @@
 {
-  "static-site": "Static Site",
-  "http-server": "HTTP Server",
-  "js-wintercg": "JS Service Worker",
-  "python": "Python"
+  "static-site": "Static website",
+  "js-wintercg": "JS service worker",
+  "python": "Python HTTP server",
+  "rust-http-server": "Rust (Axum) HTTP server",
+  "php": "PHP application"
 }
