@@ -34,6 +34,13 @@ env:
 cli_args:
   - arg1
   - arg2
+
+capabilities:
+  # Fast startup with instaboot
+  bootstrap:
+    requests:
+      - path: /
+      - path: /_bootstrap
 ```
 
 ## Fields
@@ -103,6 +110,25 @@ The `debug` field is used to enable debug mode for the application. This in turn
 
 - Required: `false`
 - Default: `false`
+
+### `capabilities`
+
+#### `bootstrap`
+
+Enable fast application startup with startup snapshots.
+
+See [InstaBoot](/edge/learn/instaboot) for more details.
+
+```
+capabilities:
+  instaboot:
+    requests:
+      - path: /
+      - path: /_bootstrap
+        # Optionally request settings:
+        method: POST
+	body: "custom body"
+```
 
 ### `health_checks`
 
