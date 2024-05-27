@@ -1,75 +1,91 @@
 import { Callout } from "nextra-theme-docs";
 
-# The `package` CLI subcommand
-Wasmer provides you with CLI commands to work with packages, namely the 
-`wasmer package` range of subcommands.
+# `wasmer publish` CLI
 
-<Callout type="info">
-  **Note:** To publish packages to the [registry](https://wasmer.io), users
-  need an account. When publishing a package, users are prompted to login if
-  they did not already. 
-</Callout>
+`wasmer publish` allows publishing a Wasmer container to the [registry](/registry).
 
-```
-$ wasmer package help
-Package related commands
+## Usage
 
-Usage: wasmer package [OPTIONS] <COMMAND>
+### Create a package
 
-Commands:
-  download  Download a package from the registry
-  build     Build a container from a package manifest
-  tag       Tag an existing package
-  push      Push a package to the registry
-  publish   Publish (push and tag) a package to the registry
-  help      Print this message or the help of the given subcommand(s)
+Creating a package is very simple, just run:
+
+```bash
+wasmer init
 ```
 
-## Publishing a package
-Once a [package manifest](/registry/manifest) is ready, the user can publish
-the package to the registry. In the Wasmer CLI, publishing a package is an easy
-operation that involves just one command: `wasmer publish`.
+### Publish a package to Wasmer
 
-<Callout type="info">
-  **Note:** The `wasmer publish` command is a _top level alias_ of 
-  `wasmer package publish`: running any of the two commands will result in the execution
-  of the same program. 
+Once you set up the values in your [`wasmer.toml` manifest](/registry/manifest), publishing a package to Wasmer is as simple as running the following command:
+
+```bash
+wasmer publish
+```
+
+This command will create your Wasmer package, and publish it to the Wasmer registry.
+
+<Callout type="info" emoji="ℹ️">
+  **Note:** You must login to wasmer to use the `publish` command.
 </Callout>
 
-```shell
-$ wasmer package publish
-Usage: wasmer package publish [OPTIONS] [path]
+#### Dry run
+
+If you want to check that everything is running properly before publishing, you can run `--dry-run`:
+
+```bash
+wasmer publish --dry-run
+```
+
+<Callout type="default" emoji="💡">
+  This will not upload the package to the registry.
+</Callout>
+
+## Configuration
+
+You can set the configuration for the registry very easily.
+
+### `registry.url`: Registry URL 
+
+Get:
+```
+wasmer config get registry.url
+```
+
+Set:
+```
+wasmer config set registry.url https://registry.wasmer.io/graphql
+```
+
+## Help
+
+This is the help output from the Wasmer CLI for `wasmer publish --help`:
+
+```
+Usage: wasmer publish [OPTIONS] [PACKAGE_PATH]
 
 Arguments:
-  [path]
+  [PACKAGE_PATH]
           Directory containing the `wasmer.toml`, or a custom *.toml manifest file.
-          
           Defaults to current working directory.
-          
-          [default: .]
+
+Options:
+      --registry <REGISTRY>
+          Registry to publish to
+      --dry-run
+          Run the publish logic without sending anything to the registry server
+      --quiet
+          Run the publish command without any output
+      --package-name <PACKAGE_NAME>
+          Override the package of the uploaded package in the wasmer.toml
+      --version <VERSION>
+          Override the package version of the uploaded package in the wasmer.toml
+
+      --token <TOKEN>
+          Override the token (by default, it will use the current logged in user)
+
+      --no-validate
+          Skip validation of the uploaded package
+
+  -h, --help
+          Print help (see a summary with '-h')
 ```
-
-The (non mandatory) argument this command needs is the path to the directory
-containing the manifest of the package. By default, the current working is
-searched for a `wasmer.toml`. Once a (valid) manifest is found, the package is
-built locally and uploaded to the repository. The next conceptual step in this
-flow is that of tagging the package, that is, assigning a name and a version to
-the package. The command allows users to provide the relevant informations to
-tag the package via command flags (`--name`, `--namespace`, `--version`), but
-these informations can be synthesized via the manifest or, if the informations
-are not given and the program is running interactively, can be provided via
-prompts: 
-
-```shell 
-$ wasmer package publish 
-...
-✔ Choose a package name · my-package
-✔ Choose a namespace · <your-name> 
-✔ Enter the package version · 0.1.0
-...
-```
-
-Once the process is completed, the user can refer to the package using the
-`namespace/name@version` format.
-
-
