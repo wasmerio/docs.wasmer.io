@@ -104,9 +104,55 @@ The `debug` field is used to enable debug mode for the application. This in turn
 - Required: `false`
 - Default: `false`
 
+### `health_checks`
+
+The `health_checks` field is used to check if an application is working correctly. If the healthchecks fail, edge will restart the application. It is **optional** and its an array of healtcheck objects
+
+- Required: `false`
+
+Currently only supported healthcheck type is `http`. It executes an http request against the application. All the supported 
+
+##### Example healthcheck
+```
+health_checks:
+  - http:
+      method: get
+      path: /
+      interval: 30s
+      timeout: 10s
+      unhealthy_threshold: 2
+      healthy_threshold: 1
+      expected_status_codes:
+        - 200
+      # below are optional
+      expected_body_includes: Hello World
+      expected_body_regex: ".*Wasmer.*"
+```
+Fields for http healthcheck:
+- #### `method`: Required
+  HTTP method to use. 
+- #### `path`: Required
+  Path to send request to. 
+- #### `interval`: Required
+  Duration between each request
+- #### `timeout`: Required
+  Timeout duration for requests
+- #### `unhealthy_threshold`: Required
+  After `unhealthy_threshold` amount of failure of the http requests, app is considered unhealthy and will be restarted
+- #### `healthy_threshold`: Required
+  After `healthy_threshold` amount of failure of the http requests, app is considered healthy and will be restarted
+- #### `expected_status_codes`: Required
+  If the application returns these status codes, then the request will be count as successful
+- #### `expected_body_includes`:
+  If this is specified, response body should include the string defined in this field to be count as successful
+- #### `expected_body_regex`:
+  If this is specified, response body should be able to match the regular expression defined in this field to be count as successful
+
+So in the example above, if the application fails two consequent request, application will be restarted. It will be keep restarted until it successfully responds to one request
+
 ### `scaling`
 
-App scaling behaviour.
+The `scaling` field is used to configure how your application scales on Edge.
 
 #### `scaling.mode`
 
