@@ -1,6 +1,0 @@
-kind: wasmer.io/App.v1
-meta:
-  name: wasmer/docs
-spec:
-  workload:
-    source: wasmer/docs@0.4.0
