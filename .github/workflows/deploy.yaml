@@ -17,8 +17,6 @@ jobs:
 
       - name: Setup Wasmer
         uses: wasmerio/setup-wasmer@v2
-        with:
-          version: "v4.0.0"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
