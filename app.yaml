@@ -1,8 +1,9 @@
+kind: wasmer.io/App.v0
 name: wasmer-docs
-app_id: da_4K6AIot5UVP2
 owner: wasmer
 package: .
 domains:
-- wasmer-docs.wasmer.app
-- docs.wasmer.io
-kind: wasmer.io/App.v0
+  - wasmer-docs.wasmer.app
+  - docs.wasmer.io
+
+app_id: da_4K6AIot5UVP2
