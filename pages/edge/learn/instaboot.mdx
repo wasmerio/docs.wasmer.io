@@ -1,0 +1,148 @@
+# InstaBoot - Fast Application Startup with Snapshots
+
+Cold start times can be a significant issue for serverless
+cloud platforms, especially when apps are spawned on demand all over the globe.
+
+Wasmer Edge provides a special feature called `InstaBoot`, which can
+significantly reduce cold start times of Edge applications.
+
+## What is InstaBoot?
+
+InstaBoot allows fast startup by creating a snapshot of your app that is fully
+initialized and ready to serve requests.
+
+Snapshots are created by starting a new application instance and warming it up
+with a series of warm-up requests to the application.
+These warm-up requests have to be specified in your app configuration.
+
+Once a snapshot is created, Edge can use the snapshot to start apps almost instantly!
+
+How impactful InstaBoot is depends on the programming language and the
+how much startup logic your application has.
+
+## How to use Edge InstaBoot
+
+Here is a quick guide on how to making your applications start faster:
+
+Modify your `app.yaml` configuration to include the following:
+
+```yaml
+kind: wasmer.io/App.v0
+source: ...
+# ...
+capabilities:
+  # Enable InstaBoot:
+  instaboot:
+    # We provide a list of HTTP requests that will be used to pre-warm the
+    # application.
+    # These endpoints should make sure that the most important and expensive
+    # parts of the application are loaded, caches are pre-populated, ...
+    #
+    # NOTE: all warm-up requests will also contain the "x-edge-instaboot" request
+    # header, allowing you to detect warm-up requests without using a custom
+    # endpoint.
+    requests:
+      # Load the homepage
+      - path: /
+      # Hit a special endpoint that makes sure caches are populated ...
+      - path: /_bootstrap
+      	# Optionally specify the request method and body.
+        method: POST
+	body: "{\"warm-up\": true}"
+```
+
+That's it!
+
+Once you deploy your application again with `wasmer deploy`, Edge will
+automatically prepare a snapshot of your application.
+
+**Note**:
+
+Specifying specific requests is optional. 
+You can also just specify `instaboot: {}`. Edge will then only send a single
+warm-up request to `/`. You should usually specify specific requests though.
+
+## Resetting InstaBoot Snapshots
+
+You might find yourself in a situation where you want to reset the InstaBoot
+snapshots for your application. This can be useful if some external state
+has changed, and the warm-up requests are no longer valid.
+
+You have different options available:
+
+* Deploy a new version of your app
+  Each version of your application will have its own snapshot, so
+  deploying a new version will automatically reset all generated snapshots as well.
+  Just run `wasmer deploy` again to deploy a new version.
+
+* Manual reset with the CLI:
+  You can also manually reset the snapshots for your application with the CLI.
+  Run the following command:
+
+  ```sh
+  wasmer app cache clear --instaboot [<app-ident>]
+  ```
+
+  Replace `<app-ident>` with the name or ID of your application.
+
+* Resetting snapshots in the UI
+  You can also reset snapshots in the Edge UI. Go to the application details
+  page, go to settings, and click the "Reset caches" button.
+
+## When to use InstaBoot
+
+The effectiveness of InstaBoot depends on the programming language of the app,
+and if the app has expensive startup logic.
+
+For a basic Rust web server that just opens a socket and has no other startup
+logic, InstaBoot will not make any notable difference.
+
+For some languages like `PHP` or `Python`, which need to load and
+prepare code at runtime, it can have a significant impact.
+
+You might also have more expensive startup code, like loading translations from
+a database, or populating caches. InstaBoot can help here as well.
+
+In general, InstaBoot is likely beneficial for most interpreted languages
+(PHP, Python, JavaScript, ...), and for applications that need to do expensive
+pre-fetching of state.
+
+Good use cases:
+
+* Any PHP application
+  PHP uses OpCache to cache pre-compiled PHP code. This makes a *very big*
+  difference for performance.
+  For PHP you will always want to enable InstaBoot, and make sure the warm-up
+  requests cover most important endpoints.
+* Python
+  Like PHP, Python will also have to load code at runtime and prepare it for
+  execution. While the difference is not quite as stark as with PHP, the speedup
+  can still be very significant.
+* WinterJS (Javascript):
+  While WinterJS startup times are generally fast, InstaBoot can still often
+  cut cold start times in half.
+* Expensive cache warm-up
+* Loading translations or other shared state from a database
+* ...
+
+## How it works
+
+As a user, you do not have to worry about the details of how InstaBoot works. It
+will just magically speed up your application cold start times.
+
+If you are curious, here is a brief overview:
+
+* When Edge receives a request, it will check if there is a snapshot available
+  for the application.
+* If no snapshot is available, a new instance of the application will be started
+  and the initialization requests are sent to the instance.
+* After the warm-up requests succeed, a snapshot of the application will be
+  created.
+* The snapshot is stored in a cache, and can be distributed across the whole
+  Edge cluster to prevent redundant re-initialization on each separate server.
+* For subsequent requests, the snapshot will be used to restore the application
+  to the state it was in after the warm-up requests succeeded.
+
+To avoid impacting cold start times if no snapshot is available yet,
+the application will be started normally to serve the request immediately.
+Snapshot will be created in a separate, dedicated instance in a background task.
