@@ -33,6 +33,11 @@ source: ...
 capabilities:
   # Enable InstaBoot:
   instaboot:
+    # You can optionally speciy a maximum age.
+    # If the maximum age is reached, a new snapshot will automatically
+    # be created, and the old ones discarded
+    max_age: 12h
+
     # We provide a list of HTTP requests that will be used to pre-warm the
     # application.
     # These endpoints should make sure that the most important and expensive
@@ -44,11 +49,15 @@ capabilities:
     requests:
       # Load the homepage
       - path: /
+
       # Hit a special endpoint that makes sure caches are populated ...
       - path: /_bootstrap
-      	# Optionally specify the request method and body.
+        # Optionally specify the request method, headers and body.
         method: POST
 	body: "{\"warm-up\": true}"
+	headers:
+	  - name: X-My-Header
+	    value: my-value
 ```
 
 That's it!
@@ -80,10 +89,12 @@ You have different options available:
   Run the following command:
 
   ```sh
-  wasmer app cache clear --instaboot [<app-ident>]
+  wasmer app purge-cache [<app>]
   ```
 
-  Replace `<app-ident>` with the name or ID of your application.
+  Replace `<app>` with the name or ID of your application, or leave it empty to
+  use the `app.yaml` in your current directory.
+  (See `wasmer app purge-cache --help` for more information)
 
 * Resetting snapshots in the UI
   You can also reset snapshots in the Edge UI. Go to the application details
