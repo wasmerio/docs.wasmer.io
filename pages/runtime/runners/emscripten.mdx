@@ -1,4 +1,4 @@
-import { Callout } from "nextra-theme-docs";
+import { Callout } from "@theme/index";
 
 # Emscripten Runner
 
@@ -12,8 +12,9 @@ Emscripten support is experimental in Wasmer
 
 To use the emscripten runner, you need to specify the runner for you package in your `wasmer.toml` file:
 
-```toml
-...
+```toml  filename="wasmer.toml" copy
+# ...
+
 [[command]]
 name = "proxy"
 module = "<your-module>"

@@ -13,8 +13,9 @@ https://wasmer.io/posts/announcing-wcgi
 
 To use the wcgi runner, you need to specify the runner for you package in your `wasmer.toml` file:
 
-```toml
-...
+```toml filename="wasmer.toml" copy
+# ...
+
 [[command]]
 name = "proxy"
 module = "<your-module>"
