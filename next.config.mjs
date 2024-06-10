@@ -1,13 +1,8 @@
 import nextra from 'nextra'
 
 const withNextra = nextra({
-  theme: '@theme/index.tsx',
-  themeConfig: './theme.config.tsx',
-  // latex: true,
-  flexsearch: {
-    codeblocks: true
-  },
-  defaultShowCopyCode: true
+  theme: "nextra-theme-docs",
+  themeConfig: "./theme.config.tsx",
 })
 
 export default withNextra({
