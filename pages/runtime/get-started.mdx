@@ -1,40 +1,43 @@
 import { Steps } from "nextra-theme-docs";
 import { Callout } from "nextra-theme-docs";
 import { Tab, Tabs } from "nextra-theme-docs";
+import Install from "../../components/install.mdx";
 
-# Get Started with the Wasmer Runtime
 
-This page will guide you through installing Wasmer, and running a published container in the Wasmer Registry.
+# Run your first package
+
+This page will guide you through installing Wasmer, and running a package from the Wasmer Registry.
+
 The runtime can run any pacakge published to the Wasmer Registry.
 
 <Steps>
  
-### Install Wasmer
- 
-Click [here](/install) for instructions on how to install Wasmer.
+<Install />
 
 ### Run a package
 
 Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` to print a result.
 
-<Tabs items={['CLI', /*'JS', 'Python'*/]}>
+<Tabs items={['CLI', 'JS' /*, 'Python'*/]}>
   <Tab>
-    ```bash copy
+    ```bash copy /python/
     wasmer run python/python -- -c "print(1+1)"
     ```
   </Tab>
-{/* 
   <Tab>
 
-    ```js copy
-    import Wasmer from "wasmer";
+    ```js copy /python/
+    import { Wasmer } from "@wasmer/sdk";
 
-    let python = new Wasmer("python/python");
-    let runner = python.entrypoint.run('-c "print(1+1)"');
-    console.log(python.stdout);
+    let python = Wasmer.fromRegistry("python/python");
+    let instance = await python.entrypoint.run({
+      args: `-c "print(1+1)"`
+    });
+    let output = await instance.wait();
     ```
 
   </Tab>
+{/* 
 
   <Tab>
     ```python copy

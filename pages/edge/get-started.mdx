@@ -2,93 +2,28 @@ import { Steps } from "nextra-theme-docs";
 import { Callout } from "nextra-theme-docs";
 import { Tab, Tabs } from "nextra-theme-docs";
 import Install from "../../components/install.mdx";
+import Register from "../../components/register.mdx";
 import Login from "../../components/login.mdx";
 
-# Get Started with Wasmer Edge
+# Deploy on Wasmer Edge
 
-The process to get started with Wasmer Edge is extremely short and intuitive: just install 
-the CLI and run a single command. In this page we show this two steps in detail. 
+You have an application you want to deploy on Wasmer Edge? You’re in the right place!
+
+Welcome to `wasmer deploy`. For most languages and frameworks, you can deploy your app from zero, with the following steps:
 
 <Steps>
  
 <Install />
 
+<Register />
+
+
 ### Run `wasmer deploy`
-This command will make sure that everything is in place for you to deploy your
-app: it will guide you through the creation of the app and its deployment.
 
-If you run it in an empty directory, the command will detect that no app is
-already available and will prompt you to create a new one, first choosing the
-owner of the app..
 
-```shell
-$ wasmer deploy                                             
-...
-Login for Wasmer user <you> saved
-It seems you are trying to create a new app!
-? Who should own this app? ›
-❯ <you> 
-```
-
-then the name of the app..
-
-```shell
-$ wasmer deploy                                             
-...
-✔ Who should own this app?  · <you>
-? What should be the name of the app? › <your app name> 
-````
-
-..and finally the _kind_ of app you want to deploy:
-```shell
-$ wasmer deploy                                             
-...
-✔ Who should own this app?  · <you>
-✔ What should be the name of the app?  · <your app name> 
-? What would you like to deploy? ›
-❯ Start with a template
-  Choose an existing package
-```
-
-To get a grasp of this process, we suggest you to choose to create the app from 
-a template:
-
-```shell
-$ wasmer deploy                                             
-...
-✔ Who should own this app? · <you> 
-✔ What should be the name of the app? · <your-app-name> 
-✔ What would you like to deploy? · Start with a template
-✔ Selected template · Static website (demo url https://static-website-sample.wasmer.app/)
-✶ Downloading package.. 
-```
-
-Once this last step to create an app is finished, the same command will deploy
-your first app, without having you execute any other!
-
-```shell
-$ wasmer deploy                                             
-...
-✔ Who should own this app? · <your-app> 
-✔ What should be the name of the app? · <your-app-name> 
-✔ What would you like to deploy? · Choose an existing package
-✔ What is the name of the package? · wasmer/hello
-✔ Unpacked template
-✔ Do you want to deploy the app now? · yes
-
-Deploying app <your-app-name> (<you>) to Wasmer Edge...
-
-App <your-app-name> (<you>) was successfully deployed 🚀
-https://<your-app-name>-<you>.wasmer.app
-
-→ Unique URL: https://<app-id>.id.wasmer.app
-→ Dashboard:  https://wasmer.io/apps/<you>/<your-app-name>
-
-Waiting for new deployment to become available...
-(You can safely stop waiting now with CTRL-C)
-.
-𖥔 Deployment complete
-```
+The `wasmer deploy` command will make sure that everything is in place for you to deploy your
+app: it will guide you through the creation of the app and its deployment if doesn't exist,
+or to redeploy after it changes.
 
 </Steps>
 

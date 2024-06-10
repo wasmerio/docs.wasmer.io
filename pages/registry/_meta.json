@@ -1,6 +1,5 @@
 {
-  "index": "Introduction",
-  "get-started": "Get Started",
-  "manifest": "Manifest",
+  "get-started": "Getting Started",
+  "manifest": "Package Manifest",
   "cli": "CLI"
 }

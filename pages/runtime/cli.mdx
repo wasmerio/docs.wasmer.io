@@ -8,38 +8,38 @@ Run a WebAssembly file or Wasmer container.
 
 All packages published on [Wasmer Registry](/registry) can be run with the `wasmer run` command.
 
-```
+```bash
 wasmer run python/python
 ```
 
 Some commands, such as `cowsay` have multiple commands that we can run (eg. `cowsay` or `cowthink`)
 
-```
+```bash
 wasmer run syrusakbary/cowsay --command-name=cowthink Hello world
 ```
 
 If in your current dir you have a `wasmer.toml` file, you can simply run the local package with:
 
-```
+```bash
 wasmer run .
 ```
 
 Wasmer run also allows running from URLs (in case a package is hosted on a different registry).
 
-```
+```bash
 wasmer run https://wasmer.io/python/python
 ```
 
 
 ### Run a Wasm file
 
-```
+```bash
 wasmer run my_program.wasm
 ```
 
 #### Run a Wasm file with a custom compiler
 
-```
+```bash
 wasmer run my_program.wasm --singlepass
 ```
 
@@ -49,13 +49,13 @@ wasmer run my_program.wasm --singlepass
 
 You can pass the arguments that will be given to the WASI program:
 
-```
+```bash
 wasmer run my_wasi_program.wasm -- arg1 arg2 arg3
 ```
 
 You can also pass environment variables:
 
-```
+```bash
 wasmer run my_wasi_program.wasm --env MYVAR=MYVALUE -- arg1 arg2 arg3
 ```
 

@@ -2,11 +2,16 @@ import { Callout } from "nextra-theme-docs";
 
 # Wasmer Runtime Features
 
-The Wasmer WebAssembly runtime supports different backends:
+Wasmer is powered by [WebAssembly](https://webassembly.org).
 
-- Native backends: _Singlepass_, _Cranelift_ and _LLVM_
-  Each of these have different tradeoffs of compilation speed vs runtime speed;
-- Other runtimes: _JavascriptCore_ and _Browser_;
+Wasmer supports many different backends, depending on your needs:
+* Wasmer Native Backends:
+  - _Singlepass_: incredibly fast compilation times, ideal for Blockchains
+  - _Cranelift_: normal compilation times, good performance
+  - _LLVM_: slow compilation times, great performance
+* Other Runtimes:
+  - _JavascriptCore_: ideal for macOS. See [announcement](https://wasmer.io/posts/wasmer-3_3-and-javascriptcore)
+  - _Browser_: to target the web
 
 Each of this backends support different features, and have different support for Operating Systems and Chipsets.
 

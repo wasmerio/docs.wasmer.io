@@ -2,12 +2,15 @@ import React from "react";
 import { DocsThemeConfig, useTheme } from "nextra-theme-docs";
 import { useRouter } from "next/router";
 import { useConfig } from "nextra-theme-docs";
+import RunIcon from "@components/icons/run.svg";
+import PublishIcon from "@components/icons/publish.svg";
+import DeployIcon from "@components/icons/deploy.svg";
 
 const config: DocsThemeConfig = {
   logo: (
-    <svg
+    <span className="nx-flex nx-gap-2 nx-items-center"><svg
       xmlns="http://www.w3.org/2000/svg"
-      fill="#9ca3af"
+      fill="#0F0518"
       viewBox="0 0 147 44"
       width="121px"
     >
@@ -20,7 +23,7 @@ const config: DocsThemeConfig = {
       <path d="M11.75,17.3c0,0.04,0,0.08,0,0.12c0,1.39-0.9,1.99-2.01,1.35c-1.11-0.64-2.01-2.28-2.01-3.67   c0-0.04,0-0.08,0-0.12L1,11.09v21.88l17.5,10.1V21.19L11.75,17.3z"></path>
       <path d="M20.5,12.25c0,0.04,0,0.08,0,0.12c0,1.39-0.9,1.99-2.01,1.35c-1.11-0.64-2.01-2.28-2.01-3.67   c0-0.04,0-0.08,0-0.12L9.75,6.05v7.83l10.72,6.19v14.05l6.78,3.92V16.16L20.5,12.25z"></path>
       <path d="M29.25,7.21c0,0.04,0,0.08,0,0.12c0,1.39-0.9,1.99-2.01,1.35c-1.11-0.64-2.01-2.28-2.01-3.67   c0-0.04,0-0.08,0-0.12L18.5,1v7.83l10.72,6.19v14.05L36,32.98V11.11L29.25,7.21z"></path>
-    </svg>
+    </svg>Docs</span>
   ),
   useNextSeoProps() {
     const { asPath } = useRouter();
@@ -42,23 +45,35 @@ const config: DocsThemeConfig = {
       if (type === "separator") {
         return <span className="cursor-default">{title}</span>;
       }
-      return <>{title}</>;
+      let icon = <></>;
+      switch (title) {
+        case "Runtime":
+          icon = <span style={{width:"20px", height:"20px"}}><RunIcon /></span>;
+          break;
+        case "Registry":
+          icon = <span style={{width:"20px", height:"20px"}}><PublishIcon /></span>;
+          break;
+        case "Edge":
+          icon = <span style={{width:"20px", height:"20px"}}><DeployIcon /></span>;
+          break;
+        }
+      return <span className="nx-flex nx-gap-2">{icon}{title}</span>;
     },
     defaultMenuCollapseLevel: 1,
     toggleButton: true,
   },
   docsRepositoryBase: "https://github.com/wasmerio/docs.wasmer.io/tree/main",
-  banner: (() => {
-    return {
-      key: "2.0-release",
-      text: (
-        <a href="/edge/quickstart/python" target="_self">
-          🎉 JS Service Workers and Python applications are now supported on
-          Wasmer Edge . Read the full tutorial →
-        </a>
-      ),
-    };
-  })(),
+  // banner: (() => {
+  //   return {
+  //     key: "2.0-release",
+  //     text: (
+  //       <a href="/edge/quickstart/python" target="_self">
+  //         🎉 JS Service Workers and Python applications are now supported on
+  //         Wasmer Edge . Read the full tutorial →
+  //       </a>
+  //     ),
+  //   };
+  // })(),
   editLink: {
     text: "Edit this page on GitHub →",
   },

@@ -2,17 +2,17 @@ import { Steps } from "nextra-theme-docs";
 import { Callout } from "nextra-theme-docs";
 import { Tab, Tabs } from "nextra-theme-docs";
 import Install from "../../components/install.mdx";
-import Login from "../../components/login.mdx";
+import Register from "../../components/register.mdx";
 
-# Get Started with the Wasmer Registry
+# Publish your first package
 
-This page will guide you through installing Wasmer, and publishing a container in the Wasmer Registry.
+This page will guide you through installing Wasmer, and publishing a package to the Wasmer Registry.
 
 <Steps>
  
 <Install />
 
-<Login />
+<Register />
 
 ### Create a package
 
@@ -20,7 +20,7 @@ To create your first Wasmer pacakge simply run `wasmer init`.
 
 This should have created a `wasmer.toml` file with contents similar to:
 
-```toml copy
+```toml filename="wasmer.toml" copy
 [package]
 name = '<your-user>/<package>'
 version = '0.1.0'

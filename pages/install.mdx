@@ -5,7 +5,7 @@ import { Tabs, Tab } from "nextra-theme-docs";
 
 Wasmer allows you to run applications either **Standalone** (_via the CLI_) or **Embedded** within [other languages](./#wasmer-language-integrations) such as C/C++, Rust, Python, Go, PHP, Ruby...
 
-<Tabs items={['CLI (Bash)', 'CLI (PowerShell)' /*, 'JS', 'Python' */]}>
+<Tabs items={['CLI (Bash)', 'CLI (PowerShell)', 'JS' /*, 'Python' */]}>
   <Tab>
     **Unix** (macOS, Linux):
 
@@ -15,9 +15,23 @@ Wasmer allows you to run applications either **Standalone** (_via the CLI_) or *
 
     Or, to install a specific version:
 
-    ```bash /4\.0\.0/
-    curl https://get.wasmer.io -sSfL | sh -s "v4.0.0"
+    ```bash /4\.3\.0/
+    curl https://get.wasmer.io -sSfL | sh -s "v4.3.0"
     ```
+
+    <Callout type="info">
+      Other installation methods available here:
+      https://github.com/wasmerio/wasmer-install
+    </Callout>
+
+
+    ### Is Wasmer up to date?
+    Wasmer updates very frequently. If you have installed Wasmer some time ago, chances are your Wasmer version is out of date. Get the latest version of Wasmer by running:
+
+    ```bash
+    wasmer self-update
+    ```
+
 
   </Tab>
 
@@ -30,17 +44,43 @@ Wasmer allows you to run applications either **Standalone** (_via the CLI_) or *
 
     Or, to install a specific version:
 
-    ```bash /4\.0\.0/
-    $v="v4.0.0"; iwr https://win.wasmer.io -useb | iex
+    ```bash /4\.3\.0/
+    $v="v4.3.0"; iwr https://win.wasmer.io -useb | iex
     ```
 
+    <Callout type="info">
+      Other installation methods available here:
+      https://github.com/wasmerio/wasmer-install
+    </Callout>
+
+    ### Is Wasmer up to date?
+    Wasmer updates very frequently. If you have installed Wasmer some time ago, chances are your Wasmer version is out of date. Get the latest version of Wasmer by running:
+
+    ```bash
+    wasmer self-update
+    ```
+
+
   </Tab>
+
+
+  <Tab>
+    **NPM**:
+
+    ```bash
+    npm install @wasmer/sdk --save
+    ```
+
+    Bun:
+
+    ```bash /@wasmer/ /sdk/
+    bun install @wasmer/sdk --save
+    ```
+    
+    Read the [Wasmer-JS SDK docs](/sdk/wasmer-js).
+  </Tab>
+
 
 {/* <SyncedTabs.Tab> `bash npm install wasmer` </SyncedTabs.Tab> <SyncedTabs.Tab> ```bash pip install wasmer ``` </SyncedTabs.Tab> */}
 
 </Tabs>
-
-<Callout type="info">
-  Other installation methods available here:
-  https://github.com/wasmerio/wasmer-install
-</Callout>

@@ -1,6 +1,6 @@
 import { Callout } from "nextra-theme-docs";
 
-# Wasmer Manifest
+# Wasmer Manifest (`wasmer.toml`)
 
 The manifest file called `wasmer.toml` is required [to publish](./get-started.mdx) to the [Wasmer registry](https://wasmer.io/products/registry); This file contains the package's dependencies, metadata, and commands are declared.
 
@@ -23,25 +23,27 @@ Valid keys are:
 - `homepage` \(url\)
 - `entrypoint` \(string\): The command to use by default
 
-```toml
+```toml filename="wasmer.toml" copy
 [package]
 name = "wasmer/wasm-pack"
 version = "0.7.1"
 description = "A code generator that lets you treat WebAssembly modules like native dependencies."
-license = "MIT"
-# OR
-license-file = "./LICENSE.md"
+license = "MIT" # OR license-file = "./LICENSE.md"
 readme = "./README.md"
 repository = "https://github.com/wasmerio/wasmer-pack"
 homepage = "https://wasmer.io/"
 entrypoint = "wasmer-pack"
+
+# ...
 ```
 
 ## \[dependencies\]
 
 - `"<namespace>/<name>" = "<version>"`
 
-```toml
+```toml filename="wasmer.toml" copy
+# ...
+
 [dependencies]
 "sharrattj/coreutils" = "1.0.16"
 ```
@@ -51,7 +53,9 @@ entrypoint = "wasmer-pack"
 - `name` \(string\) **required**
 - `source` \(path\) **required**: path to the `.wasm` file
 
-```toml
+```toml filename="wasmer.toml" copy
+# ...
+
 [module]
 name = "wasmer-pack"
 source = "./target/wasm32-unknown-unknown/release/wasmer-pack.wasm"
@@ -66,7 +70,7 @@ module.
 - `exports` \(string\): The path to a `*.wai` file defining the interface exposed by the module
 - `imports` \(string\[\]\): A list of `*.wai` files defining functionality the host will provide to the module
 
-```toml
+```toml filename="wasmer.toml" copy
 [[module]]
 name = "wasmer-pack"
 ...
@@ -88,7 +92,9 @@ Note that the `module` may be either the name of a `[[module]]` in the current `
 
 It is valid (and often preferrable) for a `[command]` and `[module]` to have the same `name`.
 
-```toml
+```toml filename="wasmer.toml" copy
+# ...
+
 [[command]]
 name = "wasmer-pack"
 module = "wasmer-pack"
@@ -102,7 +108,7 @@ Annotations specific to the WASI runner.
 - `main-args` \(string\[\]\): command-line arguments passed to a command on startup
 - `env` \(string\[\]\): a list of `key=value` environment variables passed through to the command on startup
 
-```toml
+```toml filename="wasmer.toml" copy
 [[command]]
 name = "wasmer-pack"
 ...
@@ -118,7 +124,7 @@ env = ["RUST_LOG=debug"]
 
 The WCGI runner also respects the `[command.annotations.wasi]` annotations.
 
-```toml
+```toml filename="wasmer.toml" copy
 [[command]]
 name = "wasmer-pack"
 ...
@@ -132,7 +138,7 @@ dialect = "wcgi"
 - `main-args` \(string\[\]\): command-line arguments passed in on startup
 - `env` \(string\[\]\): a list of `key=value` environment variables passed through to the instance on startup
 
-```toml
+```toml filename="wasmer.toml" copy
 [[command]]
 name = "wasmer-pack"
 ...
@@ -147,7 +153,9 @@ env = ["COMPATIBILITY_MODE=true"]
 
 - `"location/on/wasm"="location/on/publishing/machine"`: bundle local files into the package and make them available on the WASI filesystem
 
-```toml
+```toml filename="wasmer.toml" copy
+# ...
+
 [fs]
 "/cpython" = "./build"
 "/lib/python3.12" = "./lib"

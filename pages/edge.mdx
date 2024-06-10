@@ -1,0 +1,69 @@
+import { Callout } from "nextra-theme-docs";
+import { Cards, Card } from 'nextra/components'
+import DeployIcon from '../components/icons/deploy.svg'
+
+# Wasmer Edge
+
+Wasmer Edge is a next-generation cloud platform powered by WebAssembly, Wasmer and WASIX.
+
+You can move now your applications to the Edge and scale them like serverless at extremely affordable prices.
+
+## 🐥 First Steps
+
+To start using Wasmer Edge, check out the [Getting Started](/edge/get-started/) guide.
+
+<Cards>
+<Card icon={<DeployIcon />} title="Deploy your first app" href="/edge/get-started" />
+</Cards>
+
+
+To understand how the platform works, check out the [Architecture](/edge/architecture) documentation.
+
+
+## Features
+
+Wasmer Edge has many features, and we have many more in development:
+
+- **Stateless** HTTP workloads: <br/>
+  You can use [proxy](/edge/learn/deployment-modes#proxy) or to run web servers in the edge. [WCGI](/edge/learn/deployment-modes.mdx#wcgi) mode to run CGI in the edge.
+  If you are interested about TCP/UDP, [please reach us so we can enable it for you](/edge/learn/deployment-modes#tcpudp-applications).
+- **Automatic scaling**: <br/>
+  Workloads will be served by the Wasmer Edge network, on the servers closest
+  to the user, and will scale automatically to meet the demand.
+- **Auto-domains and aliases**: <br/>
+  Each deployed app will be reachable through a unique URL, `[NAME].wasmer.app`.
+  You can also configure additional aliases.
+- **Versioned deployments and rollback**:<br/>
+  App deployment versions are tracked.
+  You can always access previous versions though a special URL, and rollback to
+  previous versions with a single CLI command or click.
+  You can also publish preview-versions and test them before switching them to active.
+- **Custom domains with automatic SSL**: <br/>
+  You can configure custom domains and subdomains for your applications.
+  SSL certificates will automatically be provisioned and renewed for you.
+- **Remote Sessions**: <br/>
+  Interactive remote shell environments, via [`wasmer ssh`](/edge/learn/remote-sessions).
+
+### 🛠️ Features in Development
+
+- **Persistent workloads**: <br />
+  Apps are stateless and auto-scaled by default, which is great for scalability
+  and cost-effectiveness, but sometimes you need to run a persistent workload
+  that keep running, even with no requests coming in.<br />
+  Persistent workloads will enable you to provision a fixed number of instances
+  that are kept alive by the edge runtime.
+
+- **Persistent volumes**: <br />
+  Stateless apps are great for scalability, but eventually the state needs to
+  live somewhere.
+  You will be able to create persistent volumes, and mount these volumes into
+  your workloads.
+
+- **Private network**: <br />
+  Create secure, private networks to connect your workloads globally.
+  Powered by [DNET](/edge/architecture#wasmer-distributed-networking-dnet);
+
+- **Scheduled tasks / cronjobs**: <br />
+  Running tasks at a certain interval is a common requirement.
+  You will be able to configure scheduled invocation of your apps at a given interval.
+  The web UI and CLI will allow inspecting logs and success status of the task runs.

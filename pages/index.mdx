@@ -1,20 +1,32 @@
----
-title: Introduction to Wasmer Documentation
----
+import { Cards, Card } from 'nextra/components'
+import RunIcon from '../components/icons/run.svg'
+import PublishIcon from '../components/icons/publish.svg'
+import DeployIcon from '../components/icons/deploy.svg'
 
 # Introduction
 
 Welcome to the Wasmer Documentation! 👋
 [Wasmer](https://wasmer.io/) is an ecosystem based on WebAssembly that allows running applications anywhere: in the browser, embedded in your favorite programming language, or standalone in the server.
 
-> Wasmer mission is make all software universally available
-
 ## Ecosystem
 
 1. [Wasmer Runtime](/runtime): allows running Wasmer containers anywhere
 2. [Wasmer Registry](/registry): explore containers from the community and distribute your own ones
 3. [Wasmer Edge](/edge): run containers on Wasmer distributed Edge infrastructure
-3. [Wasmer JavaScript SDK](/javascript-sdk): run containers on Wasmer distributed Edge infrastructure
+
+<Cards>
+  <Card icon={<RunIcon />} title="Run your first package" href="/runtime/get-started" />
+  <Card icon={<PublishIcon />} title="Publish a package" href="/registry/get-started" />
+  <Card icon={<DeployIcon />} title="Deploy an app" href="/edge/get-started" />
+</Cards>
+
+
+## SDKs
+
+Wasmer is available in multiple programming languages and operating systems.
+We have set up the SDKs to allow using Wasmer easily anywhere:
+
+* [Wasmer JavaScript SDK](/sdk/wasmer-js): run your Wasmer packages in Javascript
 
 ## Social
 

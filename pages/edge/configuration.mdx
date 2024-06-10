@@ -1,26 +1,23 @@
 import { Callout } from "nextra-theme-docs";
 
-# Wasmer Edge Configuration
+# App Configuration (`app.yaml`)
 
 Wasmer Edge's configuration is stored in a `app.yaml` file in the root of your project.
 
 ## Example
 
-```yaml copy
+```yaml filename="app.yaml" copy
 # Required fields
 
 kind: wasmer.io/App.v0
-# username or namespace
+# username or namespace that owns the app
 owner: my-account
 # App name
 name: my-sample-site
-# Package to run
+# Package to run (it can also be `.`)
 package: wasmer/my-sample-site
 
 # OPTIONAL fields
-
-# Description displayed in the dashboard/CLI
-description: A sample site for demonstration
 
 # Enable debug mode
 # If true, http responses will have more detailed error information.
@@ -84,7 +81,7 @@ Specify environment variables for the app.
 Must be a key-value map.
 
 Example:
-```yaml
+```yaml filename="app.yaml" copy
 env:
   MY_VAR: "my-value123"
 ```
@@ -96,7 +93,7 @@ env:
 Specify command line arguments passed to the application.
 
 Example:
-```yaml
+```yaml filename="app.yaml" copy
 cli_args:
   - arg1
   - arg2
@@ -119,7 +116,7 @@ Enable fast application startup with startup snapshots.
 
 See [InstaBoot](/edge/learn/instaboot) for more details.
 
-```
+```yaml filename="app.yaml" copy
 capabilities:
   instaboot:
     requests:
@@ -139,7 +136,8 @@ The `health_checks` field is used to check if an application is working correctl
 Currently only supported healthcheck type is `http`. It executes an http request against the application. All the supported 
 
 ##### Example healthcheck
-```
+
+```yaml filename="app.yaml" copy
 health_checks:
   - http:
       method: get
@@ -205,7 +203,7 @@ Available values:
   This mode is appropriate for single-threaded synchronous Python/PHP/Ruby/...
 
 Example:
-```yaml
+```yaml filename="app.yaml" copy
 scaling:
   mode: single_concurrency
 ```

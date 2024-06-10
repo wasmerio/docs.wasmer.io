@@ -1,7 +1,6 @@
 {
-  "index": "Introduction",
-  "get-started": "Get Started",
-  "features": "Features",
+  "get-started": "Getting Started",
   "cli": "CLI",
-  "runners": "Runners"
+  "runners": "Runners",
+  "features": "Features"
 }

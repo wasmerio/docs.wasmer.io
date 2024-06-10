@@ -41,23 +41,53 @@ import CoreRacks from "@assets/deploy/architecture/core-racks.svg";
   className="bg-[#111111] rounded-lg p-4 dark:bg-transparent"
 />
 
+## Principles
+
+The guiding principles of Wasmer Edge are:
+
+- **Simplicity**: Designed to be a joy to use, with a
+  developer-centric workflow and a focus on productivity.
+  For standard use cases, the platform should be trivial to understand,
+  hiding all underlying complexity from the user.
+- **Power**: Ease of use should not imply a limited feature set.
+  Edge aims to enable complex deployment scenarios that can currently only be
+  fulfilled by complicated systems like Kubernetes or the large cloud providers.
+- **Security**: WebAssembly enables secure, sandboxed execution of untrusted code,
+  without the burden of additional emulation layers like containers or virtual machines.
+  Users can define tightly scoped, fine-grained permissions to limit the attack surface
+  of their applications.
+- **Scalability**: Applications scale seamlessly, all the way from zero
+  up to serving millions of requests per second, or running thousands of concurrent
+  instances, empowered by WebAssembly's small footprint and fast startup time.
+  The core platform itself is also designed to scale seamlessly, from a single
+  server to large, globally distributed clusters.
+- **Resilience**: Outages are a common occurrence today, even for the largest cloud
+  providers.
+  Edge is designed around a **shared nothing** architecture. Each server
+  can continue to operate independently, without relying on any shared services,
+  which also means your workloads are shielded from larger outages.
+- **Cost-Effectiveness**: WebAssembly enables much more resource-effective startup,
+  scaling and operation than traditional container and virtualization technologies.
+  We aim to pass down these benefits to our users, and provide extremely competitive
+  pricing.
+
 ## Foundations are important.
 
 Wasmer Edge has been designed from day-one to be massively scalable, with
 particular attention given to resilience measures, shared scalability bottlenecks
 and long term low cost operations:
 
-- Wasmer Edge is built almost exclusively in **_rust_** meaning it inherits
-  excellent performance and security intrinsics that come from this programming methodology.
-  https://www.wired.com/story/rust-secure-programming-language-memory-safe/
+- Wasmer Edge is built almost exclusively in **_Rust_** meaning it inherits
+  excellent performance and security intrinsics that come from this programming methodology.<br />
+  https://www.wired.com/story/rust-secure-programming-language-memory-safe/ <br />
   https://www.protocol.com/rust-programming-safety-security
 
 - Wasmer Edge is **_vertically integrated,_** meaning the runtime and its hosting
-  components are collapsed together with minimal dependencies and abstractions into a distributed monolith.
+  components are collapsed together with minimal dependencies and abstractions into a distributed monolith. <br />
   https://en.wikipedia.org/wiki/Vertical_integration
 
 - Wasmer Edge follows a **shared nothing** architecture where any node globally
-  can operate completely standalone in the event of an unavoidable network partition.
+  can operate completely standalone in the event of an unavoidable network partition. <br />
   https://en.wikipedia.org/wiki/Shared-nothing_architecture
 
 - Density of workloads running on edge nodes has been highly optimized for pure
