@@ -47,6 +47,9 @@ dependencies:
   nextra:
     specifier: ^2.13.4
     version: 2.13.4(next@13.4.5)(react-dom@18.2.0)(react@18.2.0)
+  nextra-theme-docs:
+    specifier: ^2.13.4
+    version: 2.13.4(next@13.4.5)(nextra@2.13.4)(react-dom@18.2.0)(react@18.2.0)
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -5451,6 +5454,33 @@ packages:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+    dev: false
+
+  /nextra-theme-docs@2.13.4(next@13.4.5)(nextra@2.13.4)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-2XOoMfwBCTYBt8ds4ZHftt9Wyf2XsykiNo02eir/XEYB+sGeUoE77kzqfidjEOKCSzOHYbK9BDMcg2+B/2vYRw==}
+    peerDependencies:
+      next: '>=9.5.3'
+      nextra: 2.13.4
+      react: '>=16.13.1'
+      react-dom: '>=16.13.1'
+    dependencies:
+      '@headlessui/react': 1.7.19(react-dom@18.2.0)(react@18.2.0)
+      '@popperjs/core': 2.11.8
+      clsx: 2.1.1
+      escape-string-regexp: 5.0.0
+      flexsearch: 0.7.31
+      focus-visible: 5.2.0
+      git-url-parse: 13.1.0
+      intersection-observer: 0.12.2
+      match-sorter: 6.3.1
+      next: 13.4.5(@babel/core@7.24.7)(react-dom@18.2.0)(react@18.2.0)
+      next-seo: 6.0.0(next@13.4.5)(react-dom@18.2.0)(react@18.2.0)
+      next-themes: 0.2.1(next@13.4.5)(react-dom@18.2.0)(react@18.2.0)
+      nextra: 2.13.4(next@13.4.5)(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      scroll-into-view-if-needed: 3.1.0
+      zod: 3.23.8
     dev: false
 
   /nextra@2.13.4(next@13.4.5)(react-dom@18.2.0)(react@18.2.0):
