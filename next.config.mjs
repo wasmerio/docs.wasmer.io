@@ -90,6 +90,16 @@ export default withNextra({
         source: "/registry/search",
         destination:"/registry/discover",
         permanent: true,
+      },
+      {
+        source: "/javascript-sdk",
+        destination:"/sdk/wasmer-js",
+        permanent: true,
+      },
+      {
+        source: "/javascript-sdk/:path*",
+        destination:"/sdk/wasmer-js/:path*",
+        permanent: true,
       }
     ];
   },
