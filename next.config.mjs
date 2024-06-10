@@ -74,6 +74,18 @@ export default withNextra({
         destination: "/developers/graphql-api",
         permanent: true,
       },
+       
+      // Deprecated
+      {
+        source: "/developers/build-from-source",
+        destination: "https://github.com/wasmerio/wasmer/blob/main/docs/BUILD.md",
+        permanent: true,
+      },
+      {
+        source: "/developers/testing",
+        destination: "https://github.com/wasmerio/wasmer/blob/main/docs/TEST.md",
+        permanent: true,
+      },
     ];
   },
   webpack(config) {
