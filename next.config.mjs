@@ -81,6 +81,11 @@ export default withNextra({
         destination: "https://github.com/wasmerio/wasmer/blob/main/docs/TEST.md",
         permanent: true,
       },
+      {
+        source: "/developers/graphql-api",
+        destination:"/graphql-api",
+        permanent: true,
+      }
     ];
   },
   webpack(config) {
