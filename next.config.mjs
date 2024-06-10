@@ -100,7 +100,17 @@ export default withNextra({
         source: "/javascript-sdk/:path*",
         destination:"/sdk/wasmer-js/:path*",
         permanent: true,
-      }
+      },
+      {
+        source: "/edge/tutorials/:path*",
+        destination:"/edge/guides/:path*",
+        permanent: true,
+      },
+      {
+        source: "/edge/quickstart/:path*",
+        destination:"/edge/guides/:path*",
+        permanent: true,
+      },
     ];
   },
   webpack(config) {
