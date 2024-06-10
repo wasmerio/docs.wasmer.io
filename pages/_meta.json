@@ -8,13 +8,15 @@
   "install": "Install Wasmer",
   "runtime": "Runtime",
   "registry": "Registry",
-  "javascript-sdk": "JavaScript SDK",
   "edge": "Edge",
+  "sdk": "SDKs",
+  "-- Developers": {
+    "type": "separator",
+    "title": "Developers"
+  },
+  "graphql-api": "GraphQL API",
   "wai": "WAI",
   "wasmer-pack": "Wasmer Pack",
-  "---": {
-    "type": "separator"
-  },
   "contact": {
     "title": "Contact ↗",
     "type": "page",
