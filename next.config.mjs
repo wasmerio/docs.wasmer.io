@@ -85,6 +85,11 @@ export default withNextra({
         source: "/developers/graphql-api",
         destination:"/graphql-api",
         permanent: true,
+      },
+      {
+        source: "/registry/search",
+        destination:"/registry/discover",
+        permanent: true,
       }
     ];
   },
