@@ -33,11 +33,6 @@ source: ...
 capabilities:
   # Enable InstaBoot:
   instaboot:
-    # You can optionally speciy a maximum age.
-    # If the maximum age is reached, a new snapshot will automatically
-    # be created, and the old ones discarded
-    max_age: 12h
-
     # We provide a list of HTTP requests that will be used to pre-warm the
     # application.
     # These endpoints should make sure that the most important and expensive
@@ -70,6 +65,59 @@ automatically prepare a snapshot of your application.
 Specifying specific requests is optional. 
 You can also just specify `instaboot: {}`. Edge will then only send a single
 warm-up request to `/`. You should usually specify specific requests though.
+
+## Debugging Bootstrap Failures
+
+You might find yourself in a situation where your app is slower than expected.
+This may be because of failures during the bootstrap process, for example when
+some of your warm-up requests fail.
+
+You will not notice these failures directly, because Edge uses a fresh regular
+instance of your app to serve requests if no snapshot is available, and builds
+the snapshot in the background.
+
+To identify issues, you can enable the app debug mode for your app.
+
+Simply add the following to your `app.yaml` and re-deploy:
+```yaml
+debug: true
+```
+
+In debug mode the InstaBoot snapshot will not be built in the background,
+but directly during regular request processing.
+If a warm-up request fails, the request will fail and you will get an informative
+error message.
+
+In debug mode responses will also contain a `X-Edge-Instance-Journal-Status`
+response header.
+
+If your app was started from a snapshot, the header will read:
+
+* `X-Edge-Instance-Journal-Status: bootsrap=journal+memory`
+
+*Just remember to disable debug mode again before going to production!*
+
+## Limiting the Snapshot Lifetime
+
+By default, Edge will keep snapshots for your app version indefinitely.
+You can always enforce a new snapshot by re-deploying your app, but there is
+also a way to limit the lifetime of snapshots.
+
+This can be useful if your warmup logic does things like populate caches through
+API requests, or has some logic that depends on external state (like current time).
+
+To limit the lifetime of snapshots, you can add the following to your `app.yaml`:
+```yaml
+capabilities:
+  instaboot:
+    # Also valid: 30m, 7d, ...
+    max_age: 12h
+    ...
+```
+
+Once the maximum age is reached, snapshots will be discarded and new ones are
+created automatically.
+
 
 ## Resetting InstaBoot Snapshots
 
