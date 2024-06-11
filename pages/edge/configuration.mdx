@@ -122,9 +122,17 @@ capabilities:
     requests:
       - path: /
       - path: /_bootstrap
+        # You can optionally speciy a maximum age.
+        # If the maximum age is reached, a new snapshot will automatically
+        # be created, and the old ones discarded
+        max_age: 12h
+
         # Optionally request settings:
         method: POST
 	body: "custom body"
+	headers:
+	- name: X-My-Header
+	  value: my-value
 ```
 
 ### `health_checks`
