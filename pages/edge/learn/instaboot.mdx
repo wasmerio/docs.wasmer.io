@@ -17,14 +17,13 @@ These warm-up requests have to be specified in your app configuration.
 
 Once a snapshot is created, Edge can use the snapshot to start apps almost instantly!
 
-How impactful InstaBoot is depends on the programming language and the
+How impactful InstaBoot is depends on the programming language and
 how much startup logic your application has.
 
 ## How to use Edge InstaBoot
 
-Here is a quick guide on how to making your applications start faster:
-
-Modify your `app.yaml` configuration to include the following:
+Here is a quick guide on how to make your applications start faster. Modify
+your `app.yaml` configuration to include the following:
 
 ```yaml
 kind: wasmer.io/App.v0
@@ -72,21 +71,20 @@ You might find yourself in a situation where your app is slower than expected.
 This may be because of failures during the bootstrap process, for example when
 some of your warm-up requests fail.
 
-You will not notice these failures directly, because Edge uses a fresh regular
-instance of your app to serve requests if no snapshot is available, and builds
-the snapshot in the background.
+You will not notice these failures directly, because Edge uses a fresh,
+non-snapshot instance of your app to serve requests if no
+snapshot is available, and builds the snapshot in the background.
 
-To identify issues, you can enable the app debug mode for your app.
+To identify issues, you can easily enable the debug mode for your app adding this line 
+to your `app.yaml` and re-deploying:
 
-Simply add the following to your `app.yaml` and re-deploy:
 ```yaml
 debug: true
 ```
 
-In debug mode the InstaBoot snapshot will not be built in the background,
-but directly during regular request processing.
-If a warm-up request fails, the request will fail and you will get an informative
-error message.
+In debug mode the InstaBoot snapshot will not be built in the background, but
+directly during regular request processing. If a warm-up request fails, the
+request will fail and you will get an informative error message.
 
 In debug mode responses will also contain a `X-Edge-Instance-Journal-Status`
 response header.
