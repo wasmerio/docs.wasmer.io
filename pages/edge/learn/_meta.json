@@ -3,5 +3,6 @@
   "instaboot": "InstaBoot",
   "deployment-modes": "Deployment Modes",
   "remote-sessions": "Remote Sessions",
-  "connecting-domains-to-edge": "Connecting Custom Domains to Edge"
+  "connecting-domains-to-edge": "Connecting Custom Domains to Edge",
+  "secrets": "Secrets"
 }
