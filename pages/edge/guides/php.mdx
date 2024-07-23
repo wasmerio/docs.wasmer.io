@@ -24,48 +24,23 @@ With the CLI installed, let's create a new PHP application! We begin
 creating a new empty directory - after that, we will need to run a single command. 
 
 ```bash
-$ mkdir my-php-application 
-$ cd my-php-application
+$ mkdir my-php-application && cd my-php-application
 $ wasmer deploy --template=php-starter
-It seems you are trying to create a new app!
-✔ Who should own this app? · <you> 
-✔ What should be the name of the app? · <your-app-name> 
-✔ Unpacked template
-✔ Do you want to deploy the app now? · yes
-Loading local package (manifest path: <current-working-directory>)
-✔ Correctly built package locally
-✔ Package correctly uploaded
-✔ Succesfully pushed release to namespace <you> on the registry 
-Deploying app <your-app-name> (<you>) to Wasmer Edge...
-
-App <your-app-name> (<you>) was successfully deployed 🚀
-https://<your-app-name>-<you>.wasmer.app
-
-→ Unique URL: https://<app_id>.id.wasmer.app
-→ Dashboard:  https://wasmer.io/apps/<you>/<your-app-name>
-
-Waiting for new deployment to become available...
-(You can safely stop waiting now with CTRL-C)
-.
-𖥔 Deployment complete
 ```
 
 The `wasmer deploy --template=php-starter` command will prompt you for the following:
 
-- **App owner**: This is the owner of the app. It can be your username
-  or an organization; if you're logged in, the command will prompt you to
-  choose from your namespaces: by default, it will be your username.
-- **App name**: This is the name of your app. By default, it will be the name
-  of the current directory. 
-
-The above command will do the following:
-
-- Download the template from the registry 
+- Download the PHP template from the registry 
 - Deploy it to Wasmer Edge with the user-provided informations
+  - **App owner**: This is the owner of the app. It can be your username
+    or an organization; if you're logged in, the command will prompt you to
+    choose from your namespaces: by default, it will be your username.
+  - **App name**: This is the name of your app. By default, it will be the name
+    of the current directory. 
 
 Let's check it: 
 ```shell
-$ curl https://<your-app-name>-<you>.wasmer.app
+$ curl https://<your-app>.wasmer.app
 1	=>	PHP code tester Sandbox Online
 emoji	=>	😀 😃 😄 😁 😆
 2	=>	5
@@ -74,10 +49,8 @@ Random number	=>	<random!>
 PHP Version	=>	8.3.4
 ```
 
-### Update the app 
 
 Your directory should now look like this:
-
 
 <FileTree>
   <FileTree.Folder name="app" defaultOpen>
@@ -88,6 +61,78 @@ Your directory should now look like this:
   <FileTree.File name="app.yaml" />
   <FileTree.File name="wasmer.toml" />
 </FileTree>
+
+### Custom PHP settings 
+
+PHP in Wasmer Edge is using the PHP development CLI, so we can assure maximum compatibility.
+Because of that, we want to showcase how you can make your app ready for production workloads.
+
+#### `scaling.mode` in `app.yaml`
+
+If you check the `app.yaml` file, you will see the setting [`scaling.mode`](https://github.com/wasmer-examples/php-wasmer-starter/blob/main/app.yaml#L5-L6):
+
+```yaml copy /single_concurrency/
+scaling:
+  mode: single_concurrency
+```
+
+`scaling.mode: single_concurrency` specifies to Wasmer Edge that each command only has one worker per thread, so Wasmer Edge can scale them accordingly. See [`scaling.mode` docs](/edge/configuration#scalingmode).
+
+#### `php.ini` settings.
+
+You can customize the PHP settings with a custom `php.ini`.
+Create a `config/php.ini` inside of your folder, and use the following settings:
+
+```ini filename="config/php.ini" copy
+opcache.validate_timestamps = 0
+opcache.file_update_protection = 0
+opcache.max_file_size = 0
+
+upload_max_filesize = "20M"
+post_max_size = "25M"
+```
+
+Now, mount the `config` directoy inside of the filesystem (`fs`) in `wasmer.toml`, and set the
+environment variable `PHPRC`
+
+```toml filename="wasmer.toml" /config/ /PHPRC/
+[fs]
+# ...
+"/config" = "config"
+
+[[command]]
+name = "run"
+module = "php/php:php"
+runner = "wasi"
+
+[command.annotations.wasi]
+main-args = ["-t", "/app", "-S", "localhost:8080"]
+env = ["PHPRC=/config/"] # this indicates PHP where to look for php.ini
+```
+
+<Callout type="info">
+The `main-args` current values are equivalent to calling `php -t app -S localhost:8080` in your local console.
+</Callout>
+
+#### Instaboot
+
+If you want to accelerate the cold-start times of your PHP app (for example, if you are using Symfony or Laravel with tons of PHP imports), Instaboot can help to
+speed up cold-starts by 100-200x.
+
+```yaml filename="app.yaml"
+capabilities:
+  instaboot:
+    # We provide a list of HTTP requests that will be used to pre-warm the
+    # application.
+    requests:
+      # Load the homepage
+      - path: /
+```
+
+Learn more about Instaboot [in our docs](/edge/learn/instaboot).
+
+
+### Update the app 
 
 To illustrate the lifecycle of an app, let's edit the `index.php` file 
 in the `app` folder: 
@@ -103,27 +148,13 @@ Now, simply run `wasmer deploy` again:
 
 ```shell
 $ wasmer deploy
-Loading local package (manifest path: <current-working-directory>)
-✔ Correctly built package locally
-✔ Package correctly uploaded
-✔ Succesfully pushed release to namespace <you> on the registry 
-Deploying app <your-app-name> (<you>) to Wasmer Edge...
-
-App <your-app-name> (<you>) was successfully deployed 🚀
-https://<your-app-name>-<you>.wasmer.app
-
-→ Unique URL: https://<app_id>.id.wasmer.app
-→ Dashboard:  https://wasmer.io/apps/<you>/<your-app-name>
-
-Waiting for new deployment to become available...
-(You can safely stop waiting now with CTRL-C)
-.
+[...]
 𖥔 Deployment complete
 ```
 
 Let's check it again:
 ```shell
-$ curl https://<your-app-name>-<you>.wasmer.app
+$ curl https://<your-app>.wasmer.app
 Hello World! <more text..>
 ```
 
