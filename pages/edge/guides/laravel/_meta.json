@@ -1,5 +1,3 @@
 {
-    "with-mysql": "with MySQL",
-    "with-postgres": "with Postgres",
-    "with-sqlite": "with SQLite"
+    "with-mysql": "with MySQL"
 }
