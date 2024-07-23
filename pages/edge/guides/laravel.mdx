@@ -1,0 +1,96 @@
+import { Steps, Callout, FileTree } from "nextra-theme-docs";
+import { Card, Cards } from "nextra-theme-docs";
+import Install from "@components/install.mdx";
+import Login from "@components/login.mdx";
+import GitHubLogo from "@components/GitHubLogo.tsx";
+import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
+
+
+Getting an application running on Wasmer Edge is essentially working out how to package it as a deployable image. Once packaged, it can be deployed to the [Wasmer Edge](https://wasmer.io/products/edge) platform.
+
+In this guide we'll learn how to deploy a Laravel application on Wasmer Edge.
+You can also set up a new app easily with the [Laravel template for Wasmer Edge](https://staging.wasmer.io/templates/laravel-starter).
+
+
+## Prepare a Laravel app
+
+Bring your own Laravel app, or create a new one!
+
+If you want to start fresh, here's how to set up a new application.
+You'll need PHP 8+ and composer installed locally. You can check your PHP version using `php --version`.
+
+```bash
+$ composer create-project laravel/laravel wasmer-edge-laravel
+$ cd wasmer-edge-laravel
+$ php artisan serve
+```
+
+You should be able to visit http://localhost:8000 and see the home page.
+
+## Deploy to Wasmer Edge 
+
+<Steps>
+
+<Install />
+
+### Setup a Wasmer Package
+
+Now, lets make your app run with Wasmer. For that, you'll need to create a `wasmer.toml` file.
+You can simply use this configuration:
+
+```toml filename="wasmer.toml" copy
+[dependencies]
+"php/php" = "=8.3.4"
+
+[fs]
+"/app/" = "."
+
+[[command]]
+name = "run"
+module = "php/php:php"
+runner = "wasi"
+[command.annotations.wasi]
+main-args = ["-t", "/app/public", "-S", "localhost:8080"]
+```
+
+You can test that the app works properly with Wasmer by running in your shell:
+
+```bash
+$ wasmer run . --net
+```
+
+And then visiting http://localhost:8080/
+
+Once you verify that everything is running well, you should be ready to deploy to Wasmer Edge!
+
+### Custom PHP settings
+
+Please check [Wasmer PHP guide](/edge/guides/php#custom-php-settings) if you want to customize PHP settings for your app.
+
+### Deploy
+
+Now, simply run `wasmer deploy` and that will guide you to depoloying the app.
+
+In case you have any secrets or environment variables you want to set up, you can set secrets with the `wasmer app secrets` command:
+
+```bash copy
+wasmer app secrets create SOME_SECRET_KEY SOME_VALUE
+```
+
+</Steps>
+
+
+## Conclusion
+
+Congratulations! You have successfully deployed your PHP Laravel application on Wasmer Edge 🚀.
+
+> Tip: To make redeploy, simply run `wasmer deploy` again to deploy the changes.
+
+
+### Resources
+
+<Card
+  icon={<GitHubLogo />}
+  title="wasmer-examples/laravel-wasmer-starter"
+  href="https://github.com/wasmer-examples/laravel-wasmer-starter"
+/>

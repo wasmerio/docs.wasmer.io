@@ -4,6 +4,7 @@
   "python": "Python HTTP server",
   "rust-http-server": "Rust (Axum) HTTP server",
   "php": "PHP application",
+  "laravel": "Laravel PHP application",
   "react-static-site": "React Static Site",
   "python-flask-server": "Python Flask Server",
   "cdn": "Using Wasmer Edge as a CDN",

@@ -1,0 +1,90 @@
+import { Steps } from "nextra-theme-docs";
+
+# PlanetScale and Wasmer Edge: Quick Start
+
+PlanetScale is a serverless MySQL-compatible database.
+It now supports read replicas so you can perform low-latency reads wherever your users are located.
+
+This guide will help you set up PlanetScale with Wasmer Edge apps.
+
+<Steps>
+
+### Create a Database
+
+[Sign in to PlanetScale](https://auth.planetscale.com/sign-in), cand create an account if needed. Note that free accounts are no longer available. You can choose from Scaler, Team, or Enterprise [plans](https://planetscale.com/pricing) which include read-only regions.
+
+Click the 'New database' button and select 'Create new database'.
+Name your database and choose a region close to your app deployment for best performance.
+
+![Add region](/edge/integrations/planetscale/add-region.png)
+
+PlanetScale will create an initial `main` branch for your schema. Wait for the initialization to complete.
+
+![DB Summary](/edge/integrations/planetscale/db-summary.png)
+
+Click the Connect button to view your database credentials. Choose the Node.js connection string for this guide. Note this connection string as it will only be shown once.
+
+### Connect to Your Database
+
+![DB Summary](/edge/integrations/planetscale/connect-db.png)
+
+Use an SQL client like [ArcType](https://arctype.com/) or any standard MySQL client. For this guide, we'll use the MySQL option.
+
+![Credentials](/edge/integrations/planetscale/credentials.png)
+
+Create a new connection in your SQL client, using the connection string noted earlier. Test the connection and save it if successful.
+
+![Credentials](/edge/integrations/planetscale/credentials-connection.png)
+
+### Create a Table and Insert Data
+
+Open a new query in your SQL client and run the following SQL to create a table:
+
+![Query](/edge/integrations/planetscale/query.png)
+
+```sql copy
+CREATE TABLE `fruits` (
+  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` varchar(255) NOT NULL
+);
+```
+
+You should see it succeeded:
+
+```
+CREATE succeeded (0 rows affected)
+```
+
+Add a few rows to that table:
+
+```
+INSERT INTO `fruits` (id, name) VALUES  (1, 'banana');
+INSERT INTO `fruits` (id, name) VALUES  (2, 'apple');
+INSERT INTO `fruits` (id, name) VALUES  (3, 'strawberry');
+```
+
+### Promote to Production
+
+Promote the `main` branch to production for high availability and automatic backups. This can be done in the PlanetScale UI by clicking the promote button.
+
+![Promote prod](/edge/integrations/planetscale/promote-prod.png)
+
+You can now add read-only regions to improve performance. Select the production branch and click on Add region.
+
+![Summary Region](/edge/integrations/planetscale/summary-region.png)
+
+Choose the desired region and wait for the replication process to complete.
+
+![Add Region](/edge/integrations/planetscale/add-region.png)
+
+Each region will have unique credentials. Create a connection string for each region:
+
+```
+mysql://username:password@host/database-name?ssl={"rejectUnauthorized":true}
+```
+
+![Finalize](/edge/integrations/planetscale/finalize.png)
+
+Your database is now ready to be queried by your app!
+
+</Steps>
