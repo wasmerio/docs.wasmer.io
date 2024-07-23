@@ -7,9 +7,22 @@ You can set up a MySQL-compatible serverless database:
 
 ## Laravel with MySQL-compatible PlanetScale
 
-For a basic PlanetScale and Wasmer Edge connection, follow our guide here. If you're up for a multi-region level up, check out our Multi-Region Laravel with PlanetScale article.
+For a basic PlanetScale and Wasmer Edge connection, follow [our guide here](/edge/integrations/planetscale).
 
 Once you're setup with PlanetScale, connect your Laravel application in Wasmer Edge through the following steps below:
 
-Get Laravel connection information from PlanetScale instance
-Connect from Laravel application in Wasmer Edge.
+1. Get Laravel connection information from PlanetScale instance
+2. Connect from Laravel application in Wasmer Edge.
+
+Once initialized, your database dashboard should have metrics and options like so:
+
+1. Click on the Connect button at the top right, this should provide a box of information for connecting with your PlanetScale database.
+2. First though, make sure to add a password, by clicking on the “New Password” button at the upper right corner. This should show you a new password afterwards.
+3. Next, select “Laravel” in the list labeled “Connect with”
+
+Take note of the connection string provided and let’s move on!
+
+
+## Laravel with MySQL-compatible TiDB
+
+You can also use TiDB in Wasmer Edge. TiDB is mostly MySQL-compatible (although it has some minor incompatiblities).
