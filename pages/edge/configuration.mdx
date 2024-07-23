@@ -182,6 +182,29 @@ Fields for http healthcheck:
 
 So in the example above, if the application fails two consequent request, application will be restarted. It will be keep restarted until it successfully responds to one request
 
+### `locality`
+
+The `locality` field is used to configure where your app is located.
+
+#### `locality.regions`
+
+Regions that the app should be running in. By default the app runs in all the regions
+locations where Wasmer Edge is available, however for latency optimization, you may want
+to run the apps only in regions that are close to your Database.
+
+Example:
+```yaml filename="app.yaml" copy
+locality:
+  regions:
+  - us-ashburn
+  - de-falkenstein
+```
+
+<Callout type="info" emoji="ℹ️">
+  You can check all regions available to choose from, in the [Edge Regions documentation](/edge/learn/regions).
+</Callout>
+
+
 ### `scaling`
 
 The `scaling` field is used to configure how your application scales on Edge.
@@ -208,7 +231,7 @@ Available values:
 
   Only a single request will be sent to each instance at a time.
   Edge will dynamically scale up additional instances of your app as required by the incoming request volume, and shut them down when they are no longer needed.
-  This mode is appropriate for single-threaded synchronous Python/PHP/Ruby/...
+  This mode is appropriate for single-threaded synchronous [PHP](/edge/guides/php#custom-php-settings)...
 
 Example:
 ```yaml filename="app.yaml" copy

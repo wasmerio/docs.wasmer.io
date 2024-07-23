@@ -1,0 +1,29 @@
+import { Callout } from "nextra-theme-docs";
+
+# Regions
+
+Specifying a region may help on the overall latency of your app.
+
+If you locate the app close to the database that your app is consuming, you'll reduce
+the latency of your app, improving the perceived performance of the app for your user.
+
+
+Right now, this are the regions where Wasmer Edge is available:
+
+* **United States**
+  - Ashburn, Virginia (US East): `us-ashburn`
+  - Hillsboro, Oregon (US West): `us-hillsboro`
+  - Los Angeles, California (US West): `us-socal1`
+* **Germany**
+  - Falkenstein: `de-falkenstein`
+* **Japan**
+  - Tokyo: `jp-tokyo`
+* **Australia**
+  - Sydney: `au-sydney`
+* **China**
+  - Hongkong: `hk-hongkong`
+* **Brazil**
+  - Sao Paolo: `br-saopaolo`
+ 
+
+You can specify the region of your app using the [`locality.regions` setting](/edge/configuration#localityregions) in your `app.yaml`.
