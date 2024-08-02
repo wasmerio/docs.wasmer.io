@@ -1,0 +1,167 @@
+---
+title: Building a Video Converter with FFmpeg and WASIX
+---
+
+import { Card, Callout, Steps, FileTree } from "nextra-theme-docs";
+import GitHubLogo from "@components/GitHubLogo";
+
+# Building a Video Converter with FFmpeg and WASIX
+
+In this tutorial, we'll be building a Video Converter using FFmpeg package from the wasmer registry.
+We'll be using wasmer-js sdk with React.js to run the package in the browser.
+
+<Callout type="info">
+  This tutorial assumes you have instantiated the React package. You can do it
+  using **Create React App** or **Vite**.
+  <br />
+  This tutorial also assumes that you have the project setup with a video tag
+  and a file input tag. You can find the source code for this tutorial
+  [here](https://github.com/wasmerio/wasmer-js/tree/main/examples/ffmpeg-react).
+</Callout>
+
+## How it works?
+
+This project uses the [FFmpeg WASIX package](https://wasmer.io/packages/ffmpeg) from the wasmer [registry][registry] to convert the video file to a grayscale video file.
+
+<Steps>
+
+### Wiring up the UI
+
+We take in a video file from the user as a file input and when we press the **Process Video** button, we instantiate the FFmpeg package using the Wasmer Runtime which in turn takes the appropriate commands and converts the video to a grayscale video.
+
+```tsx
+<>
+  <div>
+    <label htmlFor="video-upload">
+      <span className="px-1">Upload a file</span>
+      <input
+        id="video-upload"
+        name="video-upload"
+        type="file"
+        className="sr-only"
+        {...getInputProps()}
+      />
+    </label>
+  </div>
+  <button onClick={runFFmpegProcessing} type="button">
+    Process Video
+  </button>
+</>
+```
+
+### Wiring up the instance and the logger
+
+Before writing our implementation for the `runFFmpegProcessing` function, let's write the code for instantiating the FFmpeg package and logging the output.
+
+```ts
+useEffect(() => {
+  (async () => {
+    if (loggerInitialized) return;
+    loggerInitialized = true;
+    await init();
+    initializeLogger(
+      "info,wasmer_wasix=debug,wasmer_wasix::syscalls=debug,wasmer_js=debug"
+    );
+  })();
+}, []);
+```
+
+As we want to log the output of the Wasmer Runtime we have to instantiate the logger. We do this by calling the `initializeLogger` function and passing the log level as an argument.
+
+You should place this code in the `useEffect` hook with no dependency array so that it is only called once.
+
+<Callout type="warn">
+  We found that react renders the component twice in debug mode. So we have to
+  use a flag to make sure that the logger is initialized only once. You can use
+  this flag as a global variable.
+</Callout>
+
+### FFmpeg processing implementation
+
+Now let's write the implementation for our `runFFmpegProcessing` function.
+
+```ts
+const runFfmpegProcessing = async () => {
+  const tmp = new Directory(); // Create a temporary directory
+  await tmp.writeFile("input.mp4", fileU8Arr); // Write the video file to the temporary directory
+  const pkg = await Wasmer.fromRegistry("wasmer/ffmpeg"); // Instantiate the FFmpeg package from the wasmer registry
+
+  if (!pkg.entrypoint) return;
+
+  const instance = await pkg.entrypoint!.run({
+    args: [
+      "-i",
+      "/videos/input.mp4",
+      "-vf",
+      "format=gray",
+      "/videos/output.mp4",
+    ],
+    mount: { "/videos": tmp },
+  }); // Run the package with the appropriate arguments and mount the temporary directory
+
+  await instance.stdin?.close(); // Close the stdin
+  let output = await instance.wait(); // Wait for the instance to finish running
+
+  console.log(output.stderr); // Log the stderr
+  if (output.ok) {
+    const contents = await tmp.readFile("output.mp4"); // Read the output file from the temporary directory
+
+    const u8arr = new Uint8Array(contents.buffer);
+    const file = new File([u8arr], "output.mp4", {
+      type: "video/mp4",
+    }); // Create a file object from the Uint8Array
+
+    setFile(file); // Set the file object to the state
+  } else {
+    console.log(output.stderr);
+  }
+};
+```
+
+The above code works when you press the `Process Video` button and does the following:
+
+1. Creates a temporary directory
+2. Writes the video file to the temporary directory
+3. Instantiates the FFmpeg package from the wasmer registry
+4. Runs the package with the appropriate arguments and mounts the temporary directory
+5. Waits for the instance to finish running
+6. Reads the output file from the temporary directory
+7. Creates a file object from the `Uint8Array`
+8. Sets the file object to the state
+
+<Callout type="info">
+  The **Runtime** for Wasmer is automatically instantiated when you instantiate
+  a package from the wasmer registry.
+</Callout>
+
+### Running the project
+
+Let's run the project and see if it works.
+
+```bash
+npm run dev
+```
+
+<Callout type="warn">
+  If you are using **Vite** or any other dev server, you have to configure your
+  dev server to allow cross origin isolation. You can find more information
+  about it [here][coi] and for the configuration [here][dev].
+</Callout>
+
+{/* Video Here */}
+
+</Steps>
+
+### Resources
+
+<Card
+  icon={<GitHubLogo />}
+  title="Source Code"
+  href="https://github.com/wasmerio/wasmer-js/tree/main/examples/ffmpeg-react"
+  target="_blank"
+/>
+
+[registry]: /registry
+[wasix-runner]: /runtime/runners/wasix
+[coi]: /javascript-sdk/explainers/troubleshooting#sharedarraybuffer-and-cross-origin-isolation
+[dev]: ./run#configure-your-dev-server
