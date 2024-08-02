@@ -108,6 +108,26 @@ The `debug` field is used to enable debug mode for the application. This in turn
 - Required: `false`
 - Default: `false`
 
+### `redirect`
+
+#### `redirect.force_https`
+
+Redirect all HTTP requests to HTTPS.
+
+**NOTE**: the default value is `true`, so HTTP requests will be redirected to
+HTTPS automatically.
+
+Set this value to `false` to disable redirects.
+
+- Required: `false`
+- Default: `true`
+
+Example:
+```yaml filename="app.yaml" copy
+redirect:
+  force_https: false
+```
+
 ### `capabilities`
 
 #### `instaboot`
