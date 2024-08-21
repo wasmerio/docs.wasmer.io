@@ -4,5 +4,6 @@
   "deployment-modes": "Deployment Modes",
   "remote-sessions": "Remote Sessions",
   "connecting-domains-to-edge": "Connecting Custom Domains to Edge",
-  "secrets": "Secrets"
+  "secrets": "Secrets",
+  "volumes": "Volumes"
 }
