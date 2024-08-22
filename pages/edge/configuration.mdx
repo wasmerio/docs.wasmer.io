@@ -108,6 +108,50 @@ The `debug` field is used to enable debug mode for the application. This in turn
 - Required: `false`
 - Default: `false`
 
+### `redirect`
+
+#### `redirect.force_https`
+
+Redirect all HTTP requests to HTTPS.
+
+**NOTE**: the default value is `true`, so HTTP requests will be redirected to
+HTTPS automatically.
+
+Set this value to `false` to disable redirects.
+
+- Required: `false`
+- Default: `true`
+
+Example:
+```yaml filename="app.yaml" copy
+redirect:
+  force_https: false
+```
+
+### Volumes
+
+Configure persistent volume storage for your apps.
+
+*Note*: currently volumes are limited to a specific region, and provide
+read-write-many semantics.
+This means databases and other more complex use-cases will not work well just yet.
+
+Learn more about volumes [here](/edge/learn/volumes).
+
+```yaml filename="app.yaml" copy
+volumes:
+  # A name for your volume.
+  # Must be unique for the given app.
+  - name: data
+    # Where to moint the volume into the filesystem.
+    # You can specify multiple mounts with optional subpaths.
+    mounts:
+      # Mount the volume to `/data`.
+      - mount_path: /data
+ # Optional: the subdirectory of the volume to mount.
+ # subpath: /subpath
+```
+
 ### `capabilities`
 
 #### `instaboot`
