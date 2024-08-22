@@ -143,12 +143,12 @@ You can also test your site locally before deploying the app on Wasmer Edge by
 running the following command:
 
 ```shell copy
-wasmer run . --net
+wasmer run .
 ```
 
 This will start a local server using the Static Web Server on
 `http://localhost:80`. You can also specify a different port by passing the
-`--port` flag, as in `wasmer run . --net -- --port=<your-port>`.
+`--port` flag, as in `wasmer run . -- --port=<your-port>`.
 
 <Callout type="info" emoji="ℹ️">
   The arguments after `--` (double dash) are passed to the underlying server running in the
