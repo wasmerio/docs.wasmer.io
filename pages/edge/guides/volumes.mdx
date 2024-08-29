@@ -1,0 +1,72 @@
+import { Steps, Callout, FileTree } from "nextra-theme-docs";
+import Install from "@components/install.mdx";
+import Login from "@components/login.mdx";
+import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
+import ImageLoader from "@components/ImageLoader";
+import dashboard from "@assets/app-dashboard.jpeg";
+
+
+# Using peristent storage in Wasmer Edge Apps
+
+In this tutorial, you will learn how to setup peristent storage for your edge apps
+
+Lets start with creating an edge application
+
+You can quickstart with an application from one of our templates
+```bash
+wasmer app create --template static-website
+```
+
+Now, lets edit `app.yaml` to setup persistent volume
+
+Add
+```yaml
+volumes:
+  - name: data
+    mount: /public/things_i_want_to_persist
+```
+to `app.yaml`. This will mount a peristent volume named `data` into `/public/persistent_volume` directory of your application
+
+Now, lets re-deploy the app
+
+```bash
+wasmer deploy
+```
+
+After deployment completes, you can open your app's dashboard to see the persistent volume under the storage tab. (e.g. https://wasmer.io/apps/{username}/{appname}/storage). All the data that your application creates under the mounted directory will persist through app crashes, restarts and updates. 
+The volumes are also s3 compatible. You can use any s3 client to retrive and upload data to your bucket
+
+
+# Accessing volume from outside of your app
+
+<ImageLoader
+  img={dashboard}
+  alt={"app dashboard"}
+  className="bg-[#111111] rounded-lg p-4 dark:bg-transparent"
+/>
+
+## via s3 clients
+You can provide the credentials spesific to your app to any s3 client for accessing your volume. The credentials are available in your app's dashboard
+
+Also, wasmer cli has a convinent way to configure rclone. `wasmer app volume configure` will print rclone configuration for connecting your apps volume
+
+## via wasmer.io
+In the storage section of your app's dashboard, you can see links to browse your volumes. 
+
+Clicking browse volumes will redirect and authenticate you to an S3 frontend to view your content of your volume
+Note: You can only view, you can't upload files with the s3 frontend yet. 
+
+# Proving persistency
+
+Now, lets upload "hello world" file to the volume. Get your volumes credentials and upload using an s3 client
+```bash
+echo "Hello World!" > index.html
+rclone copy ./index.html edge-volume:/data
+```
+(`/data` is the name of the volume, since you can mount multiple volumes to your app, you access to your data under via rclone in /\{volume_name\})
+The template app we used will show the file you uploaded at https://your_app_url.wasmer.app/things_i_want_to_persist/index.html
+You can also use the s3 client or the s3 frontend that we host for you to view your uploaded file
+
+Now, lets force a container restart.
+When updating your app with `wasmer deploy`, a new instance of your app will be created. So a new filesystem will be in use for your app and the volumes will be mounted
+After running `wasmer deploy`, you can see your `index.html` is still there. View from the app at url https://your_app_url.wasmer.app/things_i_want_to_persist/index.html, or from your s3 client, or from our hosted s3 frontend!
