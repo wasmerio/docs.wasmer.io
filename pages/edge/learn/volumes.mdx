@@ -86,13 +86,13 @@ You can inspect volumes in two ways:
 Volumes are not only available to your apps, but can also be remotely accessed
 through the standard S3 API, or through a builtin web UI.
 
-You can use the CLI to retrieve S3 credentials:
+You can use the CLI to retrieve the credentials:
 
 ```bash
-wasmer app volumes s3-credentials
+wasmer app volumes credentials --format=json
 ```
 
-This will print the S3 API URL, access key and secret key.
+This will print the S3 API URL, access key and secret key in the JSON format.
 
 
 <Callout type="info">
@@ -107,7 +107,7 @@ to your volumes. It even allows mounting a volume to your local machine!
 You can get an rclone configuration snippet through the CLI:
 
 ```bash
-wasmer app volumes s3-credentials --rclone-print
+wasmer app volumes credentials --format=rclone
 ```
 
 This will print out a configuration snippet that can be added to the rclone
@@ -137,3 +137,13 @@ rclone copy ./local-filename <target>:<volume-name>/remote-filename
 mkdir my-volume
 rclone mount <target>:<volume-name> ./my-volume
 ```
+
+### Rotating credentials
+In order to rotate (i.e. automatically assign a different value) the credentials tied to your volumes, 
+you can simply run this command with the CLI: 
+
+```bash
+wasmer app volumes rotate-secrets 
+```
+
+This command will rotate their values and show the new ones directly in the CLI. 
