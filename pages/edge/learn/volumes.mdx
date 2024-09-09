@@ -40,11 +40,11 @@ volumes:
   # Must be unique for the given app.
   - name: data
     # Create a persistent volume named "data" in `/data`.
-	mount: /data
+    mount: /data
 
   - name: more_data
     # Create a persistent volume named "more_data" in `/other_mntpoint`.
-	mount: /other_mntpoint
+    mount: /other_mntpoint
 ```
 
 This will create two new volumes: "data", which will be mounted at `/data` and "more_data" which will be mounted at `/other_mntpoint`.
