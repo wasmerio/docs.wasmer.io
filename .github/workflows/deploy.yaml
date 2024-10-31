@@ -17,37 +17,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Wasmer
-        uses: wasmerio/setup-wasmer@v2
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
+      - name: Install Tools
         run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+            sudo apt-get install -y docker-ce docker-ce-cli containerd.io curl tar jq
 
-      - uses: actions/cache@v3
-        name: Setup pnpm cache
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+      - name: Setup autobuild
+        run: |
+          ASSET_URL=$(curl -s -H "Authorization: token ${{ secrets.AUTOBUILD_TOKEN }}" https://api.github.com/repos/wasmerio/autobuild/releases/latest | jq '.assets[0].url')
+          curl -L --output autobuild.tar.gz -H "Accept: application/octet-stream" -H "Authorization: token ${{ secrets.AUTOBUILD_TOKEN }}" $ASSET_URL
+          tar -xzvf autobuild.tar.gz
+          chmod +x autobuild
 
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build
-        run: pnpm run build
-
-      # Publish to docs.wasmer.io
       - name: Publish
-        run: wasmer deploy --non-interactive --publish-package --bump --registry https://registry.wasmer.io/graphql --token=${{ secrets.WASMER_CIUSER_PROD_TOKEN }}
         if: github.ref_name == github.event.repository.default_branch
+        run: ./autobuild build --wasmer-token ${{ secrets.WASMER_CIUSER_PROD_TOKEN }} --owner wasmer --not-depot --dont-deploy-in-docker-build .
+
