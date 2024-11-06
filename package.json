@@ -4,7 +4,7 @@
   "description": "Documentation for Wasmer's Products",
   "scripts": {
     "dev": "next dev",
-    "build": "next build --no-lint && next export -o release",
+    "build": "next build --no-lint && next export -o out",
     "start": "next start"
   },
   "repository": {
