@@ -144,12 +144,7 @@ volumes:
   # Must be unique for the given app.
   - name: data
     # Where to moint the volume into the filesystem.
-    # You can specify multiple mounts with optional subpaths.
-    mounts:
-      # Mount the volume to `/data`.
-      - mount_path: /data
- # Optional: the subdirectory of the volume to mount.
- # subpath: /subpath
+    mount: /data
 ```
 
 ### `capabilities`
