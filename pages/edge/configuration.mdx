@@ -149,6 +149,34 @@ volumes:
 
 ### `capabilities`
 
+#### `database`
+
+Auto-provision a database for the app.
+
+Database credentials are provided as *environment variables*:
+* `DB_HOST`
+* `DB_PORT`
+* `DB_NAME`
+* `DB_USERNAME`
+* `DB_PASSWORD`
+
+Currently only `mysql` is supported.
+
+**Note**: databases are tied to regions. When speciyfing a database, you should
+also specify your desired region with the `locality.regions` setting.
+Only some of the regions support databases!
+
+Check the [list of available regions](/edge/learn/regions).
+
+```yaml filename="app.yaml" copy`
+capabilities:
+  database:
+    engine: mysql
+  locality:
+    regions:
+      - us-socal1
+```
+
 #### `instaboot`
 
 Enable fast application startup with startup snapshots.
