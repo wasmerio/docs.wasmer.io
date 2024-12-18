@@ -7,29 +7,26 @@ Specifying a region may help on the overall latency of your app.
 If you locate the app close to the database that your app is consuming, you'll reduce
 the latency of your app, improving the perceived performance of the app for your user.
 
+You can specify the region of your app using the
+[`locality.regions` setting](/edge/configuration#localityregions) in your
+`app.yaml`.
 
 <Callout type="info">
 We have created the db-latency app to showcase how using regions can improve
 performance for your app: https://db-latency.wasmer.app/
 </Callout>
 
-
 Right now, this are the regions that you can use Wasmer Edge in (by default apps are available in all regions):
 
-* **United States**
-  - Ashburn, Virginia (US East): `us-ashburn`
-  - Hillsboro, Oregon (US West): `us-hillsboro`
-  - Los Angeles, California (US West): `us-socal1`
-* **Germany**
-  - Falkenstein: `de-falkenstein`
-* **Japan**
-  - Tokyo: `jp-tokyo`
-* **Australia**
-  - Sydney: `au-sydney`
-* **China**
-  - Hongkong: `hk-hongkong`
-* **Brazil**
-  - Sao Paolo: `br-saopaolo`
- 
+| Region | Country | City | Databases | Volumes |
+| --- | --- | --- | --- | --- |
+| `us-socal1` | United States | Los Angeles, California | ✅ | ✅ |
+| `be-mons1` | Belgium | Mons | ✅ | ✅ |
+| `us-ashburn` | United States | Ashburn, Virginia | ❌ | ❌ |
+| `us-hillsboro` | United States | Hillsboro, Oregon | ❌ | ❌ |
+| `de-falkenstein` | Germany | Falkenstein | ❌ | ❌ |
+| `jp-tokyo` | Japan | Tokyo | ❌ | ❌ |
+| `au-sydney` | Australia | Sydney | ❌ | ❌ |
+| `hk-hongkong` | China | Hongkong | ❌ | ❌ |
+| `br-saopaolo` | Brazil | Sao Paolo | ❌ | ❌ |
 
-You can specify the region of your app using the [`locality.regions` setting](/edge/configuration#localityregions) in your `app.yaml`.
