@@ -39,34 +39,36 @@ WebAssembly features:
 - ❌ Not yet supported (please ping us if you need this feature!)
 
 
-|                                       | Singlepass | Cranelift | LLVM | JavascriptCore | Browser |
-| ------------------------------------- | ---------- | --------- | ---- | -------------- | ------- |
-| Bulk memory operations                | ✅         | ✅        | ✅   | ✅             | ✅      |
-| Multi-value return                    | 🔄         | ✅        | ✅   | ✅             | ✅      |
-| Import & export of mutable globals    | ✅         | ✅        | ✅   | ✅             | ✅      |
-| Non-trapping float-to-int conversions | ✅         | ✅        | ✅   | ✅             | ✅      |
-| Sign-extension operations             | ✅         | ✅        | ✅   | ✅             | ✅      |
-| Reference types                       | 🔄         | ✅        | ✅   | ✅             | ✅      |
-| SIMD (Phase 4)                        | ✅         | ✅        | ✅   | ✅             | ✅      |
-| Threads (Phase 2)                     | ✅         | ✅        | ✅   | ✅             | ✅      |
+|                                       | Singlepass | Cranelift | LLVM | V8 | Wasmi | JavascriptCore | Browser |
+| ------------------------------------- | ---------- | --------- | ---- | -- | ------| -------------- | ------- |
+| Bulk memory operations                | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
+| Multi-value return                    | 🔄         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
+| Import & export of mutable globals    | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
+| Non-trapping float-to-int conversions | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
+| Sign-extension operations             | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
+| Reference types                       | 🔄         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
+| SIMD                                  | ✅         | ✅        | ✅   | ✅  | ❌     | ✅             | ✅      |
+| Threads                               | ✅         | ✅        | ✅   | ✅  | ❌     | ✅             | ✅      |
 
 Wasmer features:
 
-| Features | Singlepass | Cranelift | LLVM | JavascriptCore | Browser |
-| -------- | ---------- | --------- | ---- | -------------- | ------- |
-| Caching  | ✅         | ✅        | ✅   | ❌             | ❌      |
-| Metering | ✅         | ✅        | ✅   | ❌             | ❌      |
+| Features | Singlepass | Cranelift | LLVM | V8 | Wasmi | JavascriptCore | Browser |
+| -------- | ---------- | --------- | ---- | -- | ----- | -------------- | ------- |
+| Caching  | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
+| Metering | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
 
 
 ## Backend support by Operating System
 
-|                | Linux | macOS | Windows | Browser |
-| -------------- | ----- | ----- | ------- | ------- |
-| Cranelift      | ✅    | ✅    | ✅      | ❌      |
-| LLVM           | ✅    | ✅    | ✅      | ❌      |
-| Singlepass     | ✅    | ✅    | ✅      | ❌      |
-| JavascriptCore | ✅    | ✅    | ✅      | ❌      |
-| Browser        | ✅    | ✅    | ✅      | ✅      |
+|                | Linux | macOS | Windows | iOS | Android | Browser |
+| -------------- | ----- | ----- | ------- | --- | ------- | ------- |
+| Cranelift      | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
+| LLVM           | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
+| Singlepass     | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
+| V8             | ✅    | ✅    | ✅      | ✅   | ✅       | ❌      |
+| Wasmi          | ✅    | ✅    | ✅      | ✅   | ✅       | ❌      |
+| JavascriptCore | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
+| Browser        | ✅    | ✅    | ✅      | ✅   | ✅       | ✅      |
 
 ## Backend support by Chipset
 
@@ -75,5 +77,7 @@ Wasmer features:
 | Cranelift      | ✅     | ✅    | ✅  | ✅     |
 | LLVM           | ✅     | ✅    | ✅  | ✅     |
 | Singlepass     | ✅     | ✅    | ❌  | ❌     |
+| V8             | ✅     | ✅    | ✅  | ✅     |
+| Wasmi          | ✅     | ✅    | ✅  | ✅     |
 | JavascriptCore | ✅     | ✅    | ✅  | ❌     |
 | Browser        | ✅     | ✅    | ✅  | ✅     |
