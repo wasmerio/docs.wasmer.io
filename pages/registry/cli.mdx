@@ -10,7 +10,7 @@ import { Callout } from "nextra-theme-docs";
 
 Creating a package is very simple, just run:
 
-```bash
+```bash copy
 wasmer init
 ```
 
@@ -18,7 +18,7 @@ wasmer init
 
 Once you set up the values in your [`wasmer.toml` manifest](/registry/manifest), publishing a package to Wasmer is as simple as running the following command:
 
-```bash
+```bash copy
 wasmer publish
 ```
 
@@ -32,7 +32,7 @@ This command will create your Wasmer package, and publish it to the Wasmer regis
 
 If you want to check that everything is running properly before publishing, you can run `--dry-run`:
 
-```bash
+```bash copy
 wasmer publish --dry-run
 ```
 
@@ -47,44 +47,110 @@ You can set the configuration for the registry very easily.
 ### `registry.url`: Registry URL 
 
 Get:
-```
+```bash copy
 wasmer config get registry.url
 ```
 
 Set:
-```
+``` bash copy
 wasmer config set registry.url https://registry.wasmer.io/graphql
 ```
 
 ## Help
 
-This is the help output from the Wasmer CLI for `wasmer publish --help`:
+This is the help output from the Wasmer CLI for `wasmer publish --help` (last updated 2025-01):
 
 ```
-Usage: wasmer publish [OPTIONS] [PACKAGE_PATH]
+Publish a package to a registry [alias: package publish]
+
+Usage: wasmer publish [OPTIONS] [path]
 
 Arguments:
-  [PACKAGE_PATH]
+  [path]
           Directory containing the `wasmer.toml`, or a custom *.toml manifest file.
+          
           Defaults to current working directory.
+          
+          [default: .]
 
 Options:
+      --wasmer-dir <WASMER_DIR>
+          Set Wasmer's home directory
+          
+          [env: WASMER_DIR=/home/imago/.local/share/wasmenv/current]
+          [default: /home/imago/.local/share/wasmenv/current]
+
+      --cache-dir <CACHE_DIR>
+          The directory cached artefacts are saved to
+          
+          [env: WASMER_CACHE_DIR=/home/imago/.wasmer/cache]
+          [default: /home/imago/.local/share/wasmenv/current/cache]
+
+  -v, --verbose...
+          Generate verbose output (repeat for more verbosity)
+
       --registry <REGISTRY>
-          Registry to publish to
-      --dry-run
-          Run the publish logic without sending anything to the registry server
-      --quiet
-          Run the publish command without any output
-      --package-name <PACKAGE_NAME>
-          Override the package of the uploaded package in the wasmer.toml
-      --version <VERSION>
-          Override the package version of the uploaded package in the wasmer.toml
+          The registry to fetch packages from (inferred from the environment by default)
+          
+          [env: WASMER_REGISTRY=]
+
+      --log-format <LOG_FORMAT>
+          The format to use when generating logs
+          
+          [env: LOG_FORMAT=]
+          [default: text]
+
+          Possible values:
+          - text: Human-readable logs
+          - json: Machine-readable logs
 
       --token <TOKEN>
-          Override the token (by default, it will use the current logged in user)
+          The API token to use when communicating with the registry (inferred from the environment by default)
+          
+          [env: WASMER_TOKEN=wap_1f8cd65ed491ab8087f54f8078f389a7bb6e7236c808aac61a487b4236f90d2f]
+
+      --color <COLOR>
+          When to display colored output
+          
+          [default: auto]
+          [possible values: auto, always, never]
+
+      --dry-run
+          Run the publish logic without sending anything to the registry server
+
+      --quiet
+          Run the publish command without any output
+
+      --namespace <PACKAGE_NAMESPACE>
+          Override the namespace of the package to upload
+
+      --name <PACKAGE_NAME>
+          Override the name of the package to upload
+
+      --version <PACKAGE_VERSION>
+          Override the package version of the uploaded package in the wasmer.toml
 
       --no-validate
           Skip validation of the uploaded package
+
+      --wait[=<WAIT>]
+          Wait for package to be available on the registry before exiting
+          
+          [default: none]
+          [possible values: none, container, native-executables, bindings, all]
+
+      --timeout <TIMEOUT>
+          Timeout (in seconds) for the publish query to the registry.
+          
+          Note that this is not the timeout for the entire publish process, but for each individual query to the registry during the publish flow.
+          
+          [default: 5m]
+
+      --bump
+          Whether or not the patch field of the version of the package - if any - should be bumped
+
+      --non-interactive
+          Do not prompt for user input
 
   -h, --help
           Print help (see a summary with '-h')
