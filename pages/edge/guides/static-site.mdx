@@ -24,9 +24,11 @@ We will cover installation of the CLI, setting up a new static site, and deployi
 
 <Install />
 
+<Login />
+
 <CliVersionCallout />
 
-### Initialize the local directory 
+### Deploy!
 We begin creating a new empty directory.
 ```bash copy
 mkdir my-new-site
@@ -67,6 +69,18 @@ The above command will do the following:
 1. Store the template locally in your current directory (try running `ls -la`)
 1. Deploy it to Wasmer Edge
 
+<Callout type="error" emoji="⚠️">
+Don't change the `public` directory attribute in the `wasmer.toml` file for this tutorial.
+If you want to learn how to specify a different directory for build output, check out our [React Static Site](/edge/guides/react-static-site) tutorial.
+</Callout>
+
+Try clicking the URL which is under the deployment message `https://my-new-site-wasmer-user.wasmer.app`, and expect to see something like:
+
+<StaticSite image={staticSiteImg} />
+
+### Update the app 
+To illustrate the lifecycle of an app, let's edit the `index.html` file in the `public` folder: 
+
 Your directory structure should look like this:
 
 <FileTree>
@@ -84,29 +98,18 @@ Your directory structure should look like this:
   </FileTree.Folder>
 </FileTree>
 
-<Callout type="error" emoji="⚠️">
-Don't change the `public` directory attribute in the `wasmer.toml` file for this tutorial.
-If you want to learn how to specify a different directory for build output, check out our [React Static Site](/edge/guides/react-static-site) tutorial.
-</Callout>
-
-Try clicking the **Unique URL** that's posted in your terminal output, and expect to see something like:
-
-<StaticSite image={staticSiteImg} />
-
-
-### Update the app 
-To illustrate the lifecycle of an app, let's edit the `index.html` file in the `public` folder: 
+Lets modify index.html:
 
 ```bash copy
 sed -i -e 's/Hi from the Edge/This is our new title!/g' public/index.html 
 ```
 
-Then let's redepoy it:
+Now, let's redeploy it:
 ```bash copy
 wasmer deploy
 ```
 
-When going to/updating the **Unique URL**, expect the page to have been updated:
+When refreshing the browser, expect the page to have been updated:
 <StaticSite image={updatedStaticSiteImg} />
 
 ### Add your content

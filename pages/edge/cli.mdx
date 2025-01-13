@@ -20,32 +20,33 @@ The most important ones are `wasmer deploy` and the subcommands of `wasmer app`.
 To deploy an app to the Wasmer Edge, the user can use the `wasmer deploy` command.
 
 
-```shell
-$ wasmer deploy --help
-Deploy an app to Wasmer Edge
+```console
+wasmer deploy --help
+
+Deploy apps to Wasmer Edge [alias: app deploy]
 
 Usage: wasmer deploy [OPTIONS]
 
 Options:
+      --wasmer-dir <WASMER_DIR>
+          Set Wasmer's home directory
 
-      --publish-package
-          Automatically publish the package referenced by this app.
-          
-          Only works if the corresponding wasmer.toml is in the same directory.
+          [env: WASMER_DIR=/home/imago/.local/share/wasmenv/current]
+          [default: /home/imago/.local/share/wasmenv/current]
 
-      --path <PATH>
-          The path to the app.yaml file
+      --cache-dir <CACHE_DIR>
+          The directory cached artefacts are saved to
 
-      --no-wait
-          Do not wait for the app to become reachable
-      
-      --owner <OWNER>
-          Specify the owner (user or namespace) of the app.
-          
-		  If specified via this flag, the owner will be overridden.  Otherwise,
-		  the `app.yaml` is inspected and, if there is no `owner` field in the
-		  spec file, the user will be prompted to select the correct owner. If
-		  no owner is found in non-interactive mode the deployment will fail.
+          [env: WASMER_CACHE_DIR=/home/imago/.wasmer/cache]
+          [default: /home/imago/.local/share/wasmenv/current/cache]
+
+  -v, --verbose...
+          Generate verbose output (repeat for more verbosity)
+
+      --registry <REGISTRY>
+          The registry to fetch packages from (inferred from the environment by default)
+
+          [env: WASMER_REGISTRY=]
       ...
 ```
 
@@ -60,7 +61,7 @@ there are two kinds of deployment - just as mentioned above for the `wasmer app
 create` command - which entail two different flows. 
 
 In one case the user refers to a package already existing in the registry - in
-this case [the `package` field](/edge/configuration/app-configuration#package)
+this case [the `package` field](/edge/configuration#package)
 in the `app.yaml` file will refer to an identifier of the package (e.g.
 `wasmer/hello`). In the other case, when the user has a custom local package
 that they want to upload and use, the `package` field will contain the path to
@@ -78,7 +79,7 @@ Once these matters are decided upon, this deployment flow concludes just as the
 former: your app is available!
 
 ```shell
-$ wasmer deploy                                             
+wasmer deploy                                             
 ...
 ✔ Who should own this app? · <your-app> 
 ✔ What should be the name of the app? · <your-app-name> 
@@ -121,7 +122,7 @@ The `wasmer app info` command provides a synthesis of these informations, in
 particular the app name, the owner of the app, and relevant URLs.
 
 ```
-$ wasmer app info       
+wasmer app info       
   App Info  
 → Name: <your-app-name> 
 → Owner: <you> 
@@ -142,33 +143,24 @@ The Wasmer CLI allows users to intentionally create an app, but if a user runs
 `wasmer deploy` without an app available, the app creation process will be
 triggered.
 
-```shell
-$ wasmer app create --help
+```console
+wasmer app create --help
+
 Create a new Edge app
 
 Usage: wasmer app create [OPTIONS]
 
 Options:
-  -t, --type <type>
-          Possible values:
-          - http:           A HTTP server
-          - static-website: A static website
-          - browser-shell:  Wraps another package to run in the browser
-          - js-worker:      Winter-js based JS-Worker
-          - py-application: Python worker
+      --template <TEMPLATE>
+          A reference to the template to use.
 
-      --deploy
-          Whether or not to deploy the application once it is created.
-          
-		  If selected, this might entail the step of publishing the package
-		  related to the application. By default, the application is not
-		  deployed and the package is not published.
+          It can be either an URL to a github repository - like `https://github.com/wasmer-examples/php-wasmer-starter` -  or the name of a template that will be searched for in the selected registry, like `astro-starter`.
+
+      --package <PACKAGE>
+          Name of the package to use
 
   -v, --verbose...
           Generate verbose output (repeat for more verbosity)
-
-      --no-validate
-          Skip local schema validation
 
   ...
 ```
@@ -185,7 +177,7 @@ Once the metadata about the app are available, the user must decide the _kind_
 of app they want to deploy. 
 
 ```shell
-$ wasmer app create  
+wasmer app create  
 ...
 ? What would you like to deploy? ›
   Start with a template
@@ -202,7 +194,7 @@ from an existing package, like
 [`wasmer/hello`](https://wasmer.io/wasmer/hello).
 
 ```shell
-$ wasmer app create 
+wasmer app create 
 ...
 ✔ What would you like to deploy? · Choose an existing package
 ✔ What is the name of the package? · wasmer/hello

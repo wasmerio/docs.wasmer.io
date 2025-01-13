@@ -8,8 +8,7 @@ They also support remote access with any S3 compatible client.
 
 
 <Callout type="warning">
-In the current initial implementation, volumes are restricted to a single
-[Edge region](/edge/learn/regions).
+In the current initial implementation, volumes are restricted to a single [Edge region](/edge/learn/regions).
 
 Volumes also at the moment only provide *read-write-many* semantics.
 Due to the automatic auto-scaling for apps, this means that volumes are not currently
@@ -77,7 +76,10 @@ You can inspect volumes in two ways:
 * in the web frontend on your app dashboard:
   Go to the "Storage" tab - you will see a list of volumes with their size.
 * using the CLI:
-  Run `wasmer app volumes list [app]` to list all volumes and their sizes.
+
+```bash copy
+wasmer app volumes list [app]
+```
 
 ## Remotely Accessing Volumes
 
@@ -86,7 +88,7 @@ through the standard S3 API, or through a builtin web UI.
 
 You can use the CLI to retrieve the credentials:
 
-```bash
+```bash copy
 wasmer app volumes credentials --format=json
 ```
 
@@ -104,7 +106,7 @@ to your volumes. It even allows mounting a volume to your local machine!
 
 You can get an rclone configuration snippet through the CLI:
 
-```bash
+```bash copy
 wasmer app volumes credentials --format=rclone
 ```
 
@@ -140,7 +142,7 @@ rclone mount <target>:<volume-name> ./my-volume
 In order to rotate (i.e. automatically assign a different value) the credentials tied to your volumes, 
 you can simply run this command with the CLI: 
 
-```bash
+```bash copy
 wasmer app volumes rotate-secrets 
 ```
 

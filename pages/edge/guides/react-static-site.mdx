@@ -13,7 +13,8 @@ In this guide, you'll learn the process of publishing a static site using react 
 
 The project requires the following tools to be installed on your system:
 
-- [Rust](https://www.rust-lang.org/tools/install)
+- [node](https://nodejs.org/en/download)
+- [pnpm](https://pnpm.io/installation)
 
 ## Deploying a Static Site
 
@@ -25,33 +26,31 @@ The project requires the following tools to be installed on your system:
 
 <Login />
 
-### Step 3.1: Initialize the React Starter template
+### Initialize the React Starter template
 
 <Callout type="info" emoji="ℹ️">
-  If you have already your react project with you, you can skip this step and
-  follow the step 3.2.
+  If you have already your react project with you, you can skip to the next step.
 </Callout>
 
 Clone the starter template from GitHub and install the dependencies:
 
-```shell copy
-$ git clone https://github.com/wasmerio/edge-react-starter.git
-$ cd edge-react-starter
-$ pnpm install
+```bash copy
+git clone https://github.com/wasmerio/edge-react-starter.git
+cd edge-react-starter
+pnpm install
 ```
 
-### Step 3.2: Setup a current react project for Wasmer Edge
+### Setup a current react project for Wasmer Edge
 
 <Callout type="info" emoji="ℹ️">
-  This step is for those who already have a react project with them. If you are
-  starting from scratch, you can follow the step 3.1 to get a boilerplate react
-  project with vite.
+  This step is for those who already have a react project with them.
+    If you are starting from scratch, you can follow the step above to get a boilerplate react project with vite.
 </Callout>
 
 Run the commands below to initialize files for Wasmer Edge:
 
-```shell copy
-$ wasmer app create --type static-website
+```bash copy
+wasmer app create --type static-website
 ```
 
 ```bash
@@ -80,7 +79,7 @@ $ wasmer app create --type static-website
   (You can safely exit now with CTRL-C)
 ```
 
-The `wasmer app create --type static-site` command will prompt you for the following:
+The `wasmer app create --template static-site` command will prompt you for the following:
 
 - **Package owner**: This is the owner of the package. It can be your username or an organization.
 - **Package**: This is the package you want to use. You can either select an existing package or create a new one.
@@ -110,7 +109,7 @@ The above command will do the following:
 >
   ```json
   "scripts": {
-    "build": "vite build -o dist" // 👈🏼 dist or any other directory (keep consistent with wasmer.toml)
+    "build": "tsc && vite build" // 👈🏼 Ensure the build output ends up in the same place as wasmer.toml>fs.public
   }
   ```
 </Callout>
@@ -130,12 +129,12 @@ description = "Your cool react project's description"
 public = "dist" # 👈🏼 dist or any other directory (keep consistent with package.json)
 ```
 
-### Step 4: Test Your Site Locally
+### Test Your Site Locally
 
 You can now test your site locally by running the following command:
 
-```shell copy
-$ wasmer run . -- --port 9000
+```bash copy
+wasmer run . -- --port 9000
 ```
 
 This will start a local server using the Static Web Server on `http://localhost:9000` and now you can access your site on the web at the URL provided in the output.
@@ -147,17 +146,16 @@ You can also specify a different port by changing the `--port` flag.
 > The arguments after `--` are passed to the static web server.
 
 <Callout type="info" emoji="ℹ️">
-  You can see all the available options with `wasmer run --help` or click
-  [here](/runtime/cli/) to see the full documentation. To see all the avilable
-  options for the static web server, run `wasmer run . -- --help`.
+  You can see all the available options with `wasmer run --help` or click [here](/runtime/cli/) to see the full documentation.
+  To see all the available options for the static web server, run `wasmer run . -- --help`.
 </Callout>
 
-### Step 6: Deploy Your Site
+### Deploy Your Site
 
 To deploy your site just build your site and run the following command:
 
-```shell copy
-$ pnpm run build
+```bash copy
+pnpm run build
 ```
 
 Run the following command to deploy your site:
@@ -168,7 +166,7 @@ Once you have added all the necessary files to the public directory, it's time t
 
 Run the following command to deploy your site:
 
-```shell copy
+```bash copy
 wasmer deploy
 ```
 

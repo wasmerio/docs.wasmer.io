@@ -23,7 +23,7 @@ We can use the `wasmer` CLI to create a new package. From the
 `markdown-renderer/` crate created in the previous tutorial, run the following:
 
 ```sh
-$ wasmer init
+wasmer init
 NOTE: Initializing wasmer.toml file with metadata from Cargo.toml
   -> ./Cargo.toml
 ```
@@ -79,7 +79,7 @@ registry.
 
 
 ```sh
-$ wasmer publish
+wasmer publish
 [1/2] ⬆️   Uploading...
 [2/2] 📦  Publishing...
 Successfully published package `wasmer-examples/markdown-renderer@0.1.0`
@@ -92,14 +92,14 @@ Wasmer registry.
 You can check your authentication status using the following command:
 
 ```sh
-$ wasmer whoami
+wasmer whoami
 logged into registry "https://registry.wasmer.io/graphql" as user "michael-f-bryan"
 ```
 
 Otherwise, you will need to log in.
 
 ```sh
-$ wasmer login
+wasmer login
 Opening auth link in your default browser: https://wasmer.io/auth/cli?nonce_id=...&secret=...
 Waiting for session... Done!
 ✅ Login for Wasmer user "michael-f-bryan" saved

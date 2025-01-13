@@ -22,25 +22,17 @@ And it should be done! You can now access your app on `blogs.wasmer.io`.
 
 Connecting a root domain is a bit more complicated than connecting a subdomain, because you can't create a CNAME record for a root domain.
 Some large DNS providers emulate root CNAME records. If your provider doesn't allow you to do that, you can use a service like [Cloudflare](https://www.cloudflare.com/).
-Note: this requires moving your entire DNS setup to Clouflare.
+Note: this requires moving your entire DNS setup to Cloudflare.
 
 <Callout type="default" emoji="⚠️">
-  If your domain is not controlled by Cloudflare you can transfer it by
-  following the guide{" "}
-  <a href="https://developers.cloudflare.com/registrar/get-started/transfer-domain-to-cloudflare/">
-    here
-  </a>
+  If your domain is not controlled by Cloudflare you can transfer it by following the guide [here](https://developers.cloudflare.com/registrar/get-started/transfer-domain-to-cloudflare/)
 </Callout>
 
 <Callout type="info" emoji="ℹ️">
-  Cloudflare does this by **CNAME flattening**. You can read more about it{" "}
-  <a href="https://blog.cloudflare.com/introducing-cname-flattening-rfc-compliant-cnames-at-a-domains-root/">
-    here
-  </a>
+  Cloudflare does this by **CNAME flattening**. You can read more about it [here](https://blog.cloudflare.com/introducing-cname-flattening-rfc-compliant-cnames-at-a-domains-root/)
 </Callout>
 
-If you want to connect your root domain (e.g. `wasmer.io`), to your app hosted on Wasmer Edge
-You will need to create two additional records:
+If you want to connect your root domain (e.g. `wasmer.io`), to your app hosted on Wasmer Edge you will need to create two additional records:
 
     1. A CNAME record pointing to your app on wasmer edge.
     2. A TXT record with the value `cname: wasmer.sh.       cname:wasmer--wasmer-sh.wasmer.app."

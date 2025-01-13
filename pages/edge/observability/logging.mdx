@@ -42,7 +42,7 @@ Some example commands, which assume that your application is called `webserver`:
 
 - Retrieve logs for the last ten minutes:
 
-```bash
+```bash copy
 wasmer app logs webserver
 ```
 
@@ -50,13 +50,13 @@ wasmer app logs webserver
 
 Note the `--max XXX` entry to limit the amount of retrieved log lines.
 
-```bash
+```bash copy
 wasmer app logs --max 1000 --from 2023-06-10 --until 2023-06-10T10:00:00
 ```
 
 - Retrieve logs in JSON format for further processing:
 
-```bash
+```bash copy
 wasmer app logs -f json
 ```
 

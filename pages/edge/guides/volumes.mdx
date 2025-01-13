@@ -13,14 +13,14 @@ In this tutorial, you will learn how to setup peristent storage for your edge ap
 Lets start with creating an edge application
 
 You can quickstart with an application from one of our templates
-```bash
+```bash copy
 wasmer app create --template static-website
 ```
 
 Now, lets edit `app.yaml` to setup persistent volume
 
 Add
-```yaml
+```yaml copy
 volumes:
   - name: data
     mount: /public/things_i_want_to_persist
@@ -33,8 +33,11 @@ Now, lets re-deploy the app
 wasmer deploy
 ```
 
-After deployment completes, you can open your app's dashboard to see the persistent volume under the storage tab. (e.g. https://wasmer.io/apps/{username}/{appname}/storage). All the data that your application creates under the mounted directory will persist through app crashes, restarts and updates. 
-The volumes are also s3 compatible. You can use any s3 client to retrive and upload data to your bucket
+After deployment completes, you can open your app's dashboard, printed in the deployment status: `-> Dashboard:  https://wasmer.io/apps/...`.
+To see the persistent volume under the storage tab (e.g. https://wasmer.io/apps/{username}/{appname}/storage).
+All the data that your application creates under the mounted directory will persist through app crashes, restarts and updates. 
+The volumes are also s3 compatible.
+You can use any s3 client to retrieve and upload data to your bucket
 
 
 # Accessing volume from outside of your app

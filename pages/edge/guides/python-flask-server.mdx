@@ -21,19 +21,14 @@ We'll be deploying a basic flask server with default index endpoint.
 
 ### Initialize the Python Application Starter template
 
-```shell copy
-$ wasmer app create
-App type:
-  Static website
-  HTTP server
-  Browser shell
-  JS Worker (experimental)
-> Python Application
+```bash copy
+wasmer app create
 ```
 
+Then follow the CLI and select some of the alternatives which creates a python app.
+
 <Callout type="info" emoji="ℹ️">
-  This is an interactive command. You can also use the `--type` flag to specify
-  the app type.
+  This is an interactive command. You can also use the `--template` flag to specify the app type.
 </Callout>
 
 Further you will be prompted to enter your package name and app name. You can choose any name you like.
@@ -54,8 +49,8 @@ You directory composition should look like this:
 
 ### Configure the Python Virtual Environment
 
-```shell copy
-$ python -m venv .env
+```bash copy
+python -m venv .env
 ```
 
 You directory composition should look like this with `.env` folder added:
@@ -71,21 +66,21 @@ You directory composition should look like this with `.env` folder added:
 
 ### Activate the Python Virtual Environment
 
-```shell copy
-$ source .env/bin/activate
+```bash copy
+source .env/bin/activate
 ```
 
 ### Install the Python Flask package
 
-```shell copy
-$ pip install flask
+```bash copy
+pip install flask
 ```
 
 ### Writing the Python Flask Application
 
-Modify the `main.py` file to look like this:
+Modify the `src/main.py` file to look like this:
 
-```python
+```python copy filename="src/main.py"
 from flask import Flask
 
 app = Flask(__name__)
@@ -99,20 +94,25 @@ You can change the return string to anything you like.
 
 ### Test the flask application locally
 
-```shell copy
-$ python -m flask --app /src/main run --debug --no-reload
- * Serving Flask app './src/main'
- * Debug mode: on
+```bash copy
+python -m flask --app src/main run --debug --no-reload
+```
+
+Expect output similar to this:
+```
+* Serving Flask app 'src/main'
+* Debug mode: on
 WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
  * Running on http://127.0.0.1:5000
 Press CTRL+C to quit
+127.0.0.1 - - [13/Jan/2025 14:33:11] "GET / HTTP/1.1" 200 -
 ```
 
 ### Configure the `wasmer.toml` and `app.yaml` files
 
 In our `wasmer.toml` we need to set up some `args` and `env` variables.
 
-```toml
+```toml copy filename="wasmer.toml"
 [package]
 name = "wasmer/python-flask-server"
 version = "0.1.1"
@@ -146,7 +146,7 @@ env = ["PYTHONEXECUTABLE: /bin/python"] # This is the path to the python executa
 
 In our `app.yaml` we want to provide the same args as we did in the `wasmer.toml` file.
 
-```yaml
+```yaml copy filename="app.yaml"
 ---
 kind: wasmer.io/App.v0
 name: wasmer-python-flask-server-myapp-example
@@ -165,21 +165,25 @@ env:
 
 Now, we can test if our application runs with wasmer
 
-```shell copy
-$ wasmer run .
- * Serving Flask app '/src/main'
- * Debug mode: on
-WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
-Press CTRL+C to quit
+```bash copy
+wasmer run .
+```
+
+Expect output similar to:
+```
+
 ```
 
 The above command will start a web server on `http://127.0.0.1:5000`.
 
 Let's try to cURL the server:
 
-```shell copy
-$ curl http://127.0.0.1:5000
+```bash copy
+curl http://127.0.0.1:5000
+```
+
+Expect to see:
+```
 Hello, from Wasmer Edge 🚀
 ```
 
@@ -187,8 +191,12 @@ Hello, from Wasmer Edge 🚀
 
 Deploying is the easiest part. Just run the following command:
 
-```shell copy
-$ wasmer deploy
+```bash copy
+wasmer deploy
+```
+
+Expect to see something like:
+```
 Loaded app from: /.../wasmer-edge/python-flask/app.yaml
 Deploying app wasmer-python-flask-server-myapp-example...
 
@@ -205,8 +213,7 @@ Waiting for new deployment to become available...
 Now you can visit the URL and see your application running on Wasmer Edge.
 
 <Callout type="info" emoji="ℹ️">
-  You must be in the directory holding the `wasmer.toml` and `app.yaml` config
-  files.
+  You must be in the directory holding the `wasmer.toml` and `app.yaml` config files.
 </Callout>
 
 <Callout type="transparent" emoji="💁">

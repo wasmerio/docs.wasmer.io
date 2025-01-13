@@ -19,7 +19,7 @@ InstaBoot allows fast startup by creating a snapshot of your app that is fully
 initialized and ready to serve requests.
 
 Snapshots are created by starting a new application instance and warming it up
-with a series of warm-up requests to the application.
+with a series of warm-up requests.
 These warm-up requests have to be specified in your app configuration.
 
 Once a snapshot is created, Edge can use the snapshot to start apps almost instantly!
@@ -98,9 +98,12 @@ response header.
 
 If your app was started from a snapshot, the header will read:
 
-* `X-Edge-Instance-Journal-Status: bootsrap=journal+memory`
+* `X-Edge-Instance-Journal-Status: bootstrap=journal+memory`
 
-*Just remember to disable debug mode again before going to production!*
+
+<Callout type='warning'>
+Remember to disable debug mode before going to production!
+</Callout>
 
 ## Limiting the Snapshot Lifetime
 

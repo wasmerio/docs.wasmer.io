@@ -5,24 +5,25 @@ import Login from "@components/login.mdx";
 import GitHubLogo from "@components/GitHubLogo.tsx";
 import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
 
-
-Getting an application running on Wasmer Edge is essentially working out how to package it as a deployable image. Once packaged, it can be deployed to the [Wasmer Edge](https://wasmer.io/products/edge) platform.
+Getting an application running on Wasmer Edge is essentially working out how to package it as a deployable image.
+Once packaged, it can be deployed to the [Wasmer Edge](https://wasmer.io/products/edge) platform.
 
 In this guide we'll learn how to deploy a Laravel application on Wasmer Edge.
 You can also set up a new app easily with the [Laravel template for Wasmer Edge](https://staging.wasmer.io/templates/laravel-starter).
 
+### Prerequisites
+
+* PHP 8.2+ - See instructions [here](https://www.php.net/manual/en/install.php)
+* composer - See instructions [here](https://getcomposer.org/download/)
 
 ## Prepare a Laravel app
 
 Bring your own Laravel app, or create a new one!
 
-If you want to start fresh, here's how to set up a new application.
-You'll need PHP 8+ and composer installed locally. You can check your PHP version using `php --version`.
-
-```bash
-$ composer create-project laravel/laravel wasmer-edge-laravel
-$ cd wasmer-edge-laravel
-$ php artisan serve
+```bash copy
+composer create-project laravel/laravel wasmer-edge-laravel
+cd wasmer-edge-laravel
+php artisan serve
 ```
 
 You should be able to visit http://localhost:8000 and see the home page.
@@ -32,6 +33,8 @@ You should be able to visit http://localhost:8000 and see the home page.
 <Steps>
 
 <Install />
+
+<Login />
 
 ### Setup a Wasmer Package
 
@@ -55,8 +58,8 @@ main-args = ["-t", "/app/public", "-S", "localhost:8080"]
 
 You can test that the app works properly with Wasmer by running in your shell:
 
-```bash
-$ wasmer run .
+```bash copy
+wasmer run .
 ```
 
 And then visiting http://localhost:8080/

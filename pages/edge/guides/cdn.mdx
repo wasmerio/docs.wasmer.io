@@ -29,96 +29,24 @@ We'll initialize the project with the `static-site` template.
 
 Navigate to the directory where you want to create the project and run the following command:
 
-```bash
-$ wasmer app create
+```bash copy
+wasmer app create
 ```
 
 The above command will give you the following prompt:
 
 ```bash
-App type:
-> Static website # Select Static website
-  HTTP server
-  Browser shell
-  JS Worker (experimental)
-  Python Application
-Who should own this package?: <your-namespace>
-No package found or specified.
-What should the package be called? It will be published under wasmer: <your-app-name> # This will be the package name of your CDN
-What should be the name of the app? <NAME>.wasmer.app: <your-app-name> # This will be the name of your app
-Would you like to publish the app now? no # Select no for now
-Writing app config to '/path/to/your/project/app.yaml'
-To (re)deploy your app, run 'wasmer deploy'
+✔ Who should own this app? · wasmer-user
+✔ What should be the name of the app? · static-website
+✔ What would you like to deploy? · Start with a template
+✔ Select a language (6 available) · N/A
+✔ Selected template · CDN Starter - demo url https://cdn-wasmer-starter.wasmer.app/
+✔ Unpacked template
+✔ Do you want to deploy the app now? · no
 ```
+The prompt may vary depending depending on wasmer runtime version, look for the CDN starter.
 
-Select the above configuration mentioned in the comments and press enter.
-
-The above command will initialize a blank project with the following structure.
-
-<FileTree>
-  <FileTree.Folder name="your-top-level-dir" defaultOpen>
-    <FileTree.Folder name="public" defaultOpen>
-      <FileTree.File name="index.html" />
-    </FileTree.Folder>
-    <FileTree.File name="app.yaml" />
-    <FileTree.File name="wasmer.toml" />
-  </FileTree.Folder>
-</FileTree>
-
-### Changing configuration for the CDN
-
-As you might notice, this project uses the `static-web-server` package which is a static web server written in Rust.
-
-Most notably, it supports changing the compression level, cache control, cors, and more.
-All these configurations can be super useful when configuring a CDN.
-
-So, let's add a `config.toml` file in your top level directory for `static-web-server`'s configuration.
-
-```toml
-[general]
-
-#### Address & Root dir
-host = "::"
-port = 8080
-root = "/app/public" # 👈🏼 Change the root directory to the public directory for static assets
-```
-
-<Callout type="info" emoji="ℹ️">
-  The above configuration is the default configuration of the
-  `static-web-server` package. More info about it can be found
-  [here](https://static-web-server.net/configuration/config-file/).
-</Callout>
-
-Now, let's add the following configuration to the `wasmer.toml` file.
-
-```yaml
-[package]
-name = "<your-namespace>/<your-app-name>"
-version = "0.1.0"
-description = "<your-namespace>/<your-app-name> CDN on Wasmer Edge"
-
-[dependencies]
-"wasmer/static-web-server" = "^1"
-
-[fs]
-"/app" = "." # 👈🏼 Add the app directory as a volume mapping it to the root directory
-
-[[command]]
-name = "script"
-module = "wasmer/static-web-server:webserver"
-runner = "https://webc.org/runner/wasi"
-
-[command.annotations.wasi] # 👈🏼 Add config.toml as an argument for the webserver
-main-args = ["-w", "/app/config.toml"]
-```
-
-### Adding files for hosting
-
-By default the static website template generates a `public/index.html`, we can remove it if we don't need it (`rm public/index.html`).
-
-And now, let's add some images in our `public` directory to host. I'll be using some free images from [unsplash](https://unsplash.com/).
-
-This is how the directory structure looks like now:
+The above command will initialize a project with the following structure.
 
 <FileTree>
   <FileTree.Folder name="your-top-level-dir" defaultOpen>
@@ -127,8 +55,13 @@ This is how the directory structure looks like now:
       <FileTree.File name="image2.jpg" />
       <FileTree.File name="image3.jpg" />
     </FileTree.Folder>
+    <FileTree.Folder name="settings" defaultOpen>
+      <FileTree.File name="config.toml" />
+    </FileTree.Folder>
     <FileTree.File name="app.yaml" />
     <FileTree.File name="wasmer.toml" />
+    <FileTree.File name="LICENSE" />
+    <FileTree.File name="README.md" />
   </FileTree.Folder>
 </FileTree>
 
@@ -142,50 +75,45 @@ You can also add other files like css, js, videos, pdfs, etc.
 
 Now, let's deploy the app.
 
-```bash
-$ wasmer deploy
+```bash copy
+wasmer deploy
 ```
 
 The above command will prompt you with the following:
 
 ```bash
-Loaded app from: /path/to/your/dir/app.yaml
+Loading local package (manifest path: /tmp/tmp.61AOVENLwX/.)
+✔ Correctly built package locally
+✔ Package correctly uploaded
+✔ Succesfully pushed release to namespace wasmer-user on the registry
+Deploying app static-website (wasmer-user) to Wasmer Edge...
 
-Publish new version of package '<your-namespace>/<your-app-name>'? yes
-Publishing package...
-[1/2] ⬆️   Uploading...
-[2/2] 📦  Publishing...
-Successfully published package `<your-namespace>/<your-app-name>@0.1.0`
-Waiting for package to become available.....
-Package '<your-namespace>/<your-app-name>@0.1.0' published successfully!
+App static-website (wasmer-user) was successfully deployed 🚀
+https://static-website-wasmer-user.wasmer.app
 
-Deploying app <your-namespace>-<your-app-name>...
-
- ✅ App <your-namespace>/<your-namespace>-<your-app-name> was successfully deployed!
-
-> App URL: https://wasmer-edge-as-cdn.wasmer.app
-> Versioned URL: https://rogh5izceeq4.id.wasmer.app
-> Admin dashboard: https://wasmer.io/apps/wasmer-edge-as-cdn
+→ Unique URL: https://rogh5izc8j9o.id.wasmer.app
+→ Dashboard:  https://wasmer.io/apps/wasmer-user/static-website
 
 Waiting for new deployment to become available...
 (You can safely stop waiting now with CTRL-C)
 .
-New version is now reachable at https://wasmer-edge-as-cdn.wasmer.app
-Deployment complete
+𖥔 Deployment complete
 ```
 
+And it's done!
+The files you've put into the `./public` directory is now accessible from anywhere, at blazing fast speeds!
+
 <Callout type="info" emoji="ℹ️">
-  And now you can view your Static files at the URL mentioned above. You can
-  also view the admin dashboard of your CDN by visiting the URL mentioned above.
+  And now you can view your Static files at the URL mentioned in the deployment output.
+  You can also view the admin dashboard of your CDN by visiting the URL mentioned in the deployment output.
 </Callout>
 
 <Callout type="info" emoji="🌐">
-  You'll need to do `wasmer deploy` again if you add any new files to the
-  `public` directory.
+  You'll need to do `wasmer deploy` again if you add any new files to the `public` directory.
 </Callout>
 
-<Callout type="warning" emoji="🚧">
-  The url of your project will be different from the one mentioned above.
+<Callout type="info" emoji="ℹ">
+    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.com`
 </Callout>
 
 ### Accessing the files
@@ -204,6 +132,32 @@ The same goes for other files as well.
 https://wasmer-edge-as-cdn.wasmer.app/image2.jpg
 https://wasmer-edge-as-cdn.wasmer.app/image3.jpg
 ```
+
+
+### Magic..! 🧙 How does it work?
+
+Have a look inside your local `wasmer.toml` file, here you'll find how the CDN is setup: 
+```toml filename="wasmer.toml"
+[dependencies]
+"wasmer/static-web-server" = "^1"
+
+[fs]
+"/public" = "public" # <-- Here the CDN files are being copied
+"/settings" = "settings"
+
+[[command]]
+name = "script"
+module = "wasmer/static-web-server:webserver" # <-- Here the module to run is being selected
+runner = "https://webc.org/runner/wasi"
+
+[command.annotations.wasi]
+main-args = ["-w", "/settings/config.toml"] # <-- Here the static webserver is being configured
+```
+
+> Aha..! But a static webserver isn't a CDN..!
+
+Wasmer Edge has dynamically distributed workers globally with replicated state.
+This in combination with a fast and efficient webserver will serve data all over the world at minimal latency.
 
 </Steps>
 
