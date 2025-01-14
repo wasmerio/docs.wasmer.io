@@ -28,7 +28,8 @@ mkdir my-new-js-worker
 cd my-new-js-worker
 ```
 
-Then, running a single command, we can setup a static website.
+Then, running a single command, we can setup a js worker:
+
 ```bash copy
 wasmer deploy --template=js-worker
 ```
@@ -74,7 +75,7 @@ curl https://jsworker-wasmer-user.wasmer.app
 ```
 
 <Callout type="info" emoji="ℹ">
-    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.com`
+    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.app`
 </Callout>
 
 Expect output similar to:
@@ -111,7 +112,7 @@ async function handler(request) {
   const out = JSON.stringify({
     env: process.env,
     headers: Object.fromEntries(request.headers),
-    hello: "world", // <- Add this
+    hello: "world", // 👈 Add this
   }, null, 2);
   return new Response(out, {
     headers: { "content-type": "application/json" },

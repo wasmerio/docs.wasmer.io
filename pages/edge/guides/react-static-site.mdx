@@ -40,6 +40,13 @@ cd edge-react-starter
 pnpm install
 ```
 
+By now, you should have a react project installed and ready to go.
+Let's build it, in preparation for future steps:
+
+```bash copy
+pnpm run build
+```
+
 ### Setup a current react project for Wasmer Edge
 
 <Callout type="info" emoji="ℹ️">
@@ -50,7 +57,7 @@ pnpm install
 Run the commands below to initialize files for Wasmer Edge:
 
 ```bash copy
-wasmer app create --type static-website
+wasmer app create --template static-site
 ```
 
 ```bash
@@ -152,24 +159,21 @@ You can also specify a different port by changing the `--port` flag.
 
 ### Deploy Your Site
 
-To deploy your site just build your site and run the following command:
+First, we need to build our distribution:
 
 ```bash copy
 pnpm run build
 ```
 
-Run the following command to deploy your site:
-
-### Deploy Your Site
-
 Once you have added all the necessary files to the public directory, it's time to update site.
 
-Run the following command to deploy your site:
+Run the following command to deploy:
 
 ```bash copy
 wasmer deploy
 ```
-
+  
+Expect output similar to this:
 ```shell
 Loaded app from: /path/to/your/directory/app.yaml
 
@@ -195,8 +199,6 @@ Waiting for the app to become reachable...
 App is now reachable!
 ```
 
-> You can checkout our versioned URL above to access how our starter demo looks like.
-
 <Callout type="info" emoji="ℹ️">
   You must be in the directory holding the `wasmer.toml` and `app.yaml` config
   files.
@@ -207,8 +209,6 @@ App is now reachable!
   version. You can check all the available options with `wasmer deploy --help`
   or click [here](/edge/cli) to see the full documentation.
 </Callout>
-
-Executing this command will package and deploy your site.
 
 Now you can access your site on the web at the URL provided in the output.
 

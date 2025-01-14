@@ -25,10 +25,10 @@ We'll be deploying a basic flask server with default index endpoint.
 wasmer app create
 ```
 
-Then follow the CLI and select some of the alternatives which creates a python app.
+Then follow the CLI and select some of the alternatives which creates a **python flask app**.
 
 <Callout type="info" emoji="ℹ️">
-  This is an interactive command. You can also use the `--template` flag to specify the app type.
+  This is an interactive command. You can also use the `--template` flag to specify a template.
 </Callout>
 
 Further you will be prompted to enter your package name and app name. You can choose any name you like.
@@ -108,6 +108,17 @@ Press CTRL+C to quit
 127.0.0.1 - - [13/Jan/2025 14:33:11] "GET / HTTP/1.1" 200 -
 ```
 
+Let's try to cURL the server:
+
+```bash copy
+curl http://127.0.0.1:5000
+```
+
+Expect to see:
+```
+Hello, from Wasmer Edge 🚀
+```
+
 ### Configure the `wasmer.toml` and `app.yaml` files
 
 In our `wasmer.toml` we need to set up some `args` and `env` variables.
@@ -169,14 +180,9 @@ Now, we can test if our application runs with wasmer
 wasmer run .
 ```
 
-Expect output similar to:
-```
-
-```
-
 The above command will start a web server on `http://127.0.0.1:5000`.
 
-Let's try to cURL the server:
+Let's try to cURL the server, running using wasmer:
 
 ```bash copy
 curl http://127.0.0.1:5000
