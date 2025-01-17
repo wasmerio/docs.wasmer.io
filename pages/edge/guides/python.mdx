@@ -17,33 +17,47 @@ We will cover installation of the CLI, setting up a new Python HTTP server, and 
 
 <Install />
 
+<Login />
+
 <CliVersionCallout />
 
-### Initialize the local directory 
+### Deploy!
 
-With the CLI installed, let's create a new Python application! We begin 
-creating a new empty directory - after that, we will need to run a single command. 
+We begin creating a new empty directory.
+```bash copy
+mkdir my-new-python-app
+cd my-new-python-app
+```
 
+Then, running a single command, we can setup a python http server.
+```bash copy
+wasmer deploy --template=python-http-server
+```
+
+This will prompt you for the following:
+
+- **App owner**: This is the owner of the app.
+It can be your username or an organization; if you're logged in, the command will prompt you tochoose from your namespaces: by default, it will be your username.
+- **App name**: This is the name of your app. By default, it will be the name of the current directory. 
+
+Expect to see output similar to this:
 ```bash
-$ mkdir my-python-http-server 
-$ cd my-python-http-server
-$ wasmer deploy --template=python-http-server             
 It seems you are trying to create a new app!
-✔ Who should own this app? · <you> 
-✔ What should be the name of the app? · <your-app-name> 
+✔ Who should own this app? · wasmer-user
+✔ What should be the name of the app? · python-http-server
 ✔ Unpacked template
 ✔ Do you want to deploy the app now? · yes
-Loading local package (manifest path: <current-working-directory>)
+Loading local package (manifest path: /tmp/tmp.hHSLc0Lr49/.)
 ✔ Correctly built package locally
 ✔ Package correctly uploaded
-✔ Succesfully pushed release to namespace <you> on the registry 
-Deploying app <your-app-name> (<you>) to Wasmer Edge...
+✔ Succesfully pushed release to namespace wasmer-user on the registry
+Deploying app python-http-server (wasmer-user) to Wasmer Edge...
 
-App <your-app-name> (<you>) was successfully deployed 🚀
-https://<your-app-name>-<you>.wasmer.app
+App python-http-server (wasmer-user) was successfully deployed 🚀
+https://python-http-server-wasmer-user.wasmer.app
 
-→ Unique URL: https://<app_id>.id.wasmer.app
-→ Dashboard:  https://wasmer.io/apps/<you>/<your-app-name>
+→ Unique URL: https://r3dhkilce6k0.id.wasmer.app
+→ Dashboard:  https://wasmer.io/apps/wasmer-user/python-http-server
 
 Waiting for new deployment to become available...
 (You can safely stop waiting now with CTRL-C)
@@ -51,23 +65,23 @@ Waiting for new deployment to become available...
 𖥔 Deployment complete
 ```
 
-The `wasmer deploy --template=python-http-server` command will prompt you for the following:
-
-- **App owner**: This is the owner of the app. It can be your username
-  or an organization; if you're logged in, the command will prompt you to
-  choose from your namespaces: by default, it will be your username.
-- **App name**: This is the name of your app. By default, it will be the name
-  of the current directory. 
-
 The above command will do the following:
 
 - Download the template from the registry 
 - Deploy it to Wasmer Edge with the user-provided informations
 
 Let's check it: 
-```shell
-$ curl https://<your-app-name>-<you>.wasmer.app
-{"message": "Python app is running with Wasmer!"}% 
+```bash copy
+curl https://python-http-server-wasmer.user.app
+```
+
+<Callout type="info" emoji="ℹ">
+    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.app`
+</Callout>
+
+Expect output similar to this:
+```bash
+{"message": "Python app is running with Wasmer!"}
 ```
 
 ### Update the app 
@@ -118,53 +132,42 @@ if __name__ == "__main__":
 
 Let's re-deploy our Python HTTP server:
 
-```shell
-$ wasmer deploy
-Loading local package (manifest path: <current-working-directory>)
-✔ Correctly built package locally
-✔ Package correctly uploaded
-✔ Succesfully pushed release to namespace <you> on the registry 
-Deploying app <your-app-name> (<you>) to Wasmer Edge...
-
-App <your-app-name> (<you>) was successfully deployed 🚀
-https://<your-app-name>-<you>.wasmer.app
-
-→ Unique URL: https://<app_id>.id.wasmer.app
-→ Dashboard:  https://wasmer.io/apps/<you>/<your-app-name>
-
-Waiting for new deployment to become available...
-(You can safely stop waiting now with CTRL-C)
-.
-𖥔 Deployment complete
+```bash copy
+wasmer deploy
 ```
 
-Let's try to cURL the server:
+Once it's successfully redeployed, let's try to cURL the server:
 
-```shell copy
-$ curl https://<your-app-name>-<you>.wasmer.app
-{"message": "Python app is running with Wasmer!", "hello": "world"}% 
+```bash copy
+curl https://python-http-server-wasmer.user.app
+```
+
+Expect it to contain the additional data field:
+```bash
+{"message": "wasmer/python-http-server is running on Python!", "hello": "world"}
 ```
 
 ### Testing your Python application locally
 
 To run your Python application locally simply run 
-```shell copy
-$ wasmer run . --env PORT=9090
-Starting server on http://127.0.0.1:9090
+```bash copy
+wasmer run . --env PORT=9090
 ``````
 
 This will start a local server on  `http://localhost:9090`.
 
 <Callout type="info" emoji="ℹ️">
-  You can see all the available options with `wasmer run --help` or click
-  [here](/runtime/cli/) to see the full documentation. 
+  You can see all the available options with `wasmer run --help` or click [here](/runtime/cli/) to see the full documentation. 
 </Callout>
 
 Let's try to cURL the server:
 
-```shell copy
-$ curl http://127.0.0.1:9090
-{"message": "Python app is running with Wasmer!"}% 
+```shell
+curl http://127.0.0.1:9090
+```
+Expect:
+```bash
+{"message": "wasmer/python-http-server is running on Python!", "hello": "world"}
 ```
 
 </Steps>

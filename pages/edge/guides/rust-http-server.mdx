@@ -31,21 +31,29 @@ The project requires the following tools to be installed on your system:
 With the CLI installed, let's create a new Axum application! We begin 
 creating a new empty directory - after that, we will need to run a single command. 
 
-```bash
-$ mkdir my-axum-server
-$ cd my-axum-server
-$ wasmer deploy --template=axum-starter
-It seems you are trying to create a new app!
-✔ Who should own this app? · <you> 
-✔ What should be the name of the app? · <your-app-name> 
+```bash copy
+mkdir my-axum-server
+cd my-axum-server
+```
 
+Then, let's try to deploy using a axum template:
+
+```bash copy
+wasmer deploy --template=axum-starter
+```
+
+Which should give you output similar to this:
+```bash
+It seems you are trying to create a new app!
+✔ Who should own this app? · wasmer-user
+✔ What should be the name of the app? · axum-starter
 ✔ Unpacked template
 
 NOTE: The selected template has a `BUILD.md` file.
-This means there are likely additional build 
+This means there are likely additional build
 steps that you need to perform before deploying
 the app:
- 
+
 # Building the application
 1. Install [WASIX](https://wasix.org/docs/language-guide/rust/installation)
 2. Build the application: `cargo wasix build --release`
@@ -53,13 +61,16 @@ the app:
 After taking the necessary steps to build your application, re-run `wasmer deploy`
 ```
 
-You can see, as prompted by the command, that we'll need a couple more steps
-before deploying the server, namely actually _building_ the application: we
-assume you installed the [`WASIX`](https://wasix.org/docs/language-guide/rust/installation) toolchain. We need to build the HTTP server
-using `cargo wasix`:
+You can see, as prompted by the command, that we'll need a couple more steps before deploying the server, namely actually _building_ the application.
+We assume you installed the [`WASIX`](https://wasix.org/docs/language-guide/rust/installation) toolchain.
+We need to build the HTTP server using `cargo wasix`:
 
+```bash copy
+cargo wasix build --release
 ```
-$ cargo wasix build --release
+
+Expect output like this:
+```
 ...
 Compiling wasmer-hello v0.1.0 (/.../Wasmer/edge-quickstart/wasmer-hello)
 Finished dev [unoptimized + debuginfo] target(s) in 10.69s
@@ -71,6 +82,8 @@ info: Post-processing WebAssembly files
   that needs to be used to achieve WASIX compatibility: one of the easiest
   "gotchas" is forgetting to update your lock file with `cargo update`.
 </Callout>
+
+### Deploy it
 
 Now, Your directory structure should look like this:
 
@@ -91,8 +104,12 @@ Now, Your directory structure should look like this:
 </FileTree>
 
 Once the application itself was correctly built, you can re-run `wasmer deploy`:
-```shell
-$ wasmer deploy 
+```bash copy
+ wasmer deploy 
+```
+
+Expect to see output similar to this:
+```bash copy
 It seems you are trying to create a new app!
 ✔ Who should own this app? · <you> 
 ✔ What should be the name of the app? · <your-app-name> 
@@ -118,8 +135,12 @@ Waiting for new deployment to become available...
 ```
 
 Let's check it:
-```shell
-$ curl https://<your-app-name>-<you>.wasmer.app
+```bash copy
+curl https://<your-app-name>-<you>.wasmer.app
+```
+
+Expect:
+```
 Hello, Axum ❤️ WASIX!
 ```
 

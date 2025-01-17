@@ -17,13 +17,12 @@ be started to serve requests, and shut down again after a short idle period.
 Apps are reachable through an automatically provisioned URL (`NAME.wasmer.app`), 
 
 <Callout type='info'>
-Note: in the future apps will also be able to be persistent and stateful with persistent volumes.
-Apps will also expand to provide generic TCP/UDP servers, not just HTTP.
+In the future, apps will expand to provide generic TCP/UDP servers, not just HTTP.
 </Callout>
 
 ## Deployment Flow
 
-Apps are based on a [configuration file](../configuration/app-configuration), which
+Apps are based on a [configuration file](/edge/configuration), which
 can also be managed through the admin UI.
 
 Each deployment of an app will create a new app version. Each version will also

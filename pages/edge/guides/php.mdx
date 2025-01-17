@@ -16,39 +16,54 @@ We will cover installation of the CLI, setting up a new PHP application, and dep
 
 <Install />
 
+<Login />
+
 <CliVersionCallout />
 
-### Initialize the local directory 
+### Deploy!
 
-With the CLI installed, let's create a new PHP application! We begin 
-creating a new empty directory - after that, we will need to run a single command. 
+We begin creating a new empty directory.
+```bash copy
+mkdir my-new-php-app
+cd my-new-php-app
+```
 
+Then, running a single command, we can setup a php application.
+```bash copy
+wasmer deploy --template=php-starter
+```
+
+This will prompt you for the following:
+
+- **App owner**: This is the owner of the app.
+It can be your username or an organization; if you're logged in, the command will prompt you tochoose from your namespaces: by default, it will be your username.
+- **App name**: This is the name of your app. By default, it will be the name of the current directory. 
+
+Expect to see output similar to this:
 ```bash
-$ mkdir my-php-application && cd my-php-application
-$ wasmer deploy --template=php-starter
+It seems you are trying to create a new app!
+✔ Who should own this app? · wasmer-user
+✔ What should be the name of the app? · php-starter
+✔ Select the directory to save the app in · php-starter
+✔ Unpacked template
+✔ Do you want to deploy the app now? · yes
+Loading local package (manifest path: php-starter/.)
+✔ Correctly built package locally
+✔ Package correctly uploaded
+✔ Succesfully pushed release to namespace wasmer-user on the registry
+Deploying app php-starter (wasmer-user) to Wasmer Edge...
+
+App php-starter (wasmer-user) was successfully deployed 🚀
+https://php-starter-wasmer-user.wasmer.app
+
+→ Unique URL: https://2e5h6i7cd9ql.id.wasmer.app
+→ Dashboard:  https://wasmer.io/apps/wasmer-user/php-starter
+
+Waiting for new deployment to become available...
+(You can safely stop waiting now with CTRL-C)
+.
+𖥔 Deployment complete
 ```
-
-The `wasmer deploy --template=php-starter` command will prompt you for the following:
-
-- Download the PHP template from the registry 
-- Deploy it to Wasmer Edge with the user-provided informations
-  - **App owner**: This is the owner of the app. It can be your username
-    or an organization; if you're logged in, the command will prompt you to
-    choose from your namespaces: by default, it will be your username.
-  - **App name**: This is the name of your app. By default, it will be the name
-    of the current directory. 
-
-Let's check it: 
-```shell
-$ curl https://<your-app>.wasmer.app
-1	=>	PHP code tester Sandbox Online
-emoji	=>	😀 😃 😄 😁 😆
-2	=>	5
-5	=>	89009
-Random number	=>	<random!>
-PHP Version	=>	8.3.4
-```
-
 
 Your directory should now look like this:
 
@@ -61,6 +76,80 @@ Your directory should now look like this:
   <FileTree.File name="app.yaml" />
   <FileTree.File name="wasmer.toml" />
 </FileTree>
+
+Let's check it: 
+```bash copy
+curl https://php-starter-wasmer-user.wasmer.app
+```
+<Callout type="info" emoji="ℹ">
+    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.app`
+</Callout>
+
+Expect output similar to this:
+```bash
+1       =>      PHP code tester Sandbox Online
+emoji   =>      😀 😃 😄 😁 😆
+2       =>      5
+5       =>      89009
+Random number   =>      630
+PHP Version     =>      8.3.4
+```
+
+### Update the app 
+
+To illustrate the lifecycle of an app, let's edit the `index.php` file 
+in the `app` folder: 
+
+```php copy filename="app/index.php"
+<?php 
+  echo 'Hello World!';   
+  var_dump($_SERVER); 
+?>
+```
+
+Now, simply run `wasmer deploy` again:
+
+```bash copy
+wasmer deploy
+```
+
+Let's check it again:
+```bash copy
+curl https://php-starter-wasmer-user.wasmer.app
+```
+
+Expect to see:
+```bash
+Hello World!array(19) {
+  ...
+}
+```
+
+
+### Testing your PHP application locally
+To test your PHP application locally simply run
+
+```bash copy
+wasmer run .
+```
+
+<Callout type="info" emoji="ℹ️">
+  You can see all the available options with `wasmer run --help` or click  [here](/runtime/cli/) to see the full documentation. 
+</Callout>
+
+
+Let's try to cURL the server:
+
+```bash copy
+curl http://127.0.0.1:8080
+```
+
+Expect to see:
+```bash
+Hello World!array(19) {
+  ...
+}
+```
 
 ### Custom PHP settings 
 
@@ -92,8 +181,7 @@ upload_max_filesize = "20M"
 post_max_size = "25M"
 ```
 
-Now, mount the `config` directoy inside of the filesystem (`fs`) in `wasmer.toml`, and set the
-environment variable `PHPRC`
+Now, copy the `config` directory inside of the filesystem (`fs`) in `wasmer.toml`, and set the environment variable `PHPRC`
 
 ```toml filename="wasmer.toml" /config/ /PHPRC/
 [fs]
@@ -119,7 +207,7 @@ The `main-args` current values are equivalent to calling `php -t app -S localhos
 If you want to accelerate the cold-start times of your PHP app (for example, if you are using Symfony or Laravel with tons of PHP imports), Instaboot can help to
 speed up cold-starts by 100-200x.
 
-```yaml filename="app.yaml"
+```yaml filename="app.yaml" copy
 capabilities:
   instaboot:
     # We provide a list of HTTP requests that will be used to pre-warm the
@@ -132,58 +220,6 @@ capabilities:
 Learn more about Instaboot [in our docs](/edge/learn/instaboot).
 
 
-### Update the app 
-
-To illustrate the lifecycle of an app, let's edit the `index.php` file 
-in the `app` folder: 
-
-```php copy filename="app/index.php"
-<?php 
-  echo 'Hello World!';   
-  var_dump($_SERVER); 
-?>
-```
-
-Now, simply run `wasmer deploy` again:
-
-```shell
-$ wasmer deploy
-[...]
-𖥔 Deployment complete
-```
-
-Let's check it again:
-```shell
-$ curl https://<your-app>.wasmer.app
-Hello World! <more text..>
-```
-
-### Testing your PHP application locally
-To test your PHP application locally simply run
-
-```shell copy
-$ wasmer run .
-Starting server on http://127.0.0.1:8000
-````
-
-<Callout type="info" emoji="ℹ️">
-  You can see all the available options with `wasmer run --help` or click
-  [here](/runtime/cli/) to see the full documentation. 
-</Callout>
-
-
-Let's try to cURL the server:
-
-```shell copy
-$ curl http://127.0.0.1:8000
-1	=>	PHP code tester Sandbox Online
-emoji	=>	😀 😃 😄 😁 😆
-2	=>	5
-5	=>	89009
-Random number	=>	286
-PHP Version	=>	8.3.4
-Hello	=>	World
-```
 
 </Steps>
 

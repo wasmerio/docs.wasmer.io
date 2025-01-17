@@ -12,77 +12,78 @@ import updatedStaticSiteImg from "@assets/deploy/quickstart/updated-static-site.
 In this quickstart guide, you'll learn the process of deploying a static site on Wasmer Edge.
 We will cover installation of the CLI, setting up a new static site, and deploying it.
 
-## Deploying a static site
-
-<Steps>
-
-<Install />
-
-<CliVersionCallout />
-
-### Initialize the local directory 
-
 <Callout type="default" emoji="⚛">
   If you want to deploy a static site made from frameworks like React, Vue, or
   Svelte, you can follow our [React Static
   Site](/edge/guides/react-static-site) tutorial.
 </Callout>
 
-With the CLI installed, let's create a new static site! We begin 
-creating a new empty directory - after that, we will need to run a single command. 
+## Deploying a static site
 
+<Steps>
+
+<Install />
+
+<Login />
+
+<CliVersionCallout />
+
+### Deploy!
+We begin creating a new empty directory.
+```bash copy
+mkdir my-new-site
+cd my-new-site
+```
+
+Then, running a single command, we can setup a static website.
+```bash copy
+wasmer deploy --template=static-website             
+```
+
+Expect to see output similar to this:
 ```bash
-$ mkdir my-new-site
-$ cd my-new-site
-$ wasmer deploy --template=static-website             
 It seems you are trying to create a new app!
-✔ Who should own this app? · <you> 
-✔ What should be the name of the app? · <your-app-name> 
+✔ Who should own this app? · wasmer-user
+✔ What should be the name of the app? · my-new-site
 ✔ Unpacked template
 ✔ Do you want to deploy the app now? · yes
-Loading local package (manifest path: <current-working-directory>)
+Loading local package (manifest path: ~/wasmer-user/Projects/my-new-site/.)
 ✔ Correctly built package locally
 ✔ Package correctly uploaded
-✔ Succesfully pushed release to namespace <you> on the registry 
-Deploying app <your-app-name> (<you>) to Wasmer Edge...
+✔ Succesfully pushed release to namespace wasmer-user on the registry
+Deploying app my-new-site (wasmer-user) to Wasmer Edge...
 
-App <your-app-name> (<you>) was successfully deployed 🚀
-https://<your-app-name>-<you>.wasmer.app
+App my-new-site (wasmer-user) was successfully deployed 🚀
+https://my-new-site-wasmer-user.wasmer.app
 
-→ Unique URL: https://<app_id>.id.wasmer.app
-→ Dashboard:  https://wasmer.io/apps/<you>/<your-app-name>
+→ Unique URL: https://2dyh6i3cvx1y.id.wasmer.app
+→ Dashboard:  https://wasmer.io/apps/wasmer-user/my-new-site
 
 Waiting for new deployment to become available...
 (You can safely stop waiting now with CTRL-C)
-.
-𖥔 Deployment complete
-```
-
-The `wasmer deploy --template=static-website` command will prompt you for the following:
-
-- **App owner**: This is the owner of the app. It can be your username
-  or an organization; if you're logged in, the command will prompt you to
-  choose from your namespaces: by default, it will be your username.
-- **App name**: This is the name of your app. By default, it will be the name
-  of the current directory. 
+ ```
 
 The above command will do the following:
 
-- Download the template from the registry 
-- Deploy it to Wasmer Edge with the user-provided informations
+1. Download the template from the registry 
+1. Store the template locally in your current directory (try running `ls -la`)
+1. Deploy it to Wasmer Edge
 
 <Callout type="error" emoji="⚠️">
-  Don't change the `public` directory attribute in the `wasmer.toml` file for
-  this tutorial. If you want to learn how to specify a different directory for
-  build output, check out our [React Static
-  Site](/edge/guides/react-static-site) tutorial.
+Don't change the `public` directory attribute in the `wasmer.toml` file for this tutorial.
+If you want to learn how to specify a different directory for build output, check out our [React Static Site](/edge/guides/react-static-site) tutorial.
 </Callout>
 
-This is what the static website looks like in a browser:
+Try clicking the URL which is under the deployment message `https://my-new-site-wasmer-user.wasmer.app`, and expect to see something like:
+
+<Callout type="info" emoji="ℹ">
+    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.app`
+</Callout>
 
 <StaticSite image={staticSiteImg} />
 
 ### Update the app 
+To illustrate the lifecycle of an app, let's edit the `index.html` file in the `public` folder: 
 
 Your directory structure should look like this:
 
@@ -101,64 +102,44 @@ Your directory structure should look like this:
   </FileTree.Folder>
 </FileTree>
 
+Lets modify index.html:
 
-To illustrate the lifecycle of an app, let's edit the `index.html` file 
-in the `public` folder: 
-
-```shell
-$ pwd
-.../my-new-site
-$ sed -i -e 's/Hi from the Edge/This is our new title!/g' public/index.html 
-$ wasmer deploy
-Loading local package (manifest path: <current-working-directory>)
-✔ Correctly built package locally
-✔ Package correctly uploaded
-✔ Succesfully pushed release to namespace <you> on the registry 
-Deploying app <your-app-name> (<you>) to Wasmer Edge...
-
-App <your-app-name> (<you>) was successfully deployed 🚀
-https://<your-app-name>-<you>.wasmer.app
-
-→ Unique URL: https://<app_id>.id.wasmer.app
-→ Dashboard:  https://wasmer.io/apps/<you>/<your-app-name>
-
-Waiting for new deployment to become available...
-(You can safely stop waiting now with CTRL-C)
-.
-𖥔 Deployment complete
+```bash copy
+sed -i -e 's/Hi from the Edge/This is our new title!/g' public/index.html 
 ```
 
+Now, let's redeploy it:
+```bash copy
+wasmer deploy
+```
+
+When refreshing the browser, expect the page to have been updated:
 <StaticSite image={updatedStaticSiteImg} />
 
 ### Add your content
 
 Currently, the public directory only contains a basic `index.html` file.
 
-You can now modify this directory and copy your own files (HTML, CSS, JavaScript, images, etc)
-as needed.
+You can now modify this directory and copy your own files (HTML, CSS, JavaScript, images, etc) as needed.
 
 ### Test your site locally 
 
-You can also test your site locally before deploying the app on Wasmer Edge by
-running the following command:
+You can also test your site locally before deploying the app on Wasmer Edge by running the following command:
 
 ```shell copy
 wasmer run .
 ```
 
-This will start a local server using the Static Web Server on
-`http://localhost:80`. You can also specify a different port by passing the
-`--port` flag, as in `wasmer run . -- --port=<your-port>`.
+This will start a local server using the Static Web Server on `http://localhost:8080`.
+You can also specify a different port by passing the `--port` flag, as in `wasmer run . -- --port=<your-port>`.
 
 <Callout type="info" emoji="ℹ️">
-  The arguments after `--` (double dash) are passed to the underlying server running in the
-  Wasmer runtime.
+  The arguments after `--` (double dash) are passed to the underlying server running in the Wasmer runtime.
 </Callout>
 
 <Callout type="info" emoji="ℹ️">
-  You can see all the available options with `wasmer run --help` or click
-  [here](/runtime/cli/) to see the full documentation. To see all the avilable
-  options for the static web server, run `wasmer run . -- --help`.
+  You can see all the available options with `wasmer run --help` or click [here](/runtime/cli/) to see the full documentation.
+  To see all the avilable options for the static web server, run `wasmer run . -- --help`.
 </Callout>
 
 </Steps>
