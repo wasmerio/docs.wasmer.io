@@ -1,0 +1,42 @@
+name: Deploy docs.wasmer.io
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Setup Wasmer
+        uses: wasmerio/setup-wasmer@v2
+        with:
+          version: v5.0.5-rc1
+          
+
+      - name: Deploy app
+        run: wasmer deploy --registry wasmer.io --bump
+        env:
+          WASMER_TOKEN: ${{ secrets.WASMER_CIUSER_PROD_TOKEN }}
+        
