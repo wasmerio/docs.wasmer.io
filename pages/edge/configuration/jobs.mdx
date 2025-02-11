@@ -1,0 +1,142 @@
+# Jobs
+
+## Introduction
+
+The `jobs` section allows defining scheduled or event-driven tasks
+that execute commands or make HTTP requests. Jobs can be useful for
+running periodic maintenance tasks, executing background processes, or
+ensuring essential workflows are automated.
+
+
+## Job Structure
+
+Each job consists of the following fields:
+
+- **name** *(str, required)* – A unique name for the job.
+- **trigger** *(str, required)* – Defines when the job should run.
+  - This can be a cron expression (e.g., `'*/15 * * * *'` for every 15
+  minutes).
+  - It can also be `'post-deployment'` to run after deployment.
+  - `'pre-deployment'` is currently not supported.
+- **action** *(required)* – Specifies the task to run. More details
+  in the [next section](#job-actions). A job can:
+  - Run a command using `execute`.
+  - Make an HTTP request using `fetch`.
+- **retries** *(int, Optional)* – The maximum number of times the job
+  should retry upon failure.
+- **timeout** *(duration, Optional)* – The maximum time a job is
+  allowed to run before timing out (e.g., `'10m'` for 10 minutes).
+- **max_schedule_drift** *(Optional[PrettyDuration])* – The maximum
+  allowed delay before the job is considered late.
+
+
+Fully working examples configuration can be found
+[here](#example-jobs-configuration).
+
+
+## Job Actions
+
+This section defines the `action` field in a job definition. There are
+two types of actions for a job:
+
+1. **Executing a command (`execute`)**
+
+   Runs a CLI command with Optional environment variables.
+   ```yaml
+   action:
+     execute:
+       command: install-wp
+       cli_args:
+         - "--version"
+         - "--help"
+       env:
+         LOG_LEVEL: DEBUG
+         EXTRA_FLAGS: "--enable-feature-1 --enable-feature-2"
+   ```
+   - `command` *(str, Optional)* – The command to execute.
+   - `cli_args` *(List[str], Optional)* – Arguments for the command.
+   - `env` *(map, Optional)* – Environment variables.
+
+2. **Making an HTTP request (`fetch`)**
+
+   Sends an HTTP request to a specific endpoint.
+   ```yaml
+   action:
+     fetch:
+       path: /wp-cron.php
+       timeout: '10m'
+       headers:
+         - name: Accept
+           value: application/json
+         - name: User-Agent
+           value: Wasmer-CronJob
+
+   ```
+   - `path` *(str, required)* – The request URL path.
+   - `method` *(str, Optional)* – HTTP method (defaults to `GET`).
+   - `headers` *(map, Optional)* – HTTP headers.
+   - `body` *(str, Optional)* – Request body.
+   - `timeout` *(duration, Optional)* – Maximum time to wait for
+     a response.
+
+## Example Jobs Configuration
+
+Below are examples of various job types based on their trigger and
+action.
+
+
+### Fetch job
+
+This job fetches the `/` path on it's app every 15 minutes.
+```yaml
+kind: wasmer.io/App.v0
+package: wasmer/hello
+jobs:
+  - name: ping-server-every-15-minutes
+    trigger: '*/15 * * * *'
+    action:
+      fetch:
+        path: /
+        timeout: 30s
+```
+
+
+### Execute job
+
+This job runs `php --version` every minute.
+
+```yaml
+kind: wasmer.io/App.v0
+package: wasmer/wordpress
+jobs:
+  - name: check-php-version
+    trigger: '*/1 * * * *'
+    execute:
+      command: php
+      cli_args: ["--version"]
+```
+
+### Post deployment job
+
+This job fetches the `/warm-up-caches` path on it's app after
+each deployment.
+
+```yaml
+kind: wasmer.io/App.v0
+package: wasmer/hello
+jobs:
+  - name: ping-server-every-15-minutes
+    trigger: post-deployment
+    action:
+      fetch:
+        path: /warm-up-caches
+        timeout: 30s
+```
+
+
+## Use Cases
+
+- **Post-deployment setup:** The `installation` job ensures necessary
+  setup commands run after deployment.
+- **Scheduled background tasks:** The `wp-cron` job triggers
+  WordPress’s cron system every 15 minutes.
