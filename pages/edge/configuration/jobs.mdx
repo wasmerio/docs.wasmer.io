@@ -26,8 +26,9 @@ Each job consists of the following fields:
   should retry upon failure.
 - **timeout** *(duration, Optional)* – The maximum time a job is
   allowed to run before timing out (e.g., `'10m'` for 10 minutes).
-- **max_schedule_drift** *(Optional[PrettyDuration])* – The maximum
-  allowed delay before the job is considered late.
+- **max_schedule_drift** *(duration, Optional)* – The maximum
+  allowed delay before the job is considered late. (e.g., `'10m'` for
+  10 minutes)
 
 
 Fully working examples configuration can be found
@@ -74,7 +75,9 @@ two types of actions for a job:
    ```
    - `path` *(str, required)* – The request URL path.
    - `method` *(str, Optional)* – HTTP method (defaults to `GET`).
-   - `headers` *(map, Optional)* – HTTP headers.
+   - `headers` *(list[object[name, value]], Optional)* – HTTP headers as
+     yaml objects. The objects have two fields, `name` which is the
+     header name, and `value` which is the value of header field.
    - `body` *(str, Optional)* – Request body.
    - `timeout` *(duration, Optional)* – Maximum time to wait for
      a response.
