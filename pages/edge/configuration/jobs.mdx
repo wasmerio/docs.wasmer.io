@@ -114,9 +114,10 @@ package: wasmer/wordpress
 jobs:
   - name: check-php-version
     trigger: '*/1 * * * *'
-    execute:
-      command: php
-      cli_args: ["--version"]
+    action:
+      execute:
+        command: php
+        cli_args: ["--version"]
 ```
 
 ### Post deployment job
