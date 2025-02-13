@@ -43,7 +43,7 @@ two types of actions for a job:
 1. **Executing a command (`execute`)**
 
    Runs a CLI command with Optional environment variables.
-   ```yaml
+   ```yaml copy
    action:
      execute:
        command: install-wp
@@ -61,7 +61,7 @@ two types of actions for a job:
 2. **Making an HTTP request (`fetch`)**
 
    Sends an HTTP request to a specific endpoint.
-   ```yaml
+   ```yaml copy
    action:
      fetch:
        path: /wp-cron.php
@@ -91,7 +91,7 @@ action.
 ### Fetch job
 
 This job fetches the `/` path on it's app every 15 minutes.
-```yaml
+```yaml copy
 kind: wasmer.io/App.v0
 package: wasmer/hello
 jobs:
@@ -108,15 +108,16 @@ jobs:
 
 This job runs `php --version` every minute.
 
-```yaml
+```yaml copy
 kind: wasmer.io/App.v0
 package: wasmer/wordpress
 jobs:
   - name: check-php-version
     trigger: '*/1 * * * *'
-    execute:
-      command: php
-      cli_args: ["--version"]
+    action:
+      execute:
+        command: php
+        cli_args: ["--version"]
 ```
 
 ### Post deployment job
@@ -124,7 +125,7 @@ jobs:
 This job fetches the `/warm-up-caches` path on it's app after
 each deployment.
 
-```yaml
+```yaml copy
 kind: wasmer.io/App.v0
 package: wasmer/hello
 jobs:
