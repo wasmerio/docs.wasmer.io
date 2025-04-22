@@ -1,5 +1,6 @@
 import { Cards, Card } from 'nextra/components'
 import RunIcon from '../components/icons/run.svg'
+import { Callout } from "nextra-theme-docs";
 
 # Wasmer Runtime
 
@@ -27,11 +28,15 @@ To run a package, check out the [Getting Started](/runtime/get-started/) guide.
 
 The Wasmer Runtime supports multiple backends, depending on your needs:
 
+<Callout type="warning">
+  **Important Licensing Information**: The Singlepass and LLVM compiler backends are now licensed under the Business Source License (BUSL-1.1), which restricts production use to Sponsors under the Wasmer Sponsorship Program. For more information, see the [Runtime Features](/runtime/features) page or contact licensing@wasmer.io.
+</Callout>
+
 ### Native backends:
 
-- **Singlepass**: A single-pass compiler for fast compilation times and low memory usage.
+- **Singlepass**: A single-pass compiler for fast compilation times and low memory usage. (BUSL-1.1 license)
 - **Cranelift**: A fast compiler backend with a focus on compile times, and runtime performance.
-- **LLVM**: A compiler backend that uses LLVM for optimization and code generation.
+- **LLVM**: A compiler backend that uses LLVM for optimization and code generation. (BUSL-1.1 license)
 
 ### Integration backends:
 

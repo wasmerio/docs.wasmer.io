@@ -45,6 +45,8 @@ wasmer run my_program.wasm --singlepass
 
 > You can also use `--cranelift` or `--llvm` instead of `--singlepass`.
 
+**Note on compiler licensing**: The Singlepass and LLVM compilers are now licensed under the Business Source License (BUSL-1.1), which restricts production use to Sponsors under the Wasmer Sponsorship Program. For non-production use or if you're a sponsor, you can continue to use these compilers. For production use without sponsorship, consider using the Cranelift compiler. For more information, see the [Runtime Features](/runtime/features) page or contact licensing@wasmer.io.
+
 ### Run a WASI or WASIX Module
 
 You can pass the arguments that will be given to the WASI program:
