@@ -31,6 +31,7 @@ Each of this backends support different features, and have different support for
 ### Wasmer features
   - **Caching**: compiled WebAssembly modules can be reused so subsequent runs of a Wasm file will have very little start up time;
   - **Metering**: computation time and other resources can be monitored and limits set to control how the Wasm code runs. This is also known as "gas metering";
+  - **LLVM Pass-Params Optimization**: an LLVM-specific optimization that passes the first global (#0) and the first memory (#0) as explicit parameters between guest functions, which can significantly improve performance for certain workloads by reducing pointer dereferencing overhead;
 
 ## Support of features by backend
 
@@ -54,10 +55,11 @@ WebAssembly features:
 
 Wasmer features:
 
-| Features | Singlepass | Cranelift | LLVM | V8 | Wasmi | JavascriptCore | Browser |
-| -------- | ---------- | --------- | ---- | -- | ----- | -------------- | ------- |
-| Caching  | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
-| Metering | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
+| Features                   | Singlepass | Cranelift | LLVM | V8 | Wasmi | JavascriptCore | Browser |
+| -------------------------- | ---------- | --------- | ---- | -- | ----- | -------------- | ------- |
+| Caching                    | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
+| Metering                   | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
+| Pass-Params Optimization   | ❌         | ❌        | ✅   | ❌  | ❌     | ❌             | ❌      |
 
 
 ## Backend support by Operating System
