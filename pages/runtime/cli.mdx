@@ -45,6 +45,16 @@ wasmer run my_program.wasm --singlepass
 
 > You can also use `--cranelift` or `--llvm` instead of `--singlepass`.
 
+#### Run a Wasm file with LLVM thread control
+
+When using the LLVM compiler, you can control how many threads are used during compilation:
+
+```bash copy
+wasmer run my_program.wasm --llvm --llvm-num-threads=4
+```
+
+> If the requested number of threads is 1, then rayon is not used during compilation, and modules are compiled on the calling thread.
+
 ### Run a WASI or WASIX Module
 
 You can pass the arguments that will be given to the WASI program:
@@ -62,7 +72,7 @@ wasmer run my_wasi_program.wasm --env MYVAR=MYVALUE -- arg1 arg2 arg3
 
 ## Help
 
-This is the help output from the Wasmer CLI for `wasmer run --help` (last updated 2025-01):
+This is the help output from the Wasmer CLI for `wasmer run --help` (last updated 2025-04):
 
 ```
 Run a WebAssembly file or Wasmer container
@@ -129,6 +139,11 @@ Options:
 
       --llvm
           Use LLVM compiler
+
+      --llvm-num-threads <NUM_THREADS>
+          Only available for the LLVM compiler. Sets the number of threads used to compile the input module(s).
+          
+          If set to 1, compilation happens on the calling thread without using rayon.
 
       --enable-verifier
           Enable compiler internal verification.
