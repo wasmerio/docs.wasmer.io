@@ -108,6 +108,18 @@ The `debug` field is used to enable debug mode for the application. This in turn
 - Required: `false`
 - Default: `false`
 
+### `enable_email`
+
+The `enable_email` field allows you to associate an email account with your application. When enabled, a randomly generated email address is created for your app, and environment variables are set to allow the app to access the email credentials.
+
+Example:
+```yaml filename="app.yaml" copy
+enable_email: true
+```
+
+- Required: `false`
+- Default: `false`
+
 ### `redirect`
 
 #### `redirect.force_https`
