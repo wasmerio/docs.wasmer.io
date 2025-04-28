@@ -138,6 +138,30 @@ identifier, which is persisted in the `app.yaml` file upon deploying.
 ### Listing your apps (`wasmer app list`)
 In order to show all the apps linked to your account, you can use the `wasmer app list` command.
 
+### Managing app databases (`wasmer app database`)
+If your app uses databases, you can manage them using the `wasmer app database` subcommands.
+
+#### Listing app databases (`wasmer app database list`)
+To list all databases attached to your app, use the `wasmer app database list` command:
+
+```shell
+wasmer app database list
+```
+
+This will display information about each database, including:
+- Name
+- Host
+- Port
+- UI link (if available)
+
+If you need to see the database passwords as well, you can use the `--with-password` flag:
+
+```shell
+wasmer app database list --with-password
+```
+
+This is particularly useful when you need to connect to your database using external tools or when troubleshooting connection issues.
+
 ### Creating an app (`wasmer app create`)
 The Wasmer CLI allows users to intentionally create an app, but if a user runs
 `wasmer deploy` without an app available, the app creation process will be
