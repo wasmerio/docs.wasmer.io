@@ -1,0 +1,147 @@
+# Dynamic Linking in WASIX
+
+WASIX supports dynamic linking and loading of side modules, similar to how shared libraries work in traditional operating systems. This feature allows WebAssembly modules to load additional modules at runtime, enabling more modular and flexible application architectures.
+
+## Overview
+
+Dynamic linking in WASIX provides several benefits:
+
+- **Modularity**: Split your application into multiple modules that can be loaded on demand
+- **Code reuse**: Share common functionality across multiple applications
+- **Reduced memory footprint**: Load only the modules you need when you need them
+- **Runtime extensibility**: Add new functionality to your application without recompiling the main module
+
+## WASIX Dynamic Linking API
+
+WASIX implements the following syscalls for dynamic linking:
+
+| Syscall | Description |
+|---------|-------------|
+| `dlopen` | Opens a dynamic library and returns a handle to it |
+| `dlclose` | Closes a dynamic library handle |
+| `dlsym` | Retrieves the address of a symbol from a dynamic library |
+
+These syscalls are similar to their POSIX counterparts, making it easier to port existing code that uses dynamic linking.
+
+## Using Dynamic Linking
+
+### From C/C++
+
+If you're using C or C++, you can use the standard `<dlfcn.h>` header to access dynamic linking functionality:
+
+```c
+#include <dlfcn.h>
+#include <stdio.h>
+
+int main() {
+    // Open the library
+    void* handle = dlopen("libexample.so", RTLD_LAZY);
+    if (!handle) {
+        fprintf(stderr, "Error: %s\n", dlerror());
+        return 1;
+    }
+
+    // Get a function from the library
+    typedef int (*example_func_t)(int);
+    example_func_t example_func = (example_func_t)dlsym(handle, "example_function");
+    if (!example_func) {
+        fprintf(stderr, "Error: %s\n", dlerror());
+        dlclose(handle);
+        return 1;
+    }
+
+    // Call the function
+    int result = example_func(42);
+    printf("Result: %d\n", result);
+
+    // Close the library
+    dlclose(handle);
+    return 0;
+}
+```
+
+### From Rust
+
+In Rust, you can use the `libloading` crate to access dynamic linking functionality:
+
+```rust
+use libloading::{Library, Symbol};
+use std::error::Error;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    // Open the library
+    let lib = Library::new("libexample.so")?;
+
+    // Get a function from the library
+    unsafe {
+        let func: Symbol<unsafe extern fn(i32) -> i32> = lib.get(b"example_function")?;
+        
+        // Call the function
+        let result = func(42);
+        println!("Result: {}", result);
+    }
+
+    // Library is automatically closed when it goes out of scope
+    Ok(())
+}
+```
+
+## Creating Dynamic Libraries
+
+### Using C/C++
+
+To create a dynamic library in C/C++, compile your code with the `-shared` flag:
+
+```bash
+clang --target=wasm32-wasmer-wasi -shared -o libexample.so example.c
+```
+
+Example library code:
+
+```c
+// example.c
+int example_function(int value) {
+    return value * 2;
+}
+```
+
+### Using Rust
+
+To create a dynamic library in Rust, set your crate type to `cdylib` in your `Cargo.toml`:
+
+```toml
+[lib]
+crate-type = ["cdylib"]
+```
+
+Example library code:
+
+```rust
+// lib.rs
+#[no_mangle]
+pub extern "C" fn example_function(value: i32) -> i32 {
+    value * 2
+}
+```
+
+Then build with:
+
+```bash
+cargo wasix build --release
+```
+
+## Limitations
+
+- Dynamic libraries must be compiled for the same target as the main module (wasm32-wasmer-wasi)
+- The dynamic linking feature is specific to WASIX and may not be available in other WebAssembly runtimes
+- Currently, dynamic libraries are loaded into the same memory space as the main module
+
+## Performance Considerations
+
+Dynamic linking in WebAssembly has some performance implications:
+
+- **Load time**: There's an overhead when loading dynamic libraries at runtime
+- **Memory usage**: Each loaded library consumes memory, even when not in use
+- **Call overhead**: Calls to functions in dynamic libraries may have a small overhead compared to static linking
+
+For performance-critical applications, consider the trade-offs between dynamic and static linking based on your specific requirements.
