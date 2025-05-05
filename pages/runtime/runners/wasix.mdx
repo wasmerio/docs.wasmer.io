@@ -8,6 +8,19 @@ WASIX was created by the Wasmer team to speed up the Wasmification of codebases 
 
 You can check more about WASIX on the [website](https://wasix.org/).
 
+## Key Features
+
+WASIX extends WASI with several important capabilities:
+
+- **Networking**: TCP/UDP sockets for client and server applications
+- **Threading**: Multi-threading support for parallel processing
+- **Advanced file operations**: Additional filesystem capabilities
+- **Dynamic linking**: Load additional WebAssembly modules at runtime (similar to shared libraries)
+- **Signals**: Process signal handling
+- **Advanced process management**: Fork, exec, and other process operations
+
+For more details on dynamic linking, see the [Dynamic Linking documentation](/runtime/features/dynamic-linking).
+
 ## Usage
 
 To use the WASIX runner, you need to specify the runner for you package in your `wasmer.toml` file:
