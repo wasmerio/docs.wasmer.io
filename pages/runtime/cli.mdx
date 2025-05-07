@@ -59,6 +59,18 @@ You can also pass environment variables:
 wasmer run my_wasi_program.wasm --env MYVAR=MYVALUE -- arg1 arg2 arg3
 ```
 
+### Profiling WebAssembly Code
+
+You can enable profiling data generation for your WebAssembly code using the `--profiler` option:
+
+```bash copy
+wasmer run my_program.wasm --profiler=perfmap
+```
+
+This generates profiling information in the [perfmap format](https://github.com/torvalds/linux/blob/master/tools/perf/Documentation/jit-interface.txt), which can be used with Linux perf tools to analyze the performance of your WebAssembly code. The profiler data is written to `/tmp/perf-{PID}.map`.
+
+This option is available for the Cranelift, LLVM, and Singlepass compiler backends.
+
 
 ## Help
 
@@ -134,6 +146,14 @@ Options:
           Enable compiler internal verification.
           
           Available for cranelift, LLVM and singlepass.
+
+      --profiler <PROFILER>
+          Enable a profiler.
+          
+          Available for cranelift, LLVM and singlepass.
+          
+          Possible values:
+          - perfmap: Generate profiling data in perfmap format
 
       --llvm-debug-dir <LLVM_DEBUG_DIR>
           LLVM debug directory, where IR and object files will be written to.

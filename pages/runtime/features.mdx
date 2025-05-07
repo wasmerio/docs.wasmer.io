@@ -31,6 +31,7 @@ Each of this backends support different features, and have different support for
 ### Wasmer features
   - **Caching**: compiled WebAssembly modules can be reused so subsequent runs of a Wasm file will have very little start up time;
   - **Metering**: computation time and other resources can be monitored and limits set to control how the Wasm code runs. This is also known as "gas metering";
+  - **Profiling**: generate profiling data for WebAssembly code to analyze performance using tools like Linux perf;
 
 ## Support of features by backend
 
@@ -58,6 +59,7 @@ Wasmer features:
 | -------- | ---------- | --------- | ---- | -- | ----- | -------------- | ------- |
 | Caching  | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
 | Metering | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
+| Profiling| ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
 
 
 ## Backend support by Operating System
@@ -76,10 +78,10 @@ Wasmer features:
 
 |                | x86_64 | arm64 | x86 | RISC-V 64-bit | RISC-V 32-bit |
 | -------------- | ------ | ----- | --- | ------------- | ------------- |
-| Cranelift      | ✅     | ✅    | ✅  | ✅            | ✅            |
+| Cranelift      | ✅     | ✅    | ✅  | ✅            | ❌            |
 | LLVM           | ✅     | ✅    | ✅  | ✅            | ✅            |
-| Singlepass     | ✅     | ✅    | ❌  | ❌            | ❌            |
+| Singlepass     | ✅     | ✅    | ❌  | ⏰            | ⏰            |
 | V8             | ✅     | ✅    | ✅  | ✅            | ✅            |
 | Wasmi          | ✅     | ✅    | ✅  | ✅            | ✅            |
-| JavascriptCore | ✅     | ✅    | ✅  | ❌            | ❌            |
+| JavascriptCore | ✅     | ✅    | ❌  | ❌            | ❌            |
 | Browser        | ✅     | ✅    | ✅  | ✅            | ✅            |
