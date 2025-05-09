@@ -1,0 +1,39 @@
+# Wasmer 6.0.0 Release Notes
+
+Release Date: April 24, 2025
+
+This stable release adds support for the exception handling proposal on Linux and includes several other improvements and bug fixes.
+
+## What's New
+
+### Exception Handling Support
+
+Added support for the WebAssembly exception handling proposal on Linux platforms, enabling more robust error handling in WebAssembly modules.
+
+## Upgrading
+
+To upgrade to Wasmer 6.0.0, use one of the following methods:
+
+### Unix/Linux/macOS
+```bash
+curl https://get.wasmer.io -sSfL | sh
+```
+
+### Windows (PowerShell)
+```powershell
+iwr https://win.wasmer.io -useb | iex
+```
+
+### Specific Version Installation
+```bash
+curl https://get.wasmer.io -sSfL | sh -s "v6.0.0"
+```
+
+### Via JavaScript
+```bash
+# NPM
+npm install @wasmer/sdk
+
+# Bun
+bun add @wasmer/sdk
+```

@@ -145,19 +145,44 @@ If your app uses databases, you can manage them using the `wasmer app database` 
 To list all databases attached to your app, use the `wasmer app database list` command:
 
 ```shell
-wasmer app database list
+wasmer app database list [APP_SPECIFIER]
 ```
 
-This will display information about each database, including:
-- Name
-- Host
-- Port
+Where `APP_SPECIFIER` is optional and can be in the format `owner/app-name` or the app ID. If omitted, the command will use the app in the current directory.
+
+The command will display a table with information about each database, including:
+- Database name
+- Host address
+- Port number
+- Database type
 - UI link (if available)
 
-If you need to see the database passwords as well, you can use the `--with-password` flag:
+Example output:
+```
+  Database Information  
+→ Name: my-postgres-db
+→ Host: postgres-xxxxx.wasmer.app
+→ Port: 5432
+→ Type: PostgreSQL
+→ UI: https://wasmer.io/apps/username/app-name/databases/my-postgres-db
+```
+
+By default, the command doesn't show sensitive information. If you need to see database credentials including passwords, you can use the `--with-password` flag:
 
 ```shell
 wasmer app database list --with-password
+```
+
+With this flag, the output will include additional credential information:
+```
+  Database Information  
+→ Name: my-postgres-db
+→ Host: postgres-xxxxx.wasmer.app
+→ Port: 5432
+→ Type: PostgreSQL
+→ Username: postgres
+→ Password: xxxxxxxxxx
+→ UI: https://wasmer.io/apps/username/app-name/databases/my-postgres-db
 ```
 
 This is particularly useful when you need to connect to your database using external tools or when troubleshooting connection issues.
