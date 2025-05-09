@@ -1,0 +1,63 @@
+# Wasmer 6.0.1 Release Notes
+
+Release Date: May 9, 2025
+
+This is a minor release that includes several improvements and bug fixes.
+
+## What's New
+
+### CLI Enhancements
+
+- **New Database List Command**: Added the `wasmer app database list` command to easily view all databases attached to your app. This command displays information such as database name, host, port, and UI link. Use the `--with-password` flag to also view database credentials.
+
+  ```shell
+  # List databases for an app
+  wasmer app database list
+
+  # Include password information
+  wasmer app database list --with-password
+  ```
+
+### LLVM Backend Improvements
+
+- Added `asm_memory_buffer` to `LLVMCallbacks`
+- Added the `debug_str` intrinsic function
+
+### Other Changes
+
+- Updated dynasm to version 3.2.0 in the Singlepass compiler
+
+## Bug Fixes
+
+- Fixed build of Wasmer on linux-aarch64
+- Fixed documentation build
+- Fixed compilation with v8 when targeting aarch64-linux-android
+- Fixed caching of pointers to intrinsic memory operations
+
+## Upgrading
+
+To upgrade to Wasmer 6.0.1, use one of the following methods:
+
+### Unix/Linux/macOS
+```bash
+curl https://get.wasmer.io -sSfL | sh
+```
+
+### Windows (PowerShell)
+```powershell
+iwr https://win.wasmer.io -useb | iex
+```
+
+### Specific Version Installation
+```bash
+curl https://get.wasmer.io -sSfL | sh -s "v6.0.1"
+```
+
+### Via JavaScript
+```bash
+# NPM
+npm install @wasmer/sdk
+
+# Bun
+bun add @wasmer/sdk
+```
