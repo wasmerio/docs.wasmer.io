@@ -39,7 +39,7 @@ entrypoint = "wasmer-pack"
 
 ## \[dependencies\]
 
-- `"<namespace>/<name>" = "<version>"`
+- `"<namespace>/<n>" = "<version>"`
 
 ```toml filename="wasmer.toml" copy
 # ...
@@ -79,6 +79,26 @@ name = "wasmer-pack"
 wai-version = "0.2.0"
 exports = "./wasmer-pack.wai"
 imports = ["http-client.wai", "logging.wai"]
+```
+
+### \[module.annotations\]
+
+Miscellaneous annotations that provide hints about how the module should be handled.
+
+#### \[module.annotations.suggested_compiler_optimizations\]
+
+Hints for the compiler about optimizations that should be applied when compiling this module.
+
+- `pass_params` \(boolean\): Enable the g0m0 optimization pass, which can improve performance for certain modules.
+
+```toml filename="wasmer.toml" copy
+[[module]]
+name = "php"
+source = "sapi/cli/php.wasm"
+abi = "wasi"
+
+[module.annotations.suggested_compiler_optimizations]
+pass_params = true
 ```
 
 ## \[\[command\]\]
