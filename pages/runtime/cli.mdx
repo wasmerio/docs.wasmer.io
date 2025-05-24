@@ -59,6 +59,18 @@ You can also pass environment variables:
 wasmer run my_wasi_program.wasm --env MYVAR=MYVALUE -- arg1 arg2 arg3
 ```
 
+### Run Dynamically Linked WebAssembly
+
+Wasmer supports running WebAssembly modules that use dynamic linking. For modules that load shared libraries at runtime, you may need to mount directories containing the `.so` files:
+
+```bash copy
+wasmer run my_dynamic_program.wasm --mapdir /lib:./libraries
+```
+
+This makes the `./libraries` directory available to the WebAssembly module as `/lib`, allowing it to find and load shared libraries using `dlopen()`.
+
+For more information about dynamic linking, see the [Dynamic Linking guide](/runtime/dynamic-linking).
+
 ### Profiling WebAssembly Code
 
 You can enable profiling data generation for your WebAssembly code using the `--profiler` option:

@@ -1,0 +1,307 @@
+# Dynamic Linking
+
+Dynamic linking in Wasmer allows WebAssembly modules to load and link other WebAssembly modules at runtime, enabling more modular and flexible application architectures. This feature supports threading and provides a familiar interface similar to POSIX dynamic linking.
+
+## Overview
+
+Dynamic linking enables:
+- **Runtime module loading**: Load WebAssembly libraries on-demand using `dlopen`
+- **Symbol resolution**: Access functions and global variables from loaded modules using `dlsym`
+- **Module unloading**: Clean up loaded modules with `dlclose`
+- **Threading support**: Full threading capabilities across dynamically linked modules
+- **Dependency management**: Automatic loading of module dependencies
+
+## Compilation Requirements
+
+To create dynamically linkable WebAssembly modules, you need:
+
+- **Clang 19** or later
+- **WASIX sysroot with PIC support** (`WASIX_SYSROOT_PIC` environment variable)
+- **wasm-ld-19** linker
+
+### Compiling Dynamic Libraries
+
+Create a shared library (`.so` file) with the following flags:
+
+```bash
+# Compile to object file
+clang-19 \
+  --target=wasm32-wasi --sysroot=${WASIX_SYSROOT_PIC} \
+  -matomics -mbulk-memory -mmutable-globals -pthread \
+  -mthread-model posix -ftls-model=local-exec \
+  -fno-trapping-math -D_WASI_EMULATED_MMAN -D_WASI_EMULATED_SIGNAL \
+  -D_WASI_EMULATED_PROCESS_CLOCKS \
+  -g -flto -O0 \
+  -fPIC -fvisibility=default \
+  -c mylibrary.c -o mylibrary.o
+
+# Link to shared library
+wasm-ld-19 \
+  --extra-features=atomics,bulk-memory,mutable-globals \
+  --export=__wasm_call_ctors --export-if-defined=__wasm_apply_data_relocs \
+  --experimental-pic --unresolved-symbols=import-dynamic \
+  -shared --shared-memory \
+  -o libmylibrary.so mylibrary.o
+```
+
+### Compiling Main Executables
+
+For executables that use dynamic linking:
+
+```bash
+# Compile main program
+clang-19 \
+  --target=wasm32-wasi --sysroot=${WASIX_SYSROOT_PIC} \
+  -matomics -mbulk-memory -mmutable-globals -pthread \
+  -mthread-model posix -ftls-model=local-exec \
+  -fno-trapping-math -D_WASI_EMULATED_MMAN -D_WASI_EMULATED_SIGNAL \
+  -D_WASI_EMULATED_PROCESS_CLOCKS \
+  -g -flto -O0 \
+  -fPIC \
+  -c main.c -o main.o
+
+# Link executable (can link against dynamic libraries)
+wasm-ld-19 \
+  -L. -lmylibrary \
+  -L${WASIX_SYSROOT_PIC}/lib \
+  -L${WASIX_SYSROOT_PIC}/lib/wasm32-wasi \
+  --whole-archive --export-all \
+  main.o \
+  ${WASIX_SYSROOT_PIC}/lib/wasm32-wasi/crt1.o \
+  -lc -lresolv -lrt -lm -lpthread \
+  -lwasi-emulated-mman \
+  --max-memory=4294967296 --import-memory --shared-memory \
+  --extra-features=atomics,bulk-memory,mutable-globals \
+  --export=__wasm_signal --export=__tls_size --export=__tls_align \
+  --export=__tls_base --export=__wasm_call_ctors --export-if-defined=__wasm_apply_data_relocs \
+  --experimental-pic \
+  -pie \
+  --no-export-dynamic \
+  -o main.wasm
+```
+
+## Dynamic Linking API
+
+Wasmer provides three syscalls for dynamic linking, similar to POSIX:
+
+### dlopen
+
+Load a dynamic library:
+
+```c
+#include <dlfcn.h>
+
+void *handle = dlopen("libmylibrary.so", RTLD_NOW);
+if (!handle) {
+    fprintf(stderr, "Failed to load library: %s\n", dlerror());
+    return 1;
+}
+```
+
+**Flags:**
+- `RTLD_NOW`: Resolve all symbols immediately
+- `RTLD_LAZY`: Resolve symbols as needed (currently same as RTLD_NOW)
+- `RTLD_GLOBAL`: Make symbols available globally
+- `RTLD_NOLOAD`: Don't load, just check if already loaded
+- `RTLD_NODELETE`: Don't unload on dlclose
+- `RTLD_DEEPBIND`: Use deep binding for symbol resolution
+
+### dlsym
+
+Resolve symbols from loaded libraries:
+
+```c
+// Get a function pointer
+int (*my_function)(int) = dlsym(handle, "my_function");
+if (!my_function) {
+    fprintf(stderr, "Failed to find symbol: %s\n", dlerror());
+    return 1;
+}
+
+// Get a global variable
+int *my_variable = dlsym(handle, "my_variable");
+if (!my_variable) {
+    fprintf(stderr, "Failed to find variable: %s\n", dlerror());
+    return 1;
+}
+
+// Use RTLD_DEFAULT to search all loaded modules
+int (*global_func)(void) = dlsym(RTLD_DEFAULT, "global_function");
+```
+
+### dlclose
+
+Unload a dynamic library:
+
+```c
+if (dlclose(handle) != 0) {
+    fprintf(stderr, "Failed to unload library: %s\n", dlerror());
+    return 1;
+}
+```
+
+### Error Handling
+
+Use `dlerror()` to get detailed error messages:
+
+```c
+char *error = dlerror();
+if (error) {
+    fprintf(stderr, "Dynamic linking error: %s\n", error);
+}
+```
+
+## Example: Simple Dynamic Library
+
+### Library Code (mylibrary.c)
+
+```c
+#include <stdio.h>
+
+// Exported global variable
+int library_version = 42;
+
+// Exported function
+int add_numbers(int a, int b) {
+    printf("Adding %d + %d in library\n", a, b);
+    return a + b;
+}
+
+// Constructor (called when library loads)
+void __attribute__((constructor)) library_init() {
+    printf("Library loaded!\n");
+}
+
+// Destructor (called when library unloads)
+void __attribute__((destructor)) library_cleanup() {
+    printf("Library unloaded!\n");
+}
+```
+
+### Main Program (main.c)
+
+```c
+#include <stdio.h>
+#include <dlfcn.h>
+
+int main() {
+    // Load the library
+    void *handle = dlopen("libmylibrary.so", RTLD_NOW);
+    if (!handle) {
+        fprintf(stderr, "Failed to load library: %s\n", dlerror());
+        return 1;
+    }
+
+    // Get function pointer
+    int (*add_func)(int, int) = dlsym(handle, "add_numbers");
+    if (!add_func) {
+        fprintf(stderr, "Failed to find function: %s\n", dlerror());
+        dlclose(handle);
+        return 1;
+    }
+
+    // Get global variable
+    int *version = dlsym(handle, "library_version");
+    if (!version) {
+        fprintf(stderr, "Failed to find variable: %s\n", dlerror());
+        dlclose(handle);
+        return 1;
+    }
+
+    // Use the library
+    printf("Library version: %d\n", *version);
+    int result = add_func(10, 20);
+    printf("Result: %d\n", result);
+
+    // Unload the library
+    dlclose(handle);
+    return 0;
+}
+```
+
+## Threading Support
+
+Dynamic linking fully supports threading. Loaded modules can:
+- Create and manage threads
+- Share data across threads
+- Use thread-local storage
+- Synchronize with mutexes and other primitives
+
+```c
+#include <pthread.h>
+#include <dlfcn.h>
+
+void *thread_function(void *arg) {
+    void *handle = dlopen("libworker.so", RTLD_NOW);
+    void (*worker_func)(void) = dlsym(handle, "do_work");
+    
+    if (worker_func) {
+        worker_func();
+    }
+    
+    dlclose(handle);
+    return NULL;
+}
+
+int main() {
+    pthread_t thread;
+    pthread_create(&thread, NULL, thread_function, NULL);
+    pthread_join(thread, NULL);
+    return 0;
+}
+```
+
+## Running with Wasmer
+
+To run dynamically linked programs with Wasmer, ensure the shared libraries are accessible:
+
+```bash
+# Place .so files in the same directory or use --mapdir
+wasmer run main.wasm
+
+# Or mount a directory containing libraries
+wasmer run --mapdir /lib:./libraries main.wasm
+```
+
+## Limitations and Considerations
+
+- **Experimental Feature**: Dynamic linking is currently experimental and may have limitations
+- **Performance**: Dynamic linking adds runtime overhead compared to static linking
+- **Memory Usage**: Each loaded module consumes additional memory
+- **Compatibility**: Requires specific compilation flags and toolchain versions
+- **Deep Sleep**: Dynamic linking is incompatible with deep sleep functionality
+
+## Best Practices
+
+1. **Error Handling**: Always check return values and use `dlerror()` for diagnostics
+2. **Resource Management**: Match every `dlopen()` with a corresponding `dlclose()`
+3. **Symbol Visibility**: Use appropriate visibility attributes for exported symbols
+4. **Thread Safety**: Ensure thread-safe access to shared resources across modules
+5. **Testing**: Thoroughly test dynamic loading scenarios and error conditions
+
+## Troubleshooting
+
+### Common Issues
+
+**Symbol not found**: Ensure the symbol is exported with proper visibility:
+```c
+__attribute__((visibility("default"))) int my_function(void);
+```
+
+**Library not found**: Check file paths and use `--mapdir` to mount directories:
+```bash
+wasmer run --mapdir /lib:./path/to/libraries main.wasm
+```
+
+**Compilation errors**: Verify you're using the correct clang version and flags:
+```bash
+clang-19 --version  # Should be 19.x or later
+```
+
+**Threading issues**: Ensure all modules are compiled with threading support:
+```bash
+# Include these flags for all modules
+-matomics -mbulk-memory -mmutable-globals -pthread
+```
+
+For more advanced usage and examples, see the [test cases](https://github.com/wasmerio/wasmer/tree/main/tests/c-wasi-tests) in the Wasmer repository.
