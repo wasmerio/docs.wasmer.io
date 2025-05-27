@@ -1,0 +1,476 @@
+# Dynamic Linking with C
+
+This guide walks through creating dynamically linked WebAssembly modules using C and Clang, demonstrating how to build shared libraries and executables that can load them at runtime.
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+- **Clang 19** or later
+- **wasm-ld-19** linker
+- **WASIX sysroot with PIC support** (set `WASIX_SYSROOT_PIC` environment variable)
+
+```bash
+# Verify your toolchain
+clang-19 --version
+wasm-ld-19 --version
+echo $WASIX_SYSROOT_PIC
+```
+
+## Example: Math Library
+
+Let's create a simple math library that can be loaded dynamically.
+
+### Step 1: Create the Library (mathlib.c)
+
+```c
+#include <stdio.h>
+
+// Global variable that will be exported
+int library_version = 100;
+
+// Private function (not exported)
+static void internal_log(const char* operation, int a, int b, int result) {
+    printf("[MathLib] %s(%d, %d) = %d\n", operation, a, b, result);
+}
+
+// Exported functions
+int add(int a, int b) {
+    int result = a + b;
+    internal_log("add", a, b, result);
+    return result;
+}
+
+int multiply(int a, int b) {
+    int result = a * b;
+    internal_log("multiply", a, b, result);
+    return result;
+}
+
+int get_version(void) {
+    return library_version;
+}
+
+// Constructor - called when library is loaded
+void __attribute__((constructor)) mathlib_init() {
+    printf("MathLib v%d loaded!\n", library_version);
+}
+
+// Destructor - called when library is unloaded
+void __attribute__((destructor)) mathlib_cleanup() {
+    printf("MathLib unloaded!\n");
+}
+```
+
+### Step 2: Compile the Library
+
+```bash
+# Compile to object file
+clang-19 \
+  --target=wasm32-wasi --sysroot=${WASIX_SYSROOT_PIC} \
+  -matomics -mbulk-memory -mmutable-globals -pthread \
+  -mthread-model posix -ftls-model=local-exec \
+  -fno-trapping-math -D_WASI_EMULATED_MMAN -D_WASI_EMULATED_SIGNAL \
+  -D_WASI_EMULATED_PROCESS_CLOCKS \
+  -g -flto -O0 \
+  -fPIC -fvisibility=default \
+  -c mathlib.c -o mathlib.o
+
+# Link to shared library
+wasm-ld-19 \
+  --extra-features=atomics,bulk-memory,mutable-globals \
+  --export=__wasm_call_ctors --export-if-defined=__wasm_apply_data_relocs \
+  --experimental-pic --unresolved-symbols=import-dynamic \
+  -shared --shared-memory \
+  -o libmathlib.so mathlib.o
+```
+
+### Step 3: Create the Main Program (calculator.c)
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <dlfcn.h>
+
+int main() {
+    printf("Calculator starting...\n");
+
+    // Load the math library
+    void *mathlib = dlopen("libmathlib.so", RTLD_NOW);
+    if (!mathlib) {
+        fprintf(stderr, "Failed to load mathlib: %s\n", dlerror());
+        return 1;
+    }
+
+    // Get function pointers
+    int (*add_func)(int, int) = dlsym(mathlib, "add");
+    int (*multiply_func)(int, int) = dlsym(mathlib, "multiply");
+    int (*get_version_func)(void) = dlsym(mathlib, "get_version");
+
+    if (!add_func || !multiply_func || !get_version_func) {
+        fprintf(stderr, "Failed to find functions: %s\n", dlerror());
+        dlclose(mathlib);
+        return 1;
+    }
+
+    // Get global variable
+    int *version_ptr = dlsym(mathlib, "library_version");
+    if (!version_ptr) {
+        fprintf(stderr, "Failed to find version variable: %s\n", dlerror());
+        dlclose(mathlib);
+        return 1;
+    }
+
+    // Use the library
+    printf("Library version: %d (via function: %d)\n", 
+           *version_ptr, get_version_func());
+
+    int a = 15, b = 25;
+    printf("Calculating %d + %d = %d\n", a, b, add_func(a, b));
+    printf("Calculating %d * %d = %d\n", a, b, multiply_func(a, b));
+
+    // Try to access private function (should fail)
+    void *private_func = dlsym(mathlib, "internal_log");
+    if (private_func) {
+        printf("ERROR: Private function should not be accessible!\n");
+    } else {
+        printf("Good: Private function is not accessible\n");
+    }
+
+    // Unload the library
+    printf("Unloading library...\n");
+    if (dlclose(mathlib) != 0) {
+        fprintf(stderr, "Failed to unload library: %s\n", dlerror());
+        return 1;
+    }
+
+    printf("Calculator finished!\n");
+    return 0;
+}
+```
+
+### Step 4: Compile the Main Program
+
+```bash
+# Compile main program
+clang-19 \
+  --target=wasm32-wasi --sysroot=${WASIX_SYSROOT_PIC} \
+  -matomics -mbulk-memory -mmutable-globals -pthread \
+  -mthread-model posix -ftls-model=local-exec \
+  -fno-trapping-math -D_WASI_EMULATED_MMAN -D_WASI_EMULATED_SIGNAL \
+  -D_WASI_EMULATED_PROCESS_CLOCKS \
+  -g -flto -O0 \
+  -fPIC \
+  -c calculator.c -o calculator.o
+
+# Link executable
+wasm-ld-19 \
+  -L${WASIX_SYSROOT_PIC}/lib \
+  -L${WASIX_SYSROOT_PIC}/lib/wasm32-wasi \
+  --whole-archive --export-all \
+  calculator.o \
+  ${WASIX_SYSROOT_PIC}/lib/wasm32-wasi/crt1.o \
+  -lc -lresolv -lrt -lm -lpthread \
+  -lwasi-emulated-mman \
+  --max-memory=4294967296 --import-memory --shared-memory \
+  --extra-features=atomics,bulk-memory,mutable-globals \
+  --export=__wasm_signal --export=__tls_size --export=__tls_align \
+  --export=__tls_base --export=__wasm_call_ctors --export-if-defined=__wasm_apply_data_relocs \
+  --experimental-pic \
+  -pie \
+  --no-export-dynamic \
+  -o calculator.wasm
+```
+
+### Step 5: Run with Wasmer
+
+```bash
+# Run the calculator (library must be in same directory or mounted)
+wasmer run calculator.wasm
+
+# Or mount a directory containing the library
+wasmer run --mapdir /lib:. calculator.wasm
+```
+
+Expected output:
+```
+Calculator starting...
+MathLib v100 loaded!
+Library version: 100 (via function: 100)
+[MathLib] add(15, 25) = 40
+Calculating 15 + 25 = 40
+[MathLib] multiply(15, 25) = 375
+Calculating 15 * 25 = 375
+Good: Private function is not accessible
+Unloading library...
+MathLib unloaded!
+Calculator finished!
+```
+
+## Advanced Example: Plugin System
+
+Here's a more complex example showing a plugin system with multiple libraries.
+
+### Plugin Interface (plugin.h)
+
+```c
+#ifndef PLUGIN_H
+#define PLUGIN_H
+
+typedef struct {
+    const char* name;
+    const char* version;
+    int (*process)(int input);
+    void (*cleanup)(void);
+} plugin_interface_t;
+
+// Function that each plugin must export
+plugin_interface_t* get_plugin_interface(void);
+
+#endif
+```
+
+### Plugin Implementation (doubler_plugin.c)
+
+```c
+#include <stdio.h>
+#include "plugin.h"
+
+static int doubler_process(int input) {
+    printf("Doubler plugin: %d -> %d\n", input, input * 2);
+    return input * 2;
+}
+
+static void doubler_cleanup(void) {
+    printf("Doubler plugin cleanup\n");
+}
+
+static plugin_interface_t doubler_interface = {
+    .name = "Doubler",
+    .version = "1.0",
+    .process = doubler_process,
+    .cleanup = doubler_cleanup
+};
+
+plugin_interface_t* get_plugin_interface(void) {
+    return &doubler_interface;
+}
+
+void __attribute__((constructor)) plugin_init() {
+    printf("Doubler plugin loaded\n");
+}
+```
+
+### Plugin Host (plugin_host.c)
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <dlfcn.h>
+#include "plugin.h"
+
+typedef struct {
+    void* handle;
+    plugin_interface_t* interface;
+} loaded_plugin_t;
+
+int main() {
+    const char* plugin_files[] = {
+        "libdoubler.so",
+        "libsquarer.so",  // You can create this as an exercise
+        NULL
+    };
+
+    loaded_plugin_t plugins[10];
+    int plugin_count = 0;
+
+    // Load all plugins
+    for (int i = 0; plugin_files[i] != NULL; i++) {
+        void* handle = dlopen(plugin_files[i], RTLD_NOW);
+        if (!handle) {
+            printf("Warning: Could not load %s: %s\n", 
+                   plugin_files[i], dlerror());
+            continue;
+        }
+
+        plugin_interface_t* (*get_interface)(void) = 
+            dlsym(handle, "get_plugin_interface");
+        
+        if (!get_interface) {
+            printf("Warning: %s does not export get_plugin_interface\n", 
+                   plugin_files[i]);
+            dlclose(handle);
+            continue;
+        }
+
+        plugin_interface_t* interface = get_interface();
+        if (!interface) {
+            printf("Warning: %s returned NULL interface\n", plugin_files[i]);
+            dlclose(handle);
+            continue;
+        }
+
+        plugins[plugin_count].handle = handle;
+        plugins[plugin_count].interface = interface;
+        plugin_count++;
+
+        printf("Loaded plugin: %s v%s\n", 
+               interface->name, interface->version);
+    }
+
+    // Process data through all plugins
+    int data = 5;
+    printf("\nProcessing data: %d\n", data);
+    
+    for (int i = 0; i < plugin_count; i++) {
+        data = plugins[i].interface->process(data);
+    }
+    
+    printf("Final result: %d\n", data);
+
+    // Cleanup and unload plugins
+    printf("\nUnloading plugins...\n");
+    for (int i = 0; i < plugin_count; i++) {
+        if (plugins[i].interface->cleanup) {
+            plugins[i].interface->cleanup();
+        }
+        dlclose(plugins[i].handle);
+    }
+
+    return 0;
+}
+```
+
+## Threading with Dynamic Libraries
+
+Dynamic libraries fully support threading. Here's an example:
+
+### Thread-Safe Library (threaded_counter.c)
+
+```c
+#include <stdio.h>
+#include <pthread.h>
+
+static int counter = 0;
+static pthread_mutex_t counter_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+int increment_counter(void) {
+    pthread_mutex_lock(&counter_mutex);
+    int new_value = ++counter;
+    printf("Counter incremented to: %d (thread: %p)\n", 
+           new_value, (void*)pthread_self());
+    pthread_mutex_unlock(&counter_mutex);
+    return new_value;
+}
+
+int get_counter(void) {
+    pthread_mutex_lock(&counter_mutex);
+    int value = counter;
+    pthread_mutex_unlock(&counter_mutex);
+    return value;
+}
+
+void reset_counter(void) {
+    pthread_mutex_lock(&counter_mutex);
+    counter = 0;
+    printf("Counter reset\n");
+    pthread_mutex_unlock(&counter_mutex);
+}
+```
+
+### Multi-threaded Main Program
+
+```c
+#include <stdio.h>
+#include <pthread.h>
+#include <dlfcn.h>
+
+static void* counter_handle = NULL;
+static int (*increment_func)(void) = NULL;
+
+void* worker_thread(void* arg) {
+    int thread_id = *(int*)arg;
+    
+    for (int i = 0; i < 5; i++) {
+        int value = increment_func();
+        printf("Thread %d: incremented to %d\n", thread_id, value);
+    }
+    
+    return NULL;
+}
+
+int main() {
+    // Load counter library
+    counter_handle = dlopen("libthreaded_counter.so", RTLD_NOW);
+    if (!counter_handle) {
+        fprintf(stderr, "Failed to load counter library: %s\n", dlerror());
+        return 1;
+    }
+
+    increment_func = dlsym(counter_handle, "increment_counter");
+    int (*get_func)(void) = dlsym(counter_handle, "get_counter");
+    
+    if (!increment_func || !get_func) {
+        fprintf(stderr, "Failed to find functions: %s\n", dlerror());
+        return 1;
+    }
+
+    // Create multiple threads
+    pthread_t threads[3];
+    int thread_ids[3] = {1, 2, 3};
+    
+    for (int i = 0; i < 3; i++) {
+        pthread_create(&threads[i], NULL, worker_thread, &thread_ids[i]);
+    }
+    
+    // Wait for all threads
+    for (int i = 0; i < 3; i++) {
+        pthread_join(threads[i], NULL);
+    }
+    
+    printf("Final counter value: %d\n", get_func());
+    
+    dlclose(counter_handle);
+    return 0;
+}
+```
+
+## Best Practices
+
+1. **Error Handling**: Always check return values from `dlopen`, `dlsym`, and `dlclose`
+2. **Symbol Visibility**: Use `__attribute__((visibility("default")))` for exported symbols
+3. **Thread Safety**: Use proper synchronization when sharing data across threads
+4. **Resource Management**: Match every `dlopen` with `dlclose`
+5. **Interface Design**: Define clear interfaces between main program and plugins
+
+## Common Issues
+
+### Symbol Not Found
+```c
+// Wrong: function not exported
+static int my_function(void) { return 42; }
+
+// Correct: function exported with default visibility
+__attribute__((visibility("default"))) int my_function(void) { return 42; }
+```
+
+### Library Not Found
+```bash
+# Make sure library is in the right location
+ls -la *.so
+
+# Or use --mapdir to mount the directory
+wasmer run --mapdir /lib:./my_libraries main.wasm
+```
+
+### Compilation Errors
+```bash
+# Ensure you're using the right clang version
+clang-19 --version
+
+# Check that WASIX_SYSROOT_PIC is set correctly
+echo $WASIX_SYSROOT_PIC
+ls $WASIX_SYSROOT_PIC/lib/wasm32-wasi/
+```
+
+This guide provides a solid foundation for using dynamic linking with C in Wasmer. The examples demonstrate both simple library loading and more complex plugin architectures with threading support.
