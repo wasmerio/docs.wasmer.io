@@ -21,6 +21,22 @@ module = "<your-module>"
 runner = "https://webc.org/runner/wasi"
 ```
 
+## Dynamic Linking Support
+
+WASIX now supports dynamic linking, allowing WebAssembly modules to load and link other WebAssembly libraries at runtime. This enables:
+
+- **Modular Applications**: Split large applications into smaller, reusable modules
+- **Plugin Systems**: Load functionality dynamically based on runtime conditions  
+- **Shared Libraries**: Reduce binary size by sharing common code between modules
+- **Threading Support**: Dynamic modules work seamlessly with WASIX threading
+
+Dynamic linking in WASIX provides three main syscalls:
+- `dlopen()` - Load a dynamic library
+- `dlsym()` - Resolve symbols from loaded libraries
+- `dl_invalid_handle()` - Check if a library handle is valid
+
+For detailed information on using dynamic linking, see the [Dynamic Linking Guide](/runtime/runners/wasix/dynamic-linking).
+
 ## Learn More
 
 To learn more about WASIX runner, please click [here](https://docs.rs/webc/latest/webc/metadata/annotations/constant.WASI_RUNNER_URI.html).
