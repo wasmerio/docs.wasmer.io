@@ -32,6 +32,7 @@ Each of this backends support different features, and have different support for
   - **Caching**: compiled WebAssembly modules can be reused so subsequent runs of a Wasm file will have very little start up time;
   - **Metering**: computation time and other resources can be monitored and limits set to control how the Wasm code runs. This is also known as "gas metering";
   - **Profiling**: generate profiling data for WebAssembly code to analyze performance using tools like Linux perf;
+  - **Dynamic Linking**: load and link WebAssembly modules at runtime, enabling modular applications and plugin systems (WASIX only);
 
 ## Support of features by backend
 
@@ -60,6 +61,7 @@ Wasmer features:
 | Caching  | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
 | Metering | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
 | Profiling| ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
+| Dynamic Linking | ✅  | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
 
 
 ## Backend support by Operating System

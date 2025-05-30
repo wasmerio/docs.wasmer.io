@@ -1,0 +1,284 @@
+# Dynamic Linking in WASIX
+
+Dynamic linking allows WebAssembly modules to load and link other WebAssembly libraries at runtime, enabling modular applications, plugin systems, and shared libraries.
+
+## Overview
+
+WASIX dynamic linking provides a POSIX-like interface for loading WebAssembly modules dynamically. This enables:
+
+- **Modular Architecture**: Split applications into smaller, manageable modules
+- **Plugin Systems**: Load functionality based on runtime conditions
+- **Shared Libraries**: Reduce binary size by sharing common code
+- **Threading Support**: Dynamic modules work with WASIX threading and TLS
+
+## Compilation Requirements
+
+To use dynamic linking, you need to compile your WebAssembly modules with specific flags:
+
+### Main Module (Executable)
+
+```bash
+# Compile the main executable with PIE (Position Independent Executable)
+clang-19 \
+  --target=wasm32-wasi --sysroot=${WASIX_SYSROOT_PIC} \
+  -matomics -mbulk-memory -mmutable-globals -pthread \
+  -mthread-model posix -ftls-model=local-exec \
+  -fPIC \
+  -c main.c -o main.o
+
+# Link with dynamic linking support
+wasm-ld-19 \
+  --experimental-pic \
+  -pie \
+  --shared-memory \
+  --export=__tls_base --export=__tls_size --export=__tls_align \
+  -o main.wasm main.o
+```
+
+### Shared Library
+
+```bash
+# Compile shared library
+clang-19 \
+  --target=wasm32-wasi --sysroot=${WASIX_SYSROOT_PIC} \
+  -matomics -mbulk-memory -mmutable-globals -pthread \
+  -mthread-model posix -ftls-model=local-exec \
+  -fPIC -fvisibility=default \
+  -c library.c -o library.o
+
+# Link as shared library
+wasm-ld-19 \
+  --experimental-pic \
+  --unresolved-symbols=import-dynamic \
+  -shared --shared-memory \
+  -o libexample.so library.o
+```
+
+## API Reference
+
+### dlopen()
+
+Load a dynamic library at runtime.
+
+```c
+#include <dlfcn.h>
+
+void *dlopen(const char *filename, int flags);
+```
+
+**Parameters:**
+- `filename`: Path to the WebAssembly shared library (`.so` file)
+- `flags`: Loading flags (e.g., `RTLD_NOW`, `RTLD_LAZY`)
+
+**Returns:** Handle to the loaded library, or `NULL` on error.
+
+**Example:**
+```c
+void *handle = dlopen("libexample.so", RTLD_NOW);
+if (!handle) {
+    fprintf(stderr, "Failed to load library: %s\n", dlerror());
+    return 1;
+}
+```
+
+### dlsym()
+
+Resolve a symbol from a loaded library.
+
+```c
+void *dlsym(void *handle, const char *symbol);
+```
+
+**Parameters:**
+- `handle`: Library handle from `dlopen()`, or `RTLD_DEFAULT` to search all loaded modules
+- `symbol`: Name of the symbol to resolve
+
+**Returns:** Pointer to the symbol, or `NULL` if not found.
+
+**Example:**
+```c
+// Get function pointer
+int (*my_function)(int) = dlsym(handle, "my_function");
+if (!my_function) {
+    fprintf(stderr, "Symbol not found: %s\n", dlerror());
+    return 1;
+}
+
+// Get data pointer
+int *my_data = dlsym(handle, "my_data");
+```
+
+### dlclose()
+
+Unload a dynamic library.
+
+```c
+int dlclose(void *handle);
+```
+
+**Parameters:**
+- `handle`: Library handle from `dlopen()`
+
+**Returns:** 0 on success, non-zero on error.
+
+### dlerror()
+
+Get the last error message from dynamic linking operations.
+
+```c
+char *dlerror(void);
+```
+
+**Returns:** Error message string, or `NULL` if no error.
+
+## Complete Example
+
+Here's a complete example showing dynamic linking in action:
+
+### Library Code (library.c)
+
+```c
+#include <stdio.h>
+
+// Exported data
+int data_export = 42;
+
+// Exported function
+int func_export() {
+    printf("Function called from shared library\n");
+    return 123;
+}
+
+// Constructor (called when library loads)
+void __attribute__((constructor)) library_init() {
+    printf("Library loaded\n");
+}
+
+// Destructor (called when library unloads)
+void __attribute__((destructor)) library_cleanup() {
+    printf("Library unloaded\n");
+}
+```
+
+### Main Application (main.c)
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <dlfcn.h>
+
+int main() {
+    // Load the library
+    void *handle = dlopen("libexample.so", RTLD_NOW);
+    if (!handle) {
+        fprintf(stderr, "Failed to load library: %s\n", dlerror());
+        return 1;
+    }
+
+    // Get data symbol
+    int *data = dlsym(handle, "data_export");
+    if (data) {
+        printf("Data value: %d\n", *data);
+    }
+
+    // Get function symbol
+    int (*func)() = dlsym(handle, "func_export");
+    if (func) {
+        int result = func();
+        printf("Function returned: %d\n", result);
+    }
+
+    // Unload the library
+    dlclose(handle);
+    
+    return 0;
+}
+```
+
+### Compilation
+
+```bash
+# Compile and link the shared library
+clang-19 --target=wasm32-wasi --sysroot=${WASIX_SYSROOT_PIC} \
+  -matomics -mbulk-memory -mmutable-globals -pthread \
+  -mthread-model posix -ftls-model=local-exec \
+  -fPIC -fvisibility=default \
+  -c library.c -o library.o
+
+wasm-ld-19 \
+  --experimental-pic --unresolved-symbols=import-dynamic \
+  -shared --shared-memory \
+  -o libexample.so library.o
+
+# Compile and link the main application
+clang-19 --target=wasm32-wasi --sysroot=${WASIX_SYSROOT_PIC} \
+  -matomics -mbulk-memory -mmutable-globals -pthread \
+  -mthread-model posix -ftls-model=local-exec \
+  -fPIC \
+  -c main.c -o main.o
+
+wasm-ld-19 \
+  --experimental-pic -pie --shared-memory \
+  --export=__tls_base --export=__tls_size --export=__tls_align \
+  -o main.wasm main.o
+```
+
+### Running
+
+```bash
+# Make sure the shared library is accessible
+wasmer run main.wasm --mapdir /lib:./
+
+# Output:
+# Library loaded
+# Data value: 42
+# Function called from shared library
+# Function returned: 123
+# Library unloaded
+```
+
+## Threading and TLS Support
+
+Dynamic linking in WASIX fully supports threading and Thread Local Storage (TLS):
+
+- **Thread Safety**: Multiple threads can safely load and use dynamic libraries
+- **TLS Variables**: Thread-local variables work correctly across module boundaries
+- **Shared Memory**: Dynamic modules share the same memory space and can communicate through shared data structures
+
+## Best Practices
+
+1. **Error Handling**: Always check return values and use `dlerror()` for diagnostics
+2. **Symbol Visibility**: Use `-fvisibility=default` for symbols you want to export
+3. **Library Paths**: Use `--mapdir` to make libraries accessible to the WebAssembly module
+4. **Memory Management**: Properly unload libraries with `dlclose()` when done
+5. **Threading**: Ensure thread safety when using dynamic libraries in multi-threaded applications
+
+## Limitations
+
+- **Single Region**: Currently, dynamic libraries must be in the same memory region as the main module
+- **WASIX Only**: Dynamic linking is specific to WASIX and not available in standard WASI
+- **Compilation Complexity**: Requires specific compiler and linker flags for proper operation
+
+## Troubleshooting
+
+### Common Issues
+
+**Library not found:**
+```
+Failed to load library: No such file or directory
+```
+- Ensure the library path is correct and accessible via `--mapdir`
+
+**Symbol not found:**
+```
+Symbol not found: undefined symbol
+```
+- Check that the symbol is exported with proper visibility
+- Verify the symbol name matches exactly (C++ symbols may be mangled)
+
+**Linking errors:**
+```
+wasm-ld: error: undefined symbol
+```
+- Ensure all dependencies are properly linked
+- Use `--unresolved-symbols=import-dynamic` for shared libraries

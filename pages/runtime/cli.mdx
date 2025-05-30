@@ -59,6 +59,35 @@ You can also pass environment variables:
 wasmer run my_wasi_program.wasm --env MYVAR=MYVALUE -- arg1 arg2 arg3
 ```
 
+### Run Dynamically Linked WebAssembly Modules
+
+For WebAssembly modules that use dynamic linking (WASIX only), you need to make shared libraries accessible using the `--mapdir` option:
+
+```bash copy
+wasmer run my_dynamic_app.wasm --mapdir /lib:./libraries
+```
+
+This maps the host directory `./libraries` to `/lib` inside the WebAssembly module, allowing the module to load shared libraries (`.so` files) using `dlopen()`.
+
+Example with a complete setup:
+
+```bash copy
+# Directory structure:
+# ./my_app.wasm          (main executable)
+# ./libraries/
+#   ├── libmath.so       (shared library)
+#   └── libutils.so      (another shared library)
+
+wasmer run my_app.wasm --mapdir /lib:./libraries
+```
+
+The WebAssembly module can then load libraries at runtime:
+
+```c
+// Inside the WebAssembly module
+void *handle = dlopen("/lib/libmath.so", RTLD_NOW);
+```
+
 ### Profiling WebAssembly Code
 
 You can enable profiling data generation for your WebAssembly code using the `--profiler` option:
