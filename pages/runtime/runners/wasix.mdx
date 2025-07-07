@@ -8,6 +8,32 @@ WASIX was created by the Wasmer team to speed up the Wasmification of codebases 
 
 You can check more about WASIX on the [website](https://wasix.org/).
 
+## WASIX Library Features
+
+The WASIX library supports different feature configurations to optimize for specific use cases:
+
+### `wasi-common` Feature
+
+The `wasi-common` feature provides a minimal WASIP1 implementation designed to reduce binary size for applications that don't need the full WASIX feature set. This is particularly useful for:
+
+- Applications with strict size constraints
+- Simple WASI programs that don't require WASIX extensions
+- Embedded or resource-constrained environments
+
+To use the `wasi-common` feature in your Rust project, add it to your `Cargo.toml`:
+
+```toml filename="Cargo.toml" copy
+[dependencies]
+wasix = { version = "0.12", features = ["wasi-common"] }
+```
+
+### Other Features
+
+- **`sys`**: Full system integration with native threading and networking support
+- **`js`**: JavaScript/browser compatibility for running in web environments
+
+Note: Only one of these features (`sys`, `js`, or `wasi-common`) can be enabled at a time.
+
 ## Usage
 
 To use the WASIX runner, you need to specify the runner for you package in your `wasmer.toml` file:
