@@ -1,0 +1,173 @@
+# wasmer-wasi-light
+
+`wasmer-wasi-light` is a lightweight WASI implementation for the Wasmer WebAssembly runtime, designed for reactor-style usage with minimal resource overhead and fast instantiation.
+
+## Overview
+
+While `wasmer-wasix` provides a full-featured WASI/WASIX implementation with filesystem, networking, and threading support, `wasmer-wasi-light` offers a minimal alternative focused on performance and low resource usage. It's ideal for scenarios where you need basic WASI functionality without the overhead of a complete system interface.
+
+## Key Features
+
+- **Lightweight**: Minimal memory footprint and fast instantiation
+- **Reactor-friendly**: Designed for multiple entrypoints and function calls
+- **No resource overhead**: No filesystem, networking, or threading initialization
+- **WASI Preview 1**: Standard `wasi_snapshot_preview1` interface
+- **Configurable**: Customizable args, environment variables, clock offset, and random seed
+- **Deterministic**: Configurable random seeds and clock offsets for reproducible behavior
+
+## When to Use
+
+**Use `wasmer-wasi-light` when:**
+- Creating many WebAssembly instances quickly
+- Need only basic WASI functions (args, environment, time, random)
+- Want minimal resource overhead
+- Building reactor-style applications (plugins, dynamic components)
+- Require deterministic behavior for testing
+
+**Use `wasmer-wasix` when:**
+- Need full WASI/WASIX features
+- Require filesystem or network access
+- Running complete applications with threading support
+- Need POSIX-like functionality
+
+## Supported WASI Functions
+
+`wasmer-wasi-light` implements the essential WASI Preview 1 syscalls:
+
+| Function | Description |
+|----------|-------------|
+| `args_get` / `args_sizes_get` | Command line arguments |
+| `environ_get` / `environ_sizes_get` | Environment variables |
+| `clock_res_get` / `clock_time_get` | Time functions |
+| `random_get` | Random number generation |
+| `proc_exit` / `proc_raise` | Process control |
+| `sched_yield` | Yield execution |
+
+## Usage
+
+### Basic Setup
+
+```rust
+use wasmer::{Instance, Module, Store};
+use wasmer_wasi_light::{WasiLightEnv, generate_import_object};
+use std::collections::HashMap;
+
+// Create lightweight WASI environment
+let wasi_env = WasiLightEnv::new()
+    .args(vec!["arg1".to_string(), "arg2".to_string()])
+    .envs(HashMap::from([
+        ("KEY1".to_string(), "VALUE1".to_string()),
+    ]))
+    .clock_offset(Duration::from_secs(3600))
+    .random_seed(42);
+
+// Generate import object
+let import_object = generate_import_object(&mut store, &wasi_env)?;
+
+// Instantiate module
+let instance = Instance::new(&mut store, &module, &import_object)?;
+
+// Call exported functions
+let func = instance.exports.get_function("your_function")?;
+let result = func.call(&mut store, &[])?;
+```
+
+### Configuration Options
+
+#### Command Line Arguments
+```rust
+let wasi_env = WasiLightEnv::new()
+    .args(vec!["program_name".to_string(), "--flag".to_string(), "value".to_string()]);
+```
+
+#### Environment Variables
+```rust
+use std::collections::HashMap;
+
+let wasi_env = WasiLightEnv::new()
+    .envs(HashMap::from([
+        ("PATH".to_string(), "/usr/bin".to_string()),
+        ("HOME".to_string(), "/home/user".to_string()),
+    ]));
+```
+
+#### Time Manipulation
+```rust
+use std::time::Duration;
+
+// Add 1 hour offset to system time
+let wasi_env = WasiLightEnv::new()
+    .clock_offset(Duration::from_secs(3600));
+```
+
+#### Deterministic Random Generation
+```rust
+// Use fixed seed for reproducible random values
+let wasi_env = WasiLightEnv::new()
+    .random_seed(42);
+```
+
+## Performance Comparison
+
+| Feature | wasmer-wasix | wasmer-wasi-light |
+|---------|-------------|-------------------|
+| Filesystem | ✅ Full | ❌ None |
+| Networking | ✅ Full | ❌ None |
+| Threading | ✅ Full | ❌ None |
+| Memory usage | High | Low |
+| Instantiation speed | Slow | Fast |
+| Reactor pattern | ❌ | ✅ |
+| Resource overhead | High | Minimal |
+
+## Error Handling
+
+`wasmer-wasi-light` provides structured error handling through the `WasiLightError` enum:
+
+```rust
+use wasmer_wasi_light::WasiLightError;
+
+match result {
+    Ok(value) => println!("Success: {:?}", value),
+    Err(WasiLightError::Exit(code)) => println!("Process exited with code: {}", code),
+    Err(WasiLightError::MemoryAccess(err)) => println!("Memory error: {}", err),
+    Err(WasiLightError::Runtime(err)) => println!("Runtime error: {}", err),
+    Err(err) => println!("Other error: {}", err),
+}
+```
+
+## Integration with Reactor Pattern
+
+The reactor pattern allows WebAssembly modules to expose multiple entry points and be called repeatedly. `wasmer-wasi-light` is specifically optimized for this use case:
+
+```rust
+// Create environment once
+let wasi_env = WasiLightEnv::new()
+    .args(vec!["plugin".to_string()])
+    .random_seed(42);
+
+let import_object = generate_import_object(&mut store, &wasi_env)?;
+let instance = Instance::new(&mut store, &module, &import_object)?;
+
+// Call different functions multiple times
+let process_func = instance.exports.get_function("process_data")?;
+let validate_func = instance.exports.get_function("validate_input")?;
+
+// Multiple calls with minimal overhead
+for data in input_data {
+    let result = process_func.call(&mut store, &[data.into()])?;
+    let is_valid = validate_func.call(&mut store, &[result[0]])?;
+}
+```
+
+## Crate Information
+
+- **Crate name**: `wasmer-wasi-light`
+- **Version**: 0.600.1
+- **Repository**: Part of the main Wasmer repository
+- **Documentation**: [docs.rs/wasmer-wasi-light](https://docs.rs/wasmer-wasi-light)
+
+## See Also
+
+- [WASIX Runner](/runtime/runners/wasix) - Full-featured WASI implementation
+- [Wasmer Runtime Features](/runtime/features) - Complete runtime capabilities
+- [Creating Custom Runners](/runtime/runners/create) - Build your own execution environment
