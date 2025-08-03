@@ -177,6 +177,18 @@ capabilities:
       - us-socal1
 ```
 
+You can list the databases attached to your app using the CLI:
+
+```bash
+wasmer app database list
+```
+
+This command will show you all databases associated with your app, including their names, hosts, and ports. If you need to see the database passwords as well, you can use the `--with-password` flag:
+
+```bash
+wasmer app database list --with-password
+```
+
 #### `instaboot`
 
 Enable fast application startup with startup snapshots.
