@@ -214,6 +214,66 @@ capabilities:
 	  value: my-value
 ```
 
+#### `ssh`
+
+Configure an SSH server for your application.
+
+This allows you to enable SSH access directly to your app instances with custom user authentication.
+
+<Callout type="info" emoji="ℹ️">
+  This is different from `wasmer ssh` which provides remote sessions to the Edge platform. The `ssh` capability configures an SSH server within your specific application.
+</Callout>
+
+```yaml filename="app.yaml" copy
+capabilities:
+  ssh:
+    enabled: true
+    users:
+      - username: admin
+        passwords:
+          - type: plain
+            password: "my-secure-password"
+        authorized_keys:
+          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ... user@example.com"
+      - username: developer
+        authorized_keys:
+          - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... dev@company.com"
+```
+
+##### SSH Configuration Fields
+
+- **`enabled`** (optional): Enable or disable the SSH server. Defaults to `false` if not specified.
+- **`users`** (optional): Array of SSH users with their authentication methods.
+
+##### User Configuration
+
+Each user in the `users` array can have:
+
+- **`username`** (required): The username for SSH login.
+- **`passwords`** (optional): Array of password authentication methods:
+  - `type: plain` with `password`: Plain text password (not recommended for production)
+  - `type: bcrypt` with `hash`: Bcrypt-hashed password for secure storage
+- **`authorized_keys`** (optional): Array of SSH public keys for key-based authentication.
+
+##### Security Recommendations
+
+- Use SSH key authentication (`authorized_keys`) instead of passwords when possible
+- If using passwords, prefer `bcrypt` hashed passwords over plain text
+- Limit SSH access to specific users who need it
+- Consider using strong, unique passwords or passphrases
+
+Example with bcrypt password:
+```yaml filename="app.yaml" copy
+capabilities:
+  ssh:
+    enabled: true
+    users:
+      - username: admin
+        passwords:
+          - type: bcrypt
+            hash: "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/kMaZHm.S6"
+```
+
 ### `health_checks`
 
 The `health_checks` field is used to check if an application is working correctly. If the healthchecks fail, edge will restart the application. It is **optional** and its an array of healtcheck objects
