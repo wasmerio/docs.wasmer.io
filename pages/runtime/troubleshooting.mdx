@@ -1,0 +1,187 @@
+---
+title: Troubleshooting Common Runtime Issues
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Troubleshooting Common Runtime Issues
+
+This page covers common issues you may encounter when using the Wasmer runtime and how to resolve them.
+
+## Missing Shared Libraries
+
+When running WebAssembly applications that depend on shared libraries, you may encounter errors if the required libraries cannot be found on your system.
+
+### Error Message
+
+Starting with recent versions of Wasmer, you'll see detailed error messages that show exactly where Wasmer looked for the missing library:
+
+```
+error: Spawn failed
+╰─▶ 1: Linker error: Failed to find shared library libexample.so: 
+           /lib/libexample.so: entry not found
+           /usr/lib/libexample.so: entry not found
+           /usr/local/lib/libexample.so: entry not found
+```
+
+This error indicates that Wasmer searched for `libexample.so` in multiple standard library paths but couldn't find it in any of them.
+
+### Root Cause
+
+This issue occurs when:
+
+1. **Missing library**: The required shared library is not installed on your system
+2. **Wrong library path**: The library is installed but not in one of the standard search paths
+3. **Architecture mismatch**: The library exists but is compiled for a different architecture
+4. **Permission issues**: The library file exists but cannot be accessed due to file permissions
+
+### Solutions
+
+#### 1. Install the Missing Library
+
+First, identify what library is missing from the error message. Then install it using your system's package manager:
+
+**Ubuntu/Debian:**
+```bash
+# For development libraries, often needed for linking
+sudo apt-get install lib<name>-dev
+
+# For runtime libraries
+sudo apt-get install lib<name>
+```
+
+**CentOS/RHEL/Fedora:**
+```bash
+# For development libraries
+sudo yum install lib<name>-devel
+# or on newer systems:
+sudo dnf install lib<name>-devel
+
+# For runtime libraries
+sudo yum install lib<name>
+```
+
+**macOS:**
+```bash
+# Using Homebrew
+brew install <library-name>
+
+# Using MacPorts
+sudo port install <library-name>
+```
+
+#### 2. Add Custom Library Paths
+
+If your library is installed in a non-standard location, you can help Wasmer find it by setting the `LD_LIBRARY_PATH` environment variable:
+
+```bash
+export LD_LIBRARY_PATH="/path/to/your/libraries:$LD_LIBRARY_PATH"
+wasmer run your-app.wasm
+```
+
+On macOS, use `DYLD_LIBRARY_PATH` instead:
+
+```bash
+export DYLD_LIBRARY_PATH="/path/to/your/libraries:$DYLD_LIBRARY_PATH"
+wasmer run your-app.wasm
+```
+
+#### 3. Create Symbolic Links
+
+If the library exists with a different name or version, you can create a symbolic link:
+
+```bash
+# Example: if you have libexample.so.1 but need libexample.so
+sudo ln -s /usr/lib/libexample.so.1 /usr/lib/libexample.so
+```
+
+#### 4. Check Library Architecture
+
+Ensure the library matches your system architecture:
+
+```bash
+# Check the architecture of a library file
+file /path/to/library.so
+
+# Check your system architecture
+uname -m
+```
+
+### Standard Library Search Paths
+
+Wasmer searches for shared libraries in these standard locations:
+
+- `/lib/`
+- `/usr/lib/`
+- `/usr/local/lib/`
+- Paths specified in `LD_LIBRARY_PATH` (Linux) or `DYLD_LIBRARY_PATH` (macOS)
+- Paths specified in `/etc/ld.so.conf` (Linux)
+
+<Callout type="info">
+The exact search paths may vary depending on your operating system and configuration. The error message will show you exactly which paths were searched.
+</Callout>
+
+### Debugging Tips
+
+1. **Use `ldd` to check dependencies**: For Linux systems, you can use `ldd` to see what libraries a binary depends on:
+   ```bash
+   ldd your-binary
+   ```
+
+2. **Check if the library is in the system**: Search for the library file:
+   ```bash
+   find /usr -name "*libname*" 2>/dev/null
+   locate libname.so
+   ```
+
+3. **Verify library loading**: Use `ldconfig` to check the library cache:
+   ```bash
+   ldconfig -p | grep libname
+   ```
+
+4. **Run with verbose output**: Use Wasmer's logging to get more detailed information:
+   ```bash
+   RUST_LOG=debug wasmer run your-app.wasm
+   ```
+
+## Other Common Issues
+
+### Permission Denied Errors
+
+If you encounter permission denied errors when running WebAssembly files:
+
+```bash
+# Make sure the .wasm file is executable
+chmod +x your-app.wasm
+
+# Or run with explicit permissions
+wasmer run ./your-app.wasm
+```
+
+### Module Loading Errors
+
+If you see errors about module format or compatibility:
+
+1. **Check the WebAssembly file**: Ensure your `.wasm` file is valid:
+   ```bash
+   wasmer inspect your-app.wasm
+   ```
+
+2. **Verify the target**: Make sure the WebAssembly module was compiled for the correct target (WASI, WASIX, etc.)
+
+3. **Update Wasmer**: Ensure you're using a recent version of Wasmer:
+   ```bash
+   wasmer self-update
+   ```
+
+### Getting Help
+
+If you continue to experience issues:
+
+1. Check the [Wasmer GitHub repository](https://github.com/wasmerio/wasmer) for known issues
+2. Join the [Wasmer Discord community](https://discord.gg/qxXxDdV) for support
+3. Create a detailed issue report with:
+   - Your operating system and version
+   - Wasmer version (`wasmer --version`)
+   - The complete error message
+   - Steps to reproduce the issue
