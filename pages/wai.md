@@ -1,7 +1,7 @@
 # WebAssembly Interfaces (WAI)
 
 The WebAssembly spec that was first released in 2017 was only a minimum viable
-product and deliberately left several features incomplete to be iterated on by
+product and deliberately left several features incomplete to be iterated upon by
 the ecosystem.
 
 Arguably the most important functionality gap is the fact that only WebAssembly
@@ -31,7 +31,7 @@ There are four main parts to WAI:
 - The host
 
 The [Wasmer Pack](../../) project provides a convenient way to consume
-WebAssembly packages which implement a WAI interface.
+WebAssembly packages that implement a WAI interface.
 
 Some useful links:
 
@@ -72,11 +72,11 @@ The WAI Bindgen code generator consumes `*.wai` files and generates glue code
 that [the host](#the-host) can use for using functionality from a WebAssembly
 module or [the guest](#the-guest) can use for implementing that functionality.
 
-There are two primary ways users will interact with WAI Bindgen, the
-`wai-bindgen` CLI, and the `wai-bindgen-*` family of crates.
+There are two primary ways users interact with WAI Bindgen: the
+`wai-bindgen` CLI and the `wai-bindgen-*` family of crates.
 
 The `wai-bindgen` CLI provides a command-line interface to the `wai-bindgen-*`
-crates, and is often used for once-off investigation or integration with a
+crates and is often used for one-off investigation or integration with a
 non-Rust build system.
 
 On the other hand, the `wai-bindgen-*` crates allow users to generate bindings

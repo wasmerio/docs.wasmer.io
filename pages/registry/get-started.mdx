@@ -16,7 +16,7 @@ This page will guide you through installing Wasmer, and publishing a package to 
 
 ### Create a package
 
-To create your first Wasmer pacakge simply run `wasmer init`.
+To create your first Wasmer package simply run `wasmer init`.
 
 This should have created a `wasmer.toml` file with contents similar to:
 
@@ -63,7 +63,7 @@ Now, create your WebAssembly modules:
 
   </Tab>
   <Tab>
-    WASI is oficially supported by Rust, to compile to it you can simply do:
+    WASI is officially supported by Rust; to compile to it you can simply do:
 
     ```bash copy
     rustup target add wasm32-wasi
@@ -73,7 +73,7 @@ Now, create your WebAssembly modules:
   </Tab>
 </Tabs>
 
-Modify the `wasmer.toml` to point the module to the wasm file location `target/release/<your-module>.wasm`.
+Modify `wasmer.toml` to point the module to the wasm file location `target/release/<your-module>.wasm`.
 
 ### Publish your package
 

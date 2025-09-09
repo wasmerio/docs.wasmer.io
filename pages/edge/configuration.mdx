@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # App Configuration (`app.yaml`)
 
-Wasmer Edge's configuration is stored in a `app.yaml` file in the root of your project.
+Wasmer Edge's configuration is stored in an `app.yaml` file in the root of your project.
 
 ## Example
 
@@ -143,7 +143,7 @@ volumes:
   # A name for your volume.
   # Must be unique for the given app.
   - name: data
-    # Where to moint the volume into the filesystem.
+    # Where to mount the volume into the filesystem.
     mount: /data
 ```
 
@@ -162,7 +162,7 @@ Database credentials are provided as *environment variables*:
 
 Currently only `mysql` is supported.
 
-**Note**: databases are tied to regions. When speciyfing a database, you should
+**Note**: databases are tied to regions. When specifying a database, you should
 also specify your desired region with the `locality.regions` setting.
 Only some of the regions support databases!
 
@@ -201,12 +201,12 @@ capabilities:
     requests:
       - path: /
       - path: /_bootstrap
-        # You can optionally speciy a maximum age.
+        # You can optionally specify a maximum age.
         # If the maximum age is reached, a new snapshot will automatically
         # be created, and the old ones discarded
         max_age: 12h
 
-        # Optionally request settings:
+        # Optional request settings:
         method: POST
 	body: "custom body"
 	headers:
@@ -216,13 +216,13 @@ capabilities:
 
 ### `health_checks`
 
-The `health_checks` field is used to check if an application is working correctly. If the healthchecks fail, edge will restart the application. It is **optional** and its an array of healtcheck objects
+The `health_checks` field is used to check if an application is working correctly. If the health checks fail, edge will restart the application. It is **optional** and it is an array of health check objects
 
 - Required: `false`
 
-Currently only supported healthcheck type is `http`. It executes an http request against the application. All the supported 
+Currently the only supported health check type is `http`. It executes an HTTP request against the application. All the supported
 
-##### Example healthcheck
+##### Example health check
 
 ```yaml filename="app.yaml" copy
 health_checks:
@@ -239,27 +239,27 @@ health_checks:
       expected_body_includes: Hello World
       expected_body_regex: ".*Wasmer.*"
 ```
-Fields for http healthcheck:
+Fields for HTTP health check:
 - #### `method`: Required
-  HTTP method to use. 
+  HTTP method to use.
 - #### `path`: Required
-  Path to send request to. 
+  Path to send the request to.
 - #### `interval`: Required
-  Duration between each request
+  Duration between each request.
 - #### `timeout`: Required
-  Timeout duration for requests
+  Timeout duration for requests.
 - #### `unhealthy_threshold`: Required
-  After `unhealthy_threshold` amount of failure of the http requests, app is considered unhealthy and will be restarted
+  After `unhealthy_threshold` failed HTTP requests, the app is considered unhealthy and will be restarted.
 - #### `healthy_threshold`: Required
-  After `healthy_threshold` amount of failure of the http requests, app is considered healthy and will be restarted
+  After `healthy_threshold` successful HTTP requests, the app is considered healthy.
 - #### `expected_status_codes`: Required
-  If the application returns these status codes, then the request will be count as successful
+  If the application returns these status codes, the request counts as successful.
 - #### `expected_body_includes`:
-  If this is specified, response body should include the string defined in this field to be count as successful
+  If this is specified, the response body should include the string defined in this field to be counted as successful.
 - #### `expected_body_regex`:
-  If this is specified, response body should be able to match the regular expression defined in this field to be count as successful
+  If this is specified, the response body should match the regular expression defined in this field to be counted as successful.
 
-So in the example above, if the application fails two consequent request, application will be restarted. It will be keep restarted until it successfully responds to one request
+So in the example above, if the application fails two consecutive requests, the application will be restarted. It will keep restarting until it successfully responds to one request.
 
 ### `locality`
 
@@ -292,16 +292,16 @@ The `scaling` field is used to configure how your application scales on Edge.
 
 Scaling mode for the app.
 
-**NOTE**: You should usually stick to the default behaviour,
+**NOTE**: You should usually stick to the default behavior,
 which is enabled when no scaling mode is specified.
-Only use the below modes if you you are sure they are appropriate!
+Only use the modes below if you are sure they are appropriate!
 
 Available values:
 
 * `<unset>`
 
   If no scaling mode is specified, Edge will send multiple requests to each instance, and also scale up additional instances if required.
-  This is the default, and the recommended mode if your program can handle multiple requests concurrently (Rust, Go, ...).
+  This is the default and the recommended mode if your program can handle multiple requests concurrently (Rust, Go, ...).
 
 * `single_concurrency`
 
@@ -323,4 +323,4 @@ scaling:
 
 ### `jobs`
 
-This section is defined on [jobs](/edge/configuration/jobs) page.
+This section is defined on the [jobs](/edge/configuration/jobs) page.

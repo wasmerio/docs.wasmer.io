@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Wasmer Manifest (`wasmer.toml`)
 
-The manifest file called `wasmer.toml` is required [to publish](./get-started.mdx) to the [Wasmer registry](https://wasmer.io/products/registry); This file contains the package's dependencies, metadata, and commands are declared.
+The manifest file called `wasmer.toml` is required [to publish](./get-started.mdx) to the [Wasmer registry](https://wasmer.io/products/registry). This file contains the package's dependencies, metadata, and command declarations.
 
 <Callout type="default" emoji="💡">
   If you want to get assistance creating the `wasmer.toml` file you can simply
@@ -90,7 +90,7 @@ imports = ["http-client.wai", "logging.wai"]
 
 Note that the `module` may be either the name of a `[[module]]` in the current `wasmer.toml`, or it might come from a dependency. For example, `module = "python/python:python"` indicates the command uses the `python` module from the package's `python/python` dependency.
 
-It is valid (and often preferrable) for a `[command]` and `[module]` to have the same `name`.
+It is valid (and often preferable) for a `[command]` and `[module]` to have the same `name`.
 
 ```toml filename="wasmer.toml" copy
 # ...

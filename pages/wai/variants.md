@@ -1,6 +1,6 @@
 # Enums, Flags, Variants, and Unions
 
-the concept of "this value can be X or Y or Z" can be expressed in several ways
+The concept of "this value can be X or Y or Z" can be expressed in several ways
 depending on the context.
 
 ## Enum
@@ -16,7 +16,7 @@ enum ordering {
 }
 ```
 
-For a more details, consult [the *Item: `enum`* section][enum] in the `*.wai`
+For more details, consult [the *Item: `enum`* section][enum] in the `*.wai`
 format.
 
 ## Flags
@@ -39,7 +39,7 @@ variants can be set at a time, whereas an `enum` can be only one thing at a
 time. Different languages are often able to express this in a very efficient
 form, typically an integer where each bit represents a different flag.
 
-For a more details, consult [the *Item: `flags`* section][flags] in the `*.wai`
+For more details, consult [the *Item: `flags`* section][flags] in the `*.wai`
 format.
 
 ## Variant
@@ -65,7 +65,7 @@ particular language.
 
 In Rust, a `variant` is just a normal `enum`.
 
-In TypeScript, the variant is implemented as a tagged union.
+In TypeScript, variants are implemented as tagged unions.
 
 ```ts
 type error = { type: "file-not-found", value: string }
@@ -73,7 +73,7 @@ type error = { type: "file-not-found", value: string }
     | { type: "other" };
 ```
 
-For a more details, consult [the *Item: `variant`* section][variant] in the
+For more details, consult [the *Item: `variant`* section][variant] in the
 `*.wai` format.
 
 ## Union
@@ -88,13 +88,13 @@ union configuration {
 ```
 
 This is distinct from a `variant` because some languages may be able to
-represent an `union` in a way that is more efficient or idiomatic.
+represent a `union` in a way that is more efficient or idiomatic.
 
-For a more details, consult [the *Item: `union`* section][union] in the
+For more details, consult [the *Item: `union`* section][union] in the
 `*.wai` format.
 
 
 [union]: https://github.com/wasmerio/wai/blob/main/WAI.md#item-union-variant-but-with-no-case-names
-[enum]: https://github.com/wasmerio/wai/blob/main/WAI.md#item-union-variant-but-with-no-case-names
+[enum]: https://github.com/wasmerio/wai/blob/main/WAI.md#item-enum-set-of-named-values
 [variant]: https://github.com/wasmerio/wai/blob/main/WAI.md#item-variant-one-of-a-set-of-types
 [flags]: https://github.com/wasmerio/wai/blob/main/WAI.md#item-flags-bag-of-bools
