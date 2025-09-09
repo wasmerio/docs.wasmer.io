@@ -4,7 +4,7 @@ The difference between a [resource](/wai/resources) and a
 [record](/wai/records) can be subtle when first starting out,
 but there is a simple rule of thumb that will work 90% of the time:
 
-> Records contain data, resources encapsulate behaviour.
+> Records contain data, resources encapsulate behavior.
 
 ## Typical Examples
 
@@ -58,9 +58,9 @@ When deciding between using a resource or a record, consider the following:
 
 ## Edge Cases
 
-While the *"Records contain data, resources encapsulate behaviour"* rule works
+While the *"Records contain data, resources encapsulate behavior"* rule works
 for most cases, you will almost certainly run into situations where something
-has both data and behaviour.
+has both data and behavior.
 
 This happens a lot when wrapping a "normal" library with a WAI interface so it
 can be used from WebAssembly. The distinction between "object" and "data" is
@@ -90,7 +90,7 @@ resource virtual-machine {
 
 This approach works particularly well when the methods will update state because
 all resources are reference types, meaning any modifications made to a resource
-through one handle (e.g. via a method) will be seen by all other handles to the
+through one handle (e.g., via a method) will be seen by all other handles to the
 same resource.
 
 One downside of this approach is that each getter or setter is implemented using
@@ -124,7 +124,7 @@ predicted-location: func(s: satellite, ts: timestamp) -> position
 ```
 
 This works well when the thing being expressed is mostly data, with only a
-couple of pieces of associated behaviour.
+couple of pieces of associated behavior.
 
 Records are passed around by value, meaning any operations that would normally
 modify a field will need to return a new value with the updated field, instead.

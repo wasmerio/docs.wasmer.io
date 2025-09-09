@@ -2,10 +2,10 @@
 
 So far we've covered basic functions, numbers, strings, lists, records, and
 variants, but there's one key aspect in programming we haven't touched on yet -
-objects with behaviour and internal state!
+objects with behavior and internal state!
 
 In WIT, we use a `resource` to give the host access to an "object" that has
-behaviour without exposing how that object is implemented (or even which
+behavior without exposing how that object is implemented (or even which
 language it is implemented in).
 
 To explore this concept, we'll create a basic `Calculator` resource which lets
@@ -109,7 +109,7 @@ immutable `&self`. This means we'll need to use [interior mutability][int-mut]
 if we want to update internal state.
 
 While this might feel a bit awkward, there is a very good reason for requiring
-all state in a resource to synchronise its mutations - WebAssembly makes no
+all state in a resource to synchronize its mutations - WebAssembly makes no
 guarantees that the caller will respect the borrow checker.
 
 ## Publishing
@@ -175,7 +175,7 @@ $ python main.py
 
 ## Conclusion
 
-The resource is a useful tool for exposing stateful objects that have behaviour,
+The resource is a useful tool for exposing stateful objects that have behavior,
 and should be familiar to
 
 With the addition of resources, we've introduced most of the fundamental

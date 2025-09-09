@@ -4,7 +4,7 @@ A resource represents an opaque object where the representation and underlying
 implementation is completely hidden from the outside world. Resources may have
 associated methods, static methods, or no methods at all.
 
-Depending on the language, records may be expressed in in different ways.
+Depending on the language, resources may be expressed in different ways.
 
 | Language   | Equivalent Construct         |
 | ---------- | ---------------------------- |
@@ -49,7 +49,7 @@ resource request {
 }
 ```
 
-For a more details, consult [the *Item: `resource`* section][resource] in the
+For more details, consult [the *Item: `resource`* section][resource] in the
 `*.wai` format.
 
 [resource]: https://github.com/wasmerio/wai/blob/main/WAI.md#item-resource

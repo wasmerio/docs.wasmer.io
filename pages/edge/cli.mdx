@@ -6,7 +6,7 @@ The most important ones are `wasmer deploy` and the subcommands of `wasmer app`.
 
 <Callout type="info">
   **Note:** To deploy apps on Wasmer Edge an account is required. When
-  deploying an app, you will be prompted to login if you are not already. 
+  deploying an app, you will be prompted to log in if you are not already.
 </Callout>
 
 <Callout>
@@ -50,10 +50,10 @@ Options:
       ...
 ```
 
-The `wasmer deploy` command has many flags, but does not have any mandatory
-argument. Its objective is that of loading the user-provided data - thus,
-possibly, [publishing](/registry/cli) a package as well - in Wasmer Edge and
-providing the needed informations for the user to manage their application.
+The `wasmer deploy` command has many flags but does not have any mandatory
+argument. Its objective is to load the user-provided data—possibly
+[publishing](/registry/cli) a package as well—into Wasmer Edge and
+provide the information needed for the user to manage their application.
 
 Based on the kind of app the user wants to deploy, the `wasmer deploy`
 command carries out different actions. In a nutshell, from the CLI perspective,
@@ -69,11 +69,11 @@ the package's manifest.
 
 In the latter case, the `wasmer deploy` command recognizes that the user
 might want to edit some of the metadata about the package and, if needed,
-prompts the user to decide on that regard. One example is that of the package
+prompts the user to decide accordingly. One example is that of the package
 version: in interactive mode, if the `--bump` flag was not given, the user will
 be asked if a patch version bump is needed. This, however, is not the only way
 to specify the version of a package: for a deeper dive into this matter, check
-out the [`publish` page](/registry/cli). 
+out the [`publish` page](/registry/cli).
 
 Once these matters are decided upon, this deployment flow concludes just as the
 former: your app is available!
@@ -112,13 +112,13 @@ Waiting for new deployment to become available...
 Once an app is deployed, the `wasmer` CLI provides a number of tools to manage
 it. 
 
-### Gathering informations about apps (`wasmer app info` and `wasmer app get`)
-In order to fetch structured informations about your app, you can use the
-`wasmer app get`, that provides the user with a number of informations about
+### Gathering information about apps (`wasmer app info` and `wasmer app get`)
+In order to fetch structured information about your app, you can use
+`wasmer app get`, which provides the user with a number of information about
 the app structured as a YAML value, ranging from the identifier of the app to
-the raw value of the `app.yaml` config file used to create the app. 
+the raw value of the `app.yaml` config file used to create the app.
 
-The `wasmer app info` command provides a synthesis of these informations, in
+The `wasmer app info` command provides a synthesis of this information, in
 particular the app name, the owner of the app, and relevant URLs.
 
 ```
@@ -178,7 +178,7 @@ Options:
       --template <TEMPLATE>
           A reference to the template to use.
 
-          It can be either an URL to a github repository - like `https://github.com/wasmer-examples/php-wasmer-starter` -  or the name of a template that will be searched for in the selected registry, like `astro-starter`.
+          It can be either a URL to a GitHub repository – like `https://github.com/wasmer-examples/php-wasmer-starter` – or the name of a template that will be searched for in the selected registry, like `astro-starter`.
 
       --package <PACKAGE>
           Name of the package to use
@@ -211,8 +211,8 @@ wasmer app create
 {/* [TODO]: Add link to templates list */}
 
 Templates allow users to kickstart their custom application from one of the
-available boilerplates like a static website, a php application, a javascript
-worker and much more. Another possibility is that of creating an app from an
+available boilerplates like a static website, a PHP application, a JavaScript
+worker, and much more. Another possibility is that of creating an app from an
 existing package: for example, as a starting step, the user can create the app
 from an existing package, like
 [`wasmer/hello`](https://wasmer.io/wasmer/hello).
@@ -232,7 +232,7 @@ owner: <YOUR-NAME>
 package: wasmer/hello
 ```
 
-This file contains all the necessary informations required to deploy your app
+This file contains all the necessary information required to deploy your app
 to Wasmer Edge. To learn more about this configuration file, refer to the
 [dedicated _Learn_ page](/edge/learn/apps). After having everything in place -
 whether it is from templates or pre-existing packages - the command will ask

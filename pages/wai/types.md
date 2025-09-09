@@ -1,28 +1,28 @@
-# Builtin Types
+# Built-in Types
 
-All types that can be used in a `*.wai` file are intended to mappable to native
+All types that can be used in a `*.wai` file are intended to be mappable to native
 types in a general purpose programming language.
 
-The core basic types are
+The core basic types are:
 
 - Unsigned integers (`u8`, `u16`, `u32`, `u64`)
 - Signed integers (`s8`, `s16`, `s32`, `s64`)
 - Floating point numbers (`float32`, `float64`)
-- UTF-8 Strings (`string`)
+- UTF-8 strings (`string`)
 - UTF-8 code points (`char`)
 - [Void][void] or nothing (`unit`)
 
 For a more precise definition, consult [the *Types* section][types] in the
 `*.wai` format.
 
-## Other Builtin Types
+## Other Built-in Types
 
-Besides the basic builtin types, there are several "generic" types built into
-WAI which let users express common concepts.
+Besides the basic built-in types, there are several "generic" types built into
+WAI that let users express common concepts.
 
 ### Tuples
 
-The tuple is equivalent to a [record](./records.md) that has numeric fields.
+The tuple is equivalent to a [record](./records.md) with numeric fields.
 
 Code generators may be able to express tuples as a first-class concept. For
 example, `tuple<string, float32, float32>` would be expressed as
@@ -30,7 +30,7 @@ example, `tuple<string, float32, float32>` would be expressed as
 
 ### Lists
 
-Lists are dynamically-sized sequences of the same element type. Often called
+Lists are dynamically sized sequences of the same element type. Often called
 a "list", "vector", or "array", a `list<string>` would be expressed as
 `Vec<String>` in Rust.
 

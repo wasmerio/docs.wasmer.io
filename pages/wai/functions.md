@@ -16,7 +16,7 @@ Most guests will map functions to top-level functions, while most hosts will
 expose functions as some sort of callable object which eventually calls into
 the relevant part of the WebAssembly virtual machine.
 
-For a more details, consult [the *Item: `func`* section][func] in the `*.wai`
+For more details, consult [the *Item: `func`* section][func] in the `*.wai`
 format.
 
 [func]: https://github.com/wasmerio/wai/blob/main/WAI.md#item-func
