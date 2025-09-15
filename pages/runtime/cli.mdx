@@ -12,19 +12,19 @@ All packages published on [Wasmer Registry](/registry) can be run with the `wasm
 wasmer run python/python
 ```
 
-Some commands, such as `cowsay` have multiple commands that we can run (eg. `cowsay` or `cowthink`)
+Some packages, such as `cowsay`, have multiple commands that we can run (e.g., `cowsay` or `cowthink`)
 
 ```bash copy
 wasmer run syrusakbary/cowsay --command-name=cowthink Hello world
 ```
 
-If in your current dir you have a `wasmer.toml` file, you can simply run the local package with:
+If your current directory has a `wasmer.toml` file, you can simply run the local package with:
 
 ```bash copy
 wasmer run .
 ```
 
-Wasmer run also allows running from URLs (in case a package is hosted on a different registry).
+The `wasmer run` command also allows running from URLs (in case a package is hosted on a different registry).
 
 ```bash copy
 wasmer run https://wasmer.io/python/python
@@ -47,7 +47,7 @@ wasmer run my_program.wasm --singlepass
 
 ### Run a WASI or WASIX Module
 
-You can pass the arguments that will be given to the WASI program:
+You can pass arguments to the WASI program:
 
 ```bash copy
 wasmer run my_wasi_program.wasm -- arg1 arg2 arg3
