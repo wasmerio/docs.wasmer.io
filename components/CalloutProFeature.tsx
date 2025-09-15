@@ -8,7 +8,7 @@ export default function CalloutProFeature() {
 		      <br/>
 
       <a href="https://wasmer.io/settings/billing" style={{ textDecoration: "underline" }} target="_blank">
-	      Upgrade your account now
+        Upgrade your account now
       </a>!
     </Callout>
     );
