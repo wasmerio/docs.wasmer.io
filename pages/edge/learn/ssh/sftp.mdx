@@ -1,0 +1,35 @@
+import CalloutProFeature from "@components/CalloutProFeature";
+
+# SFTP Access to Wasmer Edge Apps
+
+<CalloutProFeature />
+
+You can access your Wasmer Edge apps over SFTP (FTP over SSH).
+
+The SFTP server will expose your static application files as *read-only*.<br/>
+**Only files in volumes will be writable.**
+
+### Configuration
+
+To enable this feature, follow the [configuration documentation](./configuration).
+
+### Credentials
+
+You can copy and paste credentials from the settings panel or use the various buttons
+to download configuration files for the different clients.
+
+If you want to configure your client manually:
+
+* The port is always `22`
+* The domain must be your **app URL**
+* The username/password or public key are as configured
+
+### Supported Clients
+
+Below is a list of clients that have been tested for compatibility:
+
+* [Filezilla](https://filezilla-project.org/) [![Filezilla](https://wasmer.io/_next/static/media/FileZilla.bea35654.png)](https://filezilla-project.org/)
+* [Transmit](https://panic.com/transmit/) [![Transmit](https://wasmer.io//_next/static/media/Transmit.acf43a66.png)](https://panic.com/transmit/)
+* [Termius](https://termius.com/) [![Termius](https://wasmer.io//_next/static/media/Termius.5735d505.png)](https://termius.com/)
+* [WinSCP](https://winscp.net/) [![WinSCP](https://wasmer.io//_next/static/media/WinSCP.6b003043.png)](https://winscp.net/)
+

@@ -1,0 +1,69 @@
+import CalloutProFeature from "@components/CalloutProFeature";
+
+# SSH / SFTP Configuration
+
+<CalloutProFeature />
+
+SSH and SFTP access for Wasmer Edge apps support both password and public key
+authentication.
+
+This feature is disabled by default and must be enabled manually for each app.
+
+## Configuration in the Web UI
+
+To enable SSH/SFTP access for your Edge app in the web UI:
+
+* Open your dashboard on [wasmer.io](https://wasmer.io)
+* Open your app
+* Go to the **Settings** tab
+* Open the **SFTP/SSH** panel
+* Click *Enable*
+
+You will now see your user/password access credentials
+and will be able to manage authorized SSH public keys.
+
+## Configuration in app.yaml
+
+If you deploy your app with an `app.yaml` configuration, you can enable SSH/SFTP access
+there as well.
+
+See [the configuration schema](/edge/configuration#ssh) for a detailed
+description of the configuration schema.
+
+**Note**: There is a small gotcha:
+The SSH username must be prefixed with the app short id, which is only available
+after the initial deployment. See below for how to retrieve the id.
+
+Here is an example `app.yaml` configuration enabling SSH access:
+
+```yaml filename="app.yaml" copy
+capabilities:
+  ssh:
+    enabled: true
+    users:
+      - username: <app-id>_admin
+        passwords:
+          - type: plain
+            password: "my-secure-password"
+        authorized_keys:
+          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
+...
+
+### Retrieving the app short id
+
+To retrieve the app short id, you can use the Wasmer CLI:
+
+```bash
+wasmer app info <your-app-name> --json | jq -r .id
+
+...
+...
+Unique URL: https://19hninc0dpgd.id.wasmer.app
+...
+```
+
+The short id is the first part of the unique URL, in this case `19hninc0dpgd`.
+
+Use this id to prefix your SSH usernames in the `app.yaml` file.
+
+

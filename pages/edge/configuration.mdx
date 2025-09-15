@@ -238,6 +238,9 @@ capabilities:
 
 * Only a single user is currently supported
 * Usernames must be prefixed with the app short ID: `<app-shortid>_myusername`
+  This means you must first deploy your app, then retrieve the short id
+  by running `wasmer app info <app-identifier>`.
+  The short id is can be found in the `Unique URL` field: `https://<short-id>.id.wasmer.app`.
 
 ##### SSH Configuration Fields
 
