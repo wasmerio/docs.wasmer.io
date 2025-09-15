@@ -1,4 +1,5 @@
 import CalloutProFeature from "@components/CalloutProFeature";
+import { Callout } from "nextra-theme-docs";
 
 # SSH / SFTP Configuration
 
@@ -30,9 +31,11 @@ there as well.
 See [the configuration schema](/edge/configuration#ssh) for a detailed
 description of the configuration schema.
 
+<Callout type="info">
 **Note**: There is a small gotcha:
 The SSH username must be prefixed with the app short id, which is only available
 after the initial deployment. See below for how to retrieve the id.
+</Callout>
 
 Here is an example `app.yaml` configuration enabling SSH access:
 
