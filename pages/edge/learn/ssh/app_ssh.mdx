@@ -36,6 +36,11 @@ The environment is very similar to the one your application runs in, which means
 * Your application files are present on the file system
 * Your volumes are mounted and accessible
 
+<Callout type="warning">
+Only changes to files in volumes will persist after the SSH session ends.
+Any changes to files outside of volumes will be lost!
+</Callout>
+
 ## wasmer CLI
 
 The recommended way to use SSH is through the wasmer CLI.
