@@ -214,6 +214,49 @@ capabilities:
 	  value: my-value
 ```
 
+#### `ssh`
+
+Configure SSH and SFTP access for the application.
+
+See the dedicated [SSH/SFTP documentation](/edge/learn/ssh/overview) for more details.
+
+Example:
+```yaml filename="app.yaml" copy
+capabilities:
+  ssh:
+    enabled: true
+    users:
+      - username: <app-shortid>_admin
+        passwords:
+          - type: plain
+            password: "my-secure-password"
+        authorized_keys:
+          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
+```
+
+##### Limitations
+
+* Only a single user is currently supported
+* Usernames must be prefixed with the app short ID: `<app-shortid>_myusername`
+  This means you must first deploy your app, then retrieve the short id
+  by running `wasmer app info <app-identifier>`.
+  The short id can be found in the `Unique URL` field: `https://<short-id>.id.wasmer.app`.
+
+##### SSH Configuration Fields
+
+- **`enabled`** (optional): Enable or disable the SSH server. Defaults to `false` if not specified.
+- **`users`** (optional): Array of SSH users with their authentication methods.
+
+##### User Configuration
+
+Each user in the `users` array can have:
+
+- **`username`** (required): The username for SSH login.
+- **`passwords`** (optional): Array of password authentication methods:
+  - `type: plain` with `password`: Plain text password (not recommended for production)
+  - `type: bcrypt` with `hash`: Bcrypt-hashed password for secure storage
+- **`authorized_keys`** (optional): Array of SSH public keys for key-based authentication.
+
 ### `health_checks`
 
 The `health_checks` field is used to check if an application is working correctly. If the health checks fail, edge will restart the application. It is **optional** and it is an array of health check objects

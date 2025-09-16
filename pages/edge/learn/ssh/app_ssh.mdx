@@ -1,0 +1,75 @@
+import CalloutProFeature from "@components/CalloutProFeature";
+import { Callout } from "nextra-theme-docs";
+
+# Accessing your Wasmer Apps over SSH
+
+<CalloutProFeature />
+
+You can access your Wasmer Edge applications over SSH.
+
+This can be useful for:
+
+* Modifying files in volumes
+* Running maintenance commands on your app (such as migrations)
+* Creating a backup of your application
+* ...
+
+<Callout type="info">
+**Note**: This works a bit differently from SSH access to regular servers on
+traditional hosting providers.
+Read more below.
+</Callout>
+
+<Callout type="info">
+To enable SSH access, you need to enable it in your app settings.
+Follow the [configuration documentation](./configuration) for details.
+</Callout>
+
+## SSH Environment
+
+Unlike traditional hosting providers, SSH sessions for Wasmer Edge apps run
+in an isolated container environment, distinct from the containers serving
+your application traffic.
+
+The environment is very similar to the one your application runs in, which means:
+* All your configured secrets and environment variables are available
+* Your application files are present on the file system
+* Your volumes are mounted and accessible
+
+<Callout type="warning">
+Only changes to files in volumes will persist after the SSH session ends.
+Any changes to files outside of volumes will be lost!
+</Callout>
+
+## wasmer CLI
+
+The recommended way to use SSH is through the wasmer CLI.
+
+It provides a convenient command to open an SSH session to your app, which
+uses short-lived token authentication under the hood, so you don't have to
+worry about credentials.
+
+```bash
+wasmer ssh --app <your-app-name>
+```
+
+<Callout type="warning">
+App SSH access is only available in the wasmer CLI version 6.1.0-rc.4 and above.
+</Callout>
+
+## Manual Credentials
+
+If you prefer to use traditional user/password or public key authentication,
+first configure SSH access by following the [configuration documentation](./documentation).
+
+Then, you can copy and paste the URL and credentials from the dashboard.
+
+If you configured through app.yaml:
+* Always use the app URL as the `@<host>`
+* The port is always the default SSH port `22`
+
+Example:
+
+```bash
+ssh <my-configured-username>@my-app.wasmer.app
+```
