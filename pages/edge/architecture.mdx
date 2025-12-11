@@ -107,19 +107,20 @@ and long term low cost operations:
 
 ## Wasmer Edge Regions
 
-The closed beta will launch in a set of limited production regions for invited
-participants only, these locations are:
+Wasmer Edge is generally available in the following regions:
 
-- US West Coast
-- US East Coast
-- Europe Central
-- Asia
-- Australia
-- South America
+- `us-hillsboro` – US, Oregon
+- `us-ashburn` – US, Virginia
+- `us-losa1` – US, California
+- `de-falkenstein` – Europe, Germany
+- `be-mons1` – Europe, Belgium
+- `gb-lond1` – Europe, United Kingdom
+- `fr-pari1` – Europe, France
+- `sg-sing1` – Asia, Singapore
 
-Once the product transitions out of this beta phase then other hosting locations
-will be unlocked and made available to customers. Ultimately though users of Wasmer
-Edge that deploy stateless packages are abstracted from this and do not see it.
+As we monitor traffic patterns and demand, we may add or adjust regions over time.
+Ultimately, Wasmer Edge abstracts regions away for most stateless applications;
+the platform will route requests to the closest healthy region automatically.
 
 import CoreRegions from "@assets/deploy/architecture/core-regions.png";
 
@@ -189,9 +190,13 @@ Watch this space for further announcements on WASIX and other supporting ABI's a
 
 ## Wasmer Storage
 
-Persistent Storage will be released after the **Beta**, this will allow for databases,
-file systems and object storage to be compiled against WASM and run natively inside the
-Wasmer Edge platform. More details on this will be released later.
+Wasmer Edge provides persistent storage through **volumes**. Volumes are currently
+regional, meaning data is stored and accessed within a single Edge region. They are
+exposed as mounted directories inside your apps and can also be accessed remotely
+via an S3-compatible API and a built-in web UI.
+
+For details on capabilities, limitations, and usage (including backup and
+restoration policies), see the dedicated [Volumes documentation](/edge/learn/volumes).
 
 ## Wasmer Distributed Networking (DNET)
 
@@ -200,9 +205,9 @@ Every Edge Computing platform requires a network backbone as the foundation of
 the workloads it hosts, without one the use cases it can host are quite limited.
 Wasmer Edge uses a virtual networking overlay exposed directly to the WASIX sandbox.
 
-In the first beta release of Wasmer Edge you will see aspects of this distributed
-mesh network that allow for sockets and networking from workloads however its full
-potential will only become visible later as we unlock more core networking functionality.
+In early versions of Wasmer Edge you already see aspects of this distributed
+mesh network that allow for sockets and networking from workloads. Over time,
+we will continue to unlock more core networking functionality.
 
 Traffic is sent from browsers over websockets to enter the Wasmer Distributed
 Network while UDP encapsulated (and encrypted) packets are used to ship enternet
