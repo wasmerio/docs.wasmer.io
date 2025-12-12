@@ -46,7 +46,7 @@ WebAssembly features:
 |                                       | Singlepass | Cranelift | LLVM | V8 | Wasmi | WAMR | JavaScriptCore | Browser |
 | ------------------------------------- | ---------- | --------- | ---- | -- | ------| ---- | -------------- | ------- |
 | Bulk memory operations                | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
-| Multi-value return                    | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
+| Multi-value return                    | ✅[^1]     | ✅[^1]    | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
 | Import & export of mutable globals    | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
 | Non-trapping float-to-int conversions | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
 | Sign-extension operations             | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
@@ -55,6 +55,8 @@ WebAssembly features:
 | Threads                               | ✅         | ✅        | ✅   | ✅  | [🔄](https://github.com/wasmi-labs/wasmi/issues/777)     | ✅    | ✅             | ✅      |
 | Exceptions                            | 🔄         | ✅        | ✅   | ✅  | [🔄](https://github.com/wasmi-labs/wasmi/issues/1137)     | ✅    | ✅             | ✅      |
 | Async Functions                       | ✅         | ✅        | ✅   | 🔄  | ❌     | ❌    | ❌             | 🔄      |
+
+[^1]: [Known multi-value limitations](https://github.com/wasmerio/wasmer/issues/5943)
 
 Wasmer features:
 
@@ -80,13 +82,13 @@ Wasmer features:
 
 ## Backend support by Chipset
 
-|                | x86_64 | arm64 | x86 | RISC-V 64-bit | RISC-V 32-bit |
-| -------------- | ------ | ----- | --- | ------------- | ------------- |
-| Cranelift      | ✅     | ✅    | ✅  | ✅            | ❌            |
-| LLVM           | ✅     | ✅    | ✅  | ✅            | ✅            |
-| Singlepass     | ✅     | ✅    | ❌  | ✅            | ❌            |
-| V8             | ✅     | ✅    | ✅  | ✅            | ✅            |
-| Wasmi          | ✅     | ✅    | ✅  | ✅            | ✅            |
-| WAMR           | ✅     | ✅    | ✅  | ✅            | ✅            |
-| JavaScriptCore | ✅     | ✅    | ❌  | ❌            | ❌            |
-| Browser        | ✅     | ✅    | ✅  | ✅            | ✅            |
+|                | x86_64 | arm64 | riscv64gc | riscv32gc |
+| -------------- | ------ | ----- | --------- | ------------- |
+| Cranelift      | ✅     | ✅    | ✅        | ❌            |
+| LLVM           | ✅     | ✅    | ✅        | [🔄](https://github.com/wasmerio/wasmer/pull/5521) |
+| Singlepass     | ✅     | ✅    | [🔄](https://github.com/wasmerio/wasmer/pull/5711) | ❌            |
+| V8             | ✅     | ✅    | ✅        | ✅            |
+| Wasmi          | ✅     | ✅    | ✅        | ✅            |
+| WAMR           | ✅     | ✅    | ✅        | ✅            |
+| JavaScriptCore | ✅     | ✅    | ❌        | ❌            |
+| Browser        | ✅     | ✅    | ✅        | ✅            |
