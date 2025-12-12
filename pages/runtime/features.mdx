@@ -12,6 +12,7 @@ Wasmer supports many different backends, depending on your needs:
 * Other Runtimes:
   - _V8_: ideal for iOS, Android and development.
   - _Wasmi_: ideal for iOS, or any environment where only interpreters can run.
+  - _WAMR_: ideal for IOT devices or any environment where only interpreters with limited memory can run.
   - _JavaScriptCore_: ideal for macOS. See [announcement](https://wasmer.io/posts/wasmer-3_3-and-javascriptcore)
   - _Browser_: to target the web
 
@@ -42,24 +43,26 @@ WebAssembly features:
 - ❌ Not yet supported (please ping us if you need this feature!)
 
 
-|                                       | Singlepass | Cranelift | LLVM | V8 | Wasmi | JavaScriptCore | Browser |
-| ------------------------------------- | ---------- | --------- | ---- | -- | ------| -------------- | ------- |
-| Bulk memory operations                | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| Multi-value return                    | 🔄         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| Import & export of mutable globals    | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| Non-trapping float-to-int conversions | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| Sign-extension operations             | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| Reference types                       | 🔄         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| SIMD                                  | ✅         | ✅        | ✅   | ✅  | ❌     | ✅             | ✅      |
-| Threads                               | ✅         | ✅        | ✅   | ✅  | ❌     | ✅             | ✅      |
+|                                       | Singlepass | Cranelift | LLVM | V8 | Wasmi | WAMR | JavaScriptCore | Browser |
+| ------------------------------------- | ---------- | --------- | ---- | -- | ------| ---- | -------------- | ------- |
+| Bulk memory operations                | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
+| Multi-value return                    | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
+| Import & export of mutable globals    | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
+| Non-trapping float-to-int conversions | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
+| Sign-extension operations             | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
+| Reference types                       | 🔄         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
+| SIMD                                  | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
+| Threads                               | ✅         | ✅        | ✅   | ✅  | [🔄](https://github.com/wasmi-labs/wasmi/issues/777)     | ✅    | ✅             | ✅      |
+| Exceptions                            | 🔄         | ✅        | ✅   | ✅  | [🔄](https://github.com/wasmi-labs/wasmi/issues/1137)     | ✅    | ✅             | ✅      |
+| Async Functions                       | ✅         | ✅        | ✅   | 🔄  | ❌     | ❌    | ❌             | 🔄      |
 
 Wasmer features:
 
-| Features | Singlepass | Cranelift | LLVM | V8 | Wasmi | JavaScriptCore | Browser |
-| -------- | ---------- | --------- | ---- | -- | ----- | -------------- | ------- |
-| Caching  | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
-| Metering | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
-| Profiling| ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
+| Features | Singlepass | Cranelift | LLVM | V8 | Wasmi | WAMR | JavaScriptCore | Browser |
+| -------- | ---------- | --------- | ---- | -- | ----- | ---- | -------------- | ------- |
+| Caching  | ✅         | ✅        | ✅   | ❌  | ❌     | ❌    | ❌             | ❌      |
+| Metering | ✅         | ✅        | ✅   | ❌  | ❌     | ❌    | ❌             | ❌      |
+| Profiling| ✅         | ✅        | ✅   | ❌  | ❌     | ❌    | ❌             | ❌      |
 
 
 ## Backend support by Operating System
@@ -70,7 +73,8 @@ Wasmer features:
 | LLVM           | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
 | Singlepass     | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
 | V8             | ✅    | ✅    | ✅      | ✅   | ✅       | ❌      |
-| Wasmi          | ✅    | ✅    | ✅      | ✅   | ✅       | ❌      |
+| Wasmi          | ✅    | ✅    | ✅      | ✅   | ✅       | ✅      |
+| WAMR           | ✅    | ✅    | ✅      | ✅   | ✅       | ❌      |
 | JavaScriptCore | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
 | Browser        | ✅    | ✅    | ✅      | ✅   | ✅       | ✅      |
 
@@ -80,8 +84,9 @@ Wasmer features:
 | -------------- | ------ | ----- | --- | ------------- | ------------- |
 | Cranelift      | ✅     | ✅    | ✅  | ✅            | ❌            |
 | LLVM           | ✅     | ✅    | ✅  | ✅            | ✅            |
-| Singlepass     | ✅     | ✅    | ❌  | ⏰            | ⏰            |
+| Singlepass     | ✅     | ✅    | ❌  | ✅            | ❌            |
 | V8             | ✅     | ✅    | ✅  | ✅            | ✅            |
 | Wasmi          | ✅     | ✅    | ✅  | ✅            | ✅            |
+| WAMR           | ✅     | ✅    | ✅  | ✅            | ✅            |
 | JavaScriptCore | ✅     | ✅    | ❌  | ❌            | ❌            |
 | Browser        | ✅     | ✅    | ✅  | ✅            | ✅            |
