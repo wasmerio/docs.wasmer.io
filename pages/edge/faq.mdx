@@ -16,13 +16,13 @@ Note that we will add configuration for this, eg: you will be able to specify th
 ## How long is the 'short idle period' before server termination. If post-request server-side processing is required, how can we prevent a shutdown? Is this determined by CPU usage, a timeout post-last request, or perhaps an interceptor in the WASIX VM monitoring for specific IO syscalls, such as `accept4` ?
 
 Currently this is a fixed value of a few minutes, but this can not be assumed, it may change at any time, and workloads can get evicted under contention.
-What we will add a graceful termination flow like on Linux: instances will receive a SIGTERM , and will have some time to clean up and finish remaining work, with hard termination only happening after a well-known grace period.
+What we will add a graceful termination flow like on Linux: instances will receive a SIGTERM, and will have some time to clean up and finish remaining work, with hard termination only happening after a well-known grace period.
 
 ## Do we need utilities like pgBouncer ?
 
 It would probably be advisable.
-It's possible for multiple versions of your app to run on multiple servers in the same region, and for a bunch of new instances to get spawned , so you might have quite bursty connection counts.
-If you need more control, one of the features that we hope to finish in this quarter (before end of year) is persistent instances, which will keep running , and won't be dynamically spawned or terminated.
+It's possible for multiple versions of your app to run on multiple servers in the same region, and for a bunch of new instances to get spawned, so you might have quite bursty connection counts.
+If you need more control, one of the features that we hope to finish in this quarter (before end of year) is persistent instances, which will keep running, and won't be dynamically spawned or terminated.
 
 A note about database locality:
 We will have configuration that allows you to restrict your app to certain regions, so if you want to keep your instances close to the location of your database, that will be possible.

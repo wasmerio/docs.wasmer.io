@@ -5,7 +5,7 @@ import ImageLoader from "@components/ImageLoader";
 ## Wasmer Edge - Built for the future
 
 Wasmer Edge has been built from the ground up to host pure WebAssembly packages
-fully natively - nothing else like this exists today and is only possibly through
+fully natively - nothing else like this exists today and is only possible through
 the close integration of the an Open Source runtime (in this case Wasmer), a WASM
 package manager and a distributed hosting infrastructure.
 
@@ -91,7 +91,7 @@ and long term low cost operations:
   https://en.wikipedia.org/wiki/Shared-nothing_architecture
 
 - Density of workloads running on edge nodes has been highly optimized for pure
-  WebAssembly hosting allowing for a high degree **scale-up** through optmizations of the runtime.
+  WebAssembly hosting allowing for a high degree **scale-up** through optimizations of the runtime.
 
 - The distributed monolith approach of Wasmer Edge means all nodes are identical
   and can be replicated with little need for scaling supporting infrastructure that
@@ -174,7 +174,7 @@ and handle versioning of your apps.
 One of the core parts of Wasmer Edge is the runtime itself. By utilizing the
 Wasmer Runtime as the core virtualization platform of Wasmer Edge and the
 recently announced WASIX, the platform is now able to run real useful WASM
-programs and services directly on the edge. As the runtime itself developes
+programs and services directly on the edge. As the runtime itself develops
 over time this will continuously create new and exciting features for Wasmer Edge.
 
 As an example it is now possible to code up a HTTP server or API totally
@@ -210,13 +210,13 @@ mesh network that allow for sockets and networking from workloads. Over time,
 we will continue to unlock more core networking functionality.
 
 Traffic is sent from browsers over websockets to enter the Wasmer Distributed
-Network while UDP encapsulated (and encrypted) packets are used to ship enternet
+Network while UDP encapsulated (and encrypted) packets are used to ship ethernet
 frames (OSI Layer 2) between participating nodes in a specific virtual network.
 
 The design of the subsystems and topology is for many (hundreds of thousands) of
 unique virtual networks while all nodes can actively participate in a virtual network.
 
-Browsers only need to establish a WebSocket connection to the closests Wasmer
+Browsers only need to establish a WebSocket connection to the closest Wasmer
 Edge Node in order to join a virtual network.
 
 Great care was taken to implement design constraints that removed the requirements
@@ -237,7 +237,7 @@ import CoreDnet from "@assets/deploy/architecture/core-dnet.svg";
 - Supports **ARP** and **DHCP** snooping for port MAC learning
 - Supports both **IPv4** and **IPv6**
 - All tenant traffic is encrypted with unique (derived) tenant keys thus segmenting and sandboxing it from each other
-- Fully support for concurrent **socket polling**
+- Full support for concurrent **socket polling**
 - **Multithread** safe
 - Supports promiscuous **raw sockets**
 - Built in **DHCP** server
@@ -247,7 +247,7 @@ import CoreDnet from "@assets/deploy/architecture/core-dnet.svg";
 
 #### 1. Fully stateless
 
-Control planes add complexity and create single pointers of failure thus if one is able to
+Control planes add complexity and create single points of failure thus if one is able to
 deliver the same functionality without a control plane then it is a better design.
 
 #### 2. Peer-to-Peer connection-less
