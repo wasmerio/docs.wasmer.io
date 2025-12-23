@@ -156,7 +156,7 @@ impl geometry::Geometry for Geometry {
 }
 ```
 
-> Note: This may seem comfusing so I've boiled it down:
+> Note: This may seem confusing so I've boiled it down:
 >
 > - `geometry` is the crate
 > - `Geometry` is the struct
