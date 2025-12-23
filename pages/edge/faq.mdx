@@ -15,7 +15,7 @@ Note that we will add configuration for this, e.g., you will be able to specify 
 
 ## How long is the 'short idle period' before server termination. If post-request server-side processing is required, how can we prevent a shutdown? Is this determined by CPU usage, a timeout post-last request, or perhaps an interceptor in the WASIX VM monitoring for specific IO syscalls, such as `accept4` ?
 
-Currently this is a fixed value of a few minutes, but this can not be assumed, it may change at any time, and workloads can get evicted under contention.
+Currently this is a fixed value of a few minutes, but this cannot be assumed, it may change at any time, and workloads can get evicted under contention.
 What we will add a graceful termination flow like on Linux: instances will receive a SIGTERM, and will have some time to clean up and finish remaining work, with hard termination only happening after a well-known grace period.
 
 ## Do we need utilities like pgBouncer ?

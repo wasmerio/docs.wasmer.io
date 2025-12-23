@@ -349,7 +349,7 @@ Available values:
 * `single_concurrency`
 
   Special scaling mode for apps that only support **a single request at a time**.
-  You should enable this mode if your app can not handle multiple requests concurrently.
+  You should enable this mode if your app cannot handle multiple requests concurrently.
 
   Only a single request will be sent to each instance at a time.
   Edge will dynamically scale up additional instances of your app as required by the incoming request volume, and shut them down when they are no longer needed.
