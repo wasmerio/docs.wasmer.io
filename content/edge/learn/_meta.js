@@ -5,6 +5,7 @@ export default {
   "supported-frameworks-and-languages": "Supported Frameworks and Languages",
   "remote-sessions": "Remote Sessions",
   "custom-domains": "Adding Custom Domains",
+  "email": "Sending Email",
   "secrets": "Secrets",
   "regions": "Regions",
   "volumes": "Volumes",
