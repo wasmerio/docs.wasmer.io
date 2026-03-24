@@ -121,7 +121,7 @@ async function main() {
 ```
 
 <Callout type="warning">
-You have may noticed that we're using a dynamic import (`await import("@wasmer/sdk")`) to pull in `@wasmer/sdk` rather than a "normal" `import { ... } from "@wasmer/sdk"`.
+You may have noticed that we're using a dynamic import (`await import("@wasmer/sdk")`) to pull in `@wasmer/sdk` rather than a "normal" `import { ... } from "@wasmer/sdk"`.
 
 This is a workaround for a bad interaction between bundlers, `xterm`, and the
 `@wasmer/sdk` threadpool. See [ReferenceError: `document is not
