@@ -1,0 +1,104 @@
+import { Callout } from "nextra-theme-docs";
+
+# Sending Email
+
+Wasmer Edge provides built-in outbound email through the standard `sendmail`
+interface. This means your application can send transactional emails --
+password resets, notifications, welcome messages -- without configuring an
+external SMTP server or a third-party email service.
+
+To get started, you only need to enable the feature in your app configuration
+and redeploy.
+
+## Enabling Email
+
+Email sending is disabled by default. Add `enable_email: true` to your
+`app.yaml` and redeploy:
+
+```yaml filename="app.yaml" copy
+kind: wasmer.io/App.v0
+owner: my-account
+name: my-app
+package: .
+
+enable_email: true
+```
+
+```bash copy
+wasmer deploy
+```
+
+That's it -- once the app is redeployed, Wasmer Edge will make a `sendmail`
+binary available to your application.
+
+## PHP Applications
+
+PHP's built-in `mail()` function delegates to `sendmail` under the hood, so
+enabling the feature in `app.yaml` is typically all that's required. Existing
+code that calls `mail()` will work without any changes:
+
+```php filename="app/mail.php" copy
+<?php
+$ok = mail(
+  'user@example.com',
+  'Welcome',
+  "Thanks for signing up.\n"
+);
+
+echo $ok ? 'sent' : 'failed';
+```
+
+<Callout type="info" emoji="ℹ️">
+  WordPress sites on Wasmer Edge can send emails out of the box -- no plugins
+  or additional configuration needed.
+</Callout>
+
+## All Other Languages and Frameworks
+
+For non-PHP applications, you interact with email through the `sendmail`
+command, just as you would on any Unix system.
+
+### 1. Add the sendmail dependency
+
+Include the `sendmail/sendmail` package in your `wasmer.toml`:
+
+```toml filename="wasmer.toml" copy
+[dependencies]
+"sendmail/sendmail" = "*"
+```
+
+### 2. Send an email
+
+The `sendmail` binary reads a message from standard input. Use the `-t` flag to
+extract recipients from the message headers:
+
+```bash copy
+printf 'To: user@example.com\nSubject: Test message\n\nHello from Wasmer Edge.\n' \
+  | sendmail -t
+```
+
+To set the envelope sender explicitly, add the `-f` flag:
+
+```bash copy
+printf 'To: user@example.com\nSubject: Test message\n\nHello from Wasmer Edge.\n' \
+  | sendmail -f no-reply@example.com -t
+```
+
+### Using a framework's sendmail transport
+
+Many web frameworks offer a sendmail transport as an alternative to SMTP. If
+yours does, point it at the `sendmail` binary and no further Wasmer-specific
+configuration is needed. A few examples:
+
+- **Django** -- set `EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'` or use a sendmail backend package.
+
+## Rate Limits
+
+Email sending is available on all plans. The free tier includes a limited
+sending allowance; paid tiers offer higher quotas. See the
+<a href="https://wasmer.io/pricing" target="_blank" rel="noreferrer">Wasmer pricing page</a>
+for current plan details and limits.
+
+## Related
+
+- [App Configuration -- `enable_email`](/edge/configuration#enable_email)
