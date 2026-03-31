@@ -43,28 +43,32 @@ WebAssembly features:
 - ❌ Not yet supported (please ping us if you need this feature!)
 
 
-|                                       | Singlepass | Cranelift | LLVM | V8 | Wasmi | WAMR | JavaScriptCore | Browser |
-| ------------------------------------- | ---------- | --------- | ---- | -- | ------| ---- | -------------- | ------- |
-| Bulk memory operations                | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
-| Multi-value return                    | ✅[^1]     | ✅[^1]    | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
-| Import & export of mutable globals    | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
-| Non-trapping float-to-int conversions | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
-| Sign-extension operations             | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
-| Reference types                       | 🔄         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
-| SIMD                                  | ✅         | ✅        | ✅   | ✅  | ✅     | ✅    | ✅             | ✅      |
-| Threads                               | ✅         | ✅        | ✅   | ✅  | [🔄](https://github.com/wasmi-labs/wasmi/issues/777)     | ✅    | ✅             | ✅      |
-| Exceptions                            | 🔄         | ✅        | ✅   | ✅  | [🔄](https://github.com/wasmi-labs/wasmi/issues/1137)     | ✅    | ✅             | ✅      |
-| Async Functions                       | ✅         | ✅        | ✅   | 🔄  | ❌     | ❌    | ❌             | 🔄      |
+|                                       | Singlepass | Cranelift | LLVM |
+| ------------------------------------- | ---------- | --------- | ---- |
+| Bulk memory operations                | ✅         | ✅        | ✅   |
+| Multi-value return                    | ✅[^1]     | ✅[^1]    | ✅   |
+| Import & export of mutable globals    | ✅         | ✅        | ✅   |
+| Non-trapping float-to-int conversions | ✅         | ✅        | ✅   |
+| Sign-extension operations             | ✅         | ✅        | ✅   |
+| Wide Arithmetic                       | ❌         | ✅        | ✅   |
+| Reference types                       | 🔄         | ✅        | ✅   |
+| SIMD                                  | ✅         | ✅        | ✅   |
+| Relaxed SIMD                          | ❌         | ✅        | ✅   |
+| Threads                               | ✅         | ✅        | ✅   |
+| Exceptions                            | 🔄         | ✅        | ✅   |
+| Async Functions                       | ✅         | ✅        | ✅   |
+| Extended Constant Expressions         | ✅         | ✅        | ✅   |
+| Tail Call                             | ❌         | ❌        | ✅   |
 
 [^1]: [Known multi-value limitations](https://github.com/wasmerio/wasmer/issues/5943)
 
 Wasmer features:
 
-| Features | Singlepass | Cranelift | LLVM | V8 | Wasmi | WAMR | JavaScriptCore | Browser |
-| -------- | ---------- | --------- | ---- | -- | ----- | ---- | -------------- | ------- |
-| Caching  | ✅         | ✅        | ✅   | ❌  | ❌     | ❌    | ❌             | ❌      |
-| Metering | ✅         | ✅        | ✅   | ❌  | ❌     | ❌    | ❌             | ❌      |
-| Profiling| ✅         | ✅        | ✅   | ❌  | ❌     | ❌    | ❌             | ❌      |
+| Features | Singlepass | Cranelift | LLVM |
+| -------- | ---------- | --------- | ---- |
+| Caching  | ✅         | ✅        | ✅   |
+| Metering | ✅         | ✅        | ✅   |
+| Profiling| ✅         | ✅        | ✅   |
 
 
 ## Backend support by Operating System
@@ -80,7 +84,7 @@ Wasmer features:
 | JavaScriptCore | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
 | Browser        | ✅    | ✅    | ✅      | ✅   | ✅       | ✅      |
 
-## Backend support by Chipset
+## Backend support by Instruction Set Architecture (ISA)
 
 |                | x86_64 | arm64 | riscv64gc | riscv32gc | loongarch64 |
 | -------------- | ------ | ----- | --------- | ------------- | ----------- |
