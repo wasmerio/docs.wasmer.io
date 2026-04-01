@@ -12,10 +12,11 @@ Wasmer supports many different backends, depending on your needs:
 * Other Runtimes:
   - _V8_: ideal for iOS, Android and development.
   - _Wasmi_: ideal for iOS, or any environment where only interpreters can run.
-  - _JavascriptCore_: ideal for macOS. See [announcement](https://wasmer.io/posts/wasmer-3_3-and-javascriptcore)
+  - _WAMR_: ideal for IOT devices or any environment where only interpreters with limited memory can run.
+  - _JavaScriptCore_: ideal for macOS. See [announcement](https://wasmer.io/posts/wasmer-3_3-and-javascriptcore)
   - _Browser_: to target the web
 
-Each of this backends support different features, and have different support for Operating Systems and Chipsets.
+Each of these backends supports different features and has varying support for operating systems and chipsets.
 
 ### WebAssembly Features
 
@@ -42,24 +43,32 @@ WebAssembly features:
 - ❌ Not yet supported (please ping us if you need this feature!)
 
 
-|                                       | Singlepass | Cranelift | LLVM | V8 | Wasmi | JavascriptCore | Browser |
-| ------------------------------------- | ---------- | --------- | ---- | -- | ------| -------------- | ------- |
-| Bulk memory operations                | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| Multi-value return                    | 🔄         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| Import & export of mutable globals    | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| Non-trapping float-to-int conversions | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| Sign-extension operations             | ✅         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| Reference types                       | 🔄         | ✅        | ✅   | ✅  | ✅     | ✅             | ✅      |
-| SIMD                                  | ✅         | ✅        | ✅   | ✅  | ❌     | ✅             | ✅      |
-| Threads                               | ✅         | ✅        | ✅   | ✅  | ❌     | ✅             | ✅      |
+|                                       | Singlepass | Cranelift | LLVM |
+| ------------------------------------- | ---------- | --------- | ---- |
+| Bulk memory operations                | ✅         | ✅        | ✅   |
+| Multi-value return                    | ✅[^1]     | ✅[^1]    | ✅   |
+| Import & export of mutable globals    | ✅         | ✅        | ✅   |
+| Non-trapping float-to-int conversions | ✅         | ✅        | ✅   |
+| Sign-extension operations             | ✅         | ✅        | ✅   |
+| Wide Arithmetic                       | ❌         | ✅        | ✅   |
+| Reference types                       | 🔄         | ✅        | ✅   |
+| SIMD                                  | ✅         | ✅        | ✅   |
+| Relaxed SIMD                          | ❌         | ✅        | ✅   |
+| Threads                               | ✅         | ✅        | ✅   |
+| Exceptions                            | 🔄         | ✅        | ✅   |
+| Async Functions                       | ✅         | ✅        | ✅   |
+| Extended Constant Expressions         | ✅         | ✅        | ✅   |
+| Tail Call                             | ❌         | ❌        | ✅   |
+
+[^1]: [Known multi-value limitations](https://github.com/wasmerio/wasmer/issues/5943)
 
 Wasmer features:
 
-| Features | Singlepass | Cranelift | LLVM | V8 | Wasmi | JavascriptCore | Browser |
-| -------- | ---------- | --------- | ---- | -- | ----- | -------------- | ------- |
-| Caching  | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
-| Metering | ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
-| Profiling| ✅         | ✅        | ✅   | ❌  | ❌     | ❌             | ❌      |
+| Features | Singlepass | Cranelift | LLVM |
+| -------- | ---------- | --------- | ---- |
+| Caching  | ✅         | ✅        | ✅   |
+| Metering | ✅         | ✅        | ✅   |
+| Profiling| ✅         | ✅        | ✅   |
 
 
 ## Backend support by Operating System
@@ -70,18 +79,20 @@ Wasmer features:
 | LLVM           | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
 | Singlepass     | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
 | V8             | ✅    | ✅    | ✅      | ✅   | ✅       | ❌      |
-| Wasmi          | ✅    | ✅    | ✅      | ✅   | ✅       | ❌      |
-| JavascriptCore | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
+| Wasmi          | ✅    | ✅    | ✅      | ✅   | ✅       | ✅      |
+| WAMR           | ✅    | ✅    | ✅      | ✅   | ✅       | ❌      |
+| JavaScriptCore | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
 | Browser        | ✅    | ✅    | ✅      | ✅   | ✅       | ✅      |
 
-## Backend support by Chipset
+## Backend support by Instruction Set Architecture (ISA)
 
-|                | x86_64 | arm64 | x86 | RISC-V 64-bit | RISC-V 32-bit |
-| -------------- | ------ | ----- | --- | ------------- | ------------- |
-| Cranelift      | ✅     | ✅    | ✅  | ✅            | ❌            |
-| LLVM           | ✅     | ✅    | ✅  | ✅            | ✅            |
-| Singlepass     | ✅     | ✅    | ❌  | ⏰            | ⏰            |
-| V8             | ✅     | ✅    | ✅  | ✅            | ✅            |
-| Wasmi          | ✅     | ✅    | ✅  | ✅            | ✅            |
-| JavascriptCore | ✅     | ✅    | ❌  | ❌            | ❌            |
-| Browser        | ✅     | ✅    | ✅  | ✅            | ✅            |
+|                | x86_64 | arm64 | riscv64gc | riscv32gc | loongarch64 |
+| -------------- | ------ | ----- | --------- | ------------- | ----------- |
+| Cranelift      | ✅     | ✅    | ✅        | ❌            | ❌          |
+| LLVM           | ✅     | ✅    | ✅        | ✅            | ✅          |
+| Singlepass     | ✅     | ✅    | ✅        | ❌            | ❌          |
+| V8             | ✅     | ✅    | ✅        | ✅            | ✅          |
+| Wasmi          | ✅     | ✅    | ✅        | ✅            | ✅          |
+| WAMR           | ✅     | ✅    | ✅        | ✅            | ✅          |
+| JavaScriptCore | ✅     | ✅    | ❌        | ❌            | ❌          |
+| Browser        | ✅     | ✅    | ✅        | ✅            | ✅          |

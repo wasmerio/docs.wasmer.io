@@ -156,28 +156,28 @@ impl geometry::Geometry for Geometry {
 }
 ```
 
-> Note: This may seem comfusing so I've boiled it down:
+> Note: This may seem confusing so I've boiled it down:
 >
 > - `geometry` is the crate
 > - `Geometry` is the struct
 > - `geometry::Geometry` is the Trait that implements the function `distance_between` on `Geometry`
 
-### Explaination
+### Explanation
 
-Here, the function `distance_between` takes two arguement of the _Point_ type. For simplicity we [destructure](https://doc.rust-lang.org/rust-by-example/flow_control/match/destructuring/destructure_structures.html) it for a clear distinction between the x1, x2 and y1,y2 as opposed to writing `p1.x` or `p1.y` everytime.
+Here, the function `distance_between` takes two argument of the _Point_ type. For simplicity we [destructure](https://doc.rust-lang.org/rust-by-example/flow_control/match/destructuring/destructure_structures.html) it for a clear distinction between x1, x2 and y1, y2 as opposed to writing `p1.x` or `p1.y` every time.
 
 We then find the distance between the two points using the [distance formula](https://en.wikipedia.org/wiki/Euclidean_distance).
 
 ##### Note📝
 
-> As `.wai` files only accept kebab-casing. The function `distance_between` in the `geometry.wai` will convert to the default casings for the respected language.
+> As `.wai` files only accept kebab-casing. The function `distance_between` in `geometry.wai` will convert to the default casings for the respective language.
 >
 > //change here after formatting!!
-> i.e: _snake_case_ for rust, _CamelCase_ for Javascript,
+> i.e., _snake_case_ for Rust, _CamelCase_ for JavaScript,
 
 ### Nested Records
 
-As we saw, the use of simpler identifiers to create a `Point` record. we can further extend this functionality using records or other valid `WAI types` to specify the record arguments to create more complex and _nested records_.
+As we saw, the use of simpler identifiers to create a `Point` record. We can further extend this functionality using records or other valid `WAI types` to specify the record arguments to create more complex and _nested records_.
 
 > ⚠️ Recursive types are explicitly forbidden in WAI.
 
@@ -189,7 +189,7 @@ record tree-node {
 
 > 👆🏼, is not allowed.
 
-Let's futher explain `Nested Records` this with an example:
+Let's further explain `Nested Records` with an example:
 
 > WAI file with nested records :
 

@@ -9,7 +9,7 @@ import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
 
 In this guide, you'll learn the process of deploying a JS service
 worker on Wasmer Edge. We will cover installation of the CLI, setting up a new
-Javascript worker, and deploying it.
+JavaScript worker, and deploying it.
 
 ## Deploying a JS service worker
 
@@ -28,7 +28,7 @@ mkdir my-new-js-worker
 cd my-new-js-worker
 ```
 
-Then, running a single command, we can setup a js worker:
+Then, running a single command, we can set up a JS worker:
 
 ```bash copy
 wasmer deploy --template=js-worker
@@ -36,7 +36,7 @@ wasmer deploy --template=js-worker
 This will prompt you for the following:
 
 - **App owner**: This is the owner of the app.
-It can be your username or an organization; if you're logged in, the command will prompt you tochoose from your namespaces: by default, it will be your username.
+It can be your username or an organization; if you're logged in, the command will prompt you to choose from your namespaces: by default, it will be your username.
 - **App name**: This is the name of your app. By default, it will be the name of the current directory. 
 
 Expect to see output similar to this:
@@ -49,7 +49,7 @@ It seems you are trying to create a new app!
 Loading local package (manifest path: ~/wasmer-user/Projects/jsworker/.)
 ✔ Correctly built package locally
 ✔ Package correctly uploaded
-✔ Succesfully pushed release to namespace wasmer-user on the registry
+✔ Successfully pushed release to namespace wasmer-user on the registry
 Deploying app jsworker (wasmer-user) to Wasmer Edge...
 
 App jsworker (wasmer-user) was successfully deployed 🚀

@@ -77,7 +77,7 @@ impl strings_and_lists::StringsAndLists for StringsAndLists {
 ```
 
 The implementation of these functions is fairly straightforward, so we don't
-need to go into too much detain about it other than pointing out
+need to go into too much detail about it other than pointing out
 `greet_many()`'s use of [_Slice Patterns_][slice-patterns].
 
 ### A Note on Ownership

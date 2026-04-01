@@ -1,0 +1,42 @@
+# Supported Frameworks and Languages
+
+Start from a template on the Wasmer website: https://wasmer.io/templates. Wasmer includes custom detection that identifies your repository type (e.g., Next.js, Astro, Laravel, WordPress, Symfony, Django, Flask, FastAPI, MCP, and more), packages it automatically with Wasmer, and deploys it to Wasmer Edge — no Dockerfile required.
+
+## PHP
+- Detection: any repo containing at least one `.php` file is treated as PHP.
+- Dependencies: Composer dependencies are installed automatically (`composer.json` / `composer.lock`).
+- Frameworks: Laravel, Symfony, WordPress.
+- Notes: Typical entry points like `public/index.php` are supported.
+
+## Python
+- Detection: presence of `requirements.txt` or `pyproject.toml`.
+- Dependencies: installed automatically in the deployment image.
+- Post‑deploy tasks: framework‑specific steps can run (e.g., Django migrations).
+- Frameworks: Django, Flask, FastAPI, MCP, Streamlit.
+- Servers: Uvicorn (ASGI and WSGI), Daphne (ASGI).
+
+Example layout:
+```
+# Python
+requirements.txt  or  pyproject.toml
+app.py            # Flask / FastAPI entrypoint
+manage.py         # Django projects
+```
+
+## Static Sites
+- Detection: `index.html` at the repo root or a `Staticfile`.
+- Served directly from the Edge network.
+
+## JavaScript Frameworks (auto‑detected)
+- Examples: Next.js, Astro.
+- Typical signals: framework configs (e.g., `next.config.*`, `astro.config.*`) and package scripts (`build`, `dev`). Wasmer builds and packages for Edge.
+
+## Quick Reference
+```
+PHP:       any *.php  → installs Composer deps
+Python:    requirements.txt | pyproject.toml → installs deps, runs framework steps
+Static:    index.html | Staticfile → served as static
+JS:        Next.js / Astro → auto build + package
+```
+
+To get started, pick a template at https://wasmer.io/templates and push your code. The platform will handle dependency installation, build, packaging, and rollout to Wasmer Edge automatically.
