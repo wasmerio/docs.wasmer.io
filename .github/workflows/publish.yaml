@@ -38,5 +38,5 @@ jobs:
       - name: Deploy app
         run: wasmer deploy --registry wasmer.io --bump
         env:
-          WASMER_TOKEN: ${{ secrets.WASMER_CIUSER_PROD_TOKEN }}
+          WASMER_TOKEN: ${{ secrets.PROD_BACKEND_CIUSER_TOKEN }}
         
