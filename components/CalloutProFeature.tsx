@@ -1,5 +1,5 @@
 import React from "react";
-import { Callout } from "nextra-theme-docs";
+import { Callout } from '@components/nextra-theme';
 
 export default function CalloutProFeature() {
     return (

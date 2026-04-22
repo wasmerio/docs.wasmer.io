@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2016",
     "lib": [
       "dom",
       "dom.iterable",
@@ -11,19 +11,27 @@
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "incremental": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@components/*": [
         "./components/*"
       ],
       "@assets/*": [
         "./assets/*"
+      ],
+      // "nextra-theme-docs/*": [
+      //   "./theme/src/*"
+      // ],
+      // fixes incorrect types for flexsearch https://github.com/nextapps-de/flexsearch/issues/392#issuecomment-1552286514
+      "flexsearch": [
+        "./node_modules/@types/flexsearch"
       ]
     },
     "plugins": [
@@ -31,15 +39,19 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "incremental": true
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "theme",
+    "theme.config.tsx"
   ]
 }

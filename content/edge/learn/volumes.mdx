@@ -1,0 +1,153 @@
+import { Callout } from '@components/nextra-theme';
+
+# Volumes
+
+Volumes provide persistent disk storage for applications.
+
+They also support remote access with any S3 compatible client.
+
+
+<Callout type="warning">
+In the current initial implementation, volumes are restricted to a single [Edge region](/edge/learn/regions).
+
+Volumes also at the moment only provide *read-write-many* semantics.
+Due to the automatic auto-scaling for apps, this means that volumes are not currently
+well-suited for databases or other more complex use cases that require a single writer.
+
+Keep in mind that volumes can be accessed concurrently, and even from different
+nodes.
+
+These restrictions (including the single-region restriction) will be lifted
+in the future.
+</Callout>
+
+## Create and Use Volumes 
+
+* Every app may have multiple volumes.
+* Each volume has a name, which must be unique for the application.
+* Volumes can be mounted at a chosen path.
+* Each volume can be mounted multiple times.
+
+Simply extend your [app configuration](/edge/configuration) with a `volumes`
+section:
+
+```yaml filename="app.yaml" copy
+# ...
+
+volumes:
+  # A name for your volume.
+  # Must be unique for the given app.
+  - name: data
+    # Create a persistent volume named "data" in `/data`.
+    mount: /data
+
+  - name: more_data
+    # Create a persistent volume named "more_data" in `/other_mntpoint`.
+    mount: /other_mntpoint
+```
+
+This will create two new volumes: "data", which will be mounted at `/data` and "more_data" which will be mounted at `/other_mntpoint`.
+
+Now just re-deploy your app with `wasmer deploy`, and the volume will be automatically created.
+
+Your application can now use the mount path and treat it as persistent storage.
+
+<Callout type="warning">
+The name of a volume acts as a unique identifier.
+If you change the name the old volume - including it's data - will be deleted!
+</Callout>
+
+### Deleting Volumes
+
+To delete a volume, simply remove it from your app configuration and re-deploy.
+The data will be purged, and your app will not have access to the volume anymore.
+
+<Callout type="warning">
+If you rename or remove a volume from the `app.yaml` configuration,
+all data will be deleted when you deploy, and cannot be recovered.
+
+Make sure this is what you want before deploying!
+</Callout>
+
+## Inspecting Volumes
+
+You can inspect volumes in two ways:
+
+* in the web frontend on your app dashboard:
+  Go to the "Storage" tab - you will see a list of volumes with their size.
+* using the CLI:
+
+```bash copy
+wasmer app volumes list [app]
+```
+
+## Remotely Accessing Volumes
+
+Volumes are not only available to your apps, but can also be remotely accessed
+through the standard S3 API, or through a builtin web UI.
+
+You can use the CLI to retrieve the credentials:
+
+```bash copy
+wasmer app volumes credentials --format=json
+```
+
+This will print the S3 API URL, access key and secret key in the JSON format.
+
+
+<Callout type="info">
+You can visit the above URL in your browser to access a builtin web UI!
+</Callout>
+
+### Configuring rclone
+
+[rclone](https://rclone.org/) is a popular CLI client that allows full access
+to your volumes. It even allows mounting a volume to your local machine!
+
+You can get an rclone configuration snippet through the CLI:
+
+```bash copy
+wasmer app volumes credentials --format=rclone
+```
+
+This will print out a configuration snippet that can be added to the rclone
+configuration file.
+
+<Callout type="info">
+The config file is usually located at `~/.config/rclone/rclone.conf`, but you
+can retrieve the active path with `rclone config file`.
+</Callout>
+
+
+Some examples of using rclone:
+
+(Note: replace `<target>` with the name of the rclone target)
+
+```bash
+# List all volumes in this app:
+rclone lsd <target>:
+
+# List files in a given volume:
+rclone lsd <target>:<volume-name>
+
+# Copy a file to a volume:
+rclone copy ./local-filename <target>:<volume-name>/remote-filename
+
+# Mount a volume to a local directory
+mkdir my-volume
+rclone mount <target>:<volume-name> ./my-volume
+```
+
+### Rotating credentials
+In order to rotate (i.e. automatically assign a different value) the credentials tied to your volumes, 
+you can simply run this command with the CLI: 
+
+```bash copy
+wasmer app volumes rotate-secrets 
+```
+
+This command will rotate their values and show the new ones directly in the CLI. 
+
+### Data Restoration Policy
+
+We backup volume data every 24 hours. In the unlikely event of data loss (or if you want to restore older data), you can restore your data with a maximum recovery point objective (RPO) of 24 hours, meaning the most you would lose is one day's worth of data. If you need data restoration, you can contact us from here: https://docs.wasmer.io/edge/support

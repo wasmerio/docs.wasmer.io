@@ -1,0 +1,6 @@
+export default {
+	"overview": "Overview",
+  "configuration": "Configuration",
+  "sftp": "SFTP",
+  "app_ssh": "App SSH"
+}

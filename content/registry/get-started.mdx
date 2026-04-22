@@ -1,0 +1,88 @@
+import { Steps } from '@components/nextra-theme';
+import { Callout } from '@components/nextra-theme';
+import { Tab, Tabs } from '@components/nextra-theme';
+import Install from "../../components/install.mdx";
+import Register from "../../components/register.mdx";
+
+# Publish your first package
+
+This page will guide you through installing Wasmer, and publishing a package to the Wasmer Registry.
+
+<Steps>
+ 
+<Install />
+
+<Register />
+
+### Create a package
+
+To create your first Wasmer package simply run `wasmer init`.
+
+This should have created a `wasmer.toml` file with contents similar to:
+
+```toml filename="wasmer.toml" copy
+[package]
+name = '<your-user>/<package>'
+version = '0.1.0'
+description = 'Description for package'
+
+[[module]]
+name = '<your-module>'
+source = 'target/release/<your-module>.wasm'
+
+[[command]]
+runner = 'wasi'
+name = '<your-module>'
+module = '<your-module>'
+```
+
+You can check the manifest format here: [Wasmer Package Manifest](/registry/manifest).
+
+The **`wasmer.toml`** file is in the **Wasmer** ecosystem what a **`package.json`** is in the **Node** ecosystem, or **`pyproject.toml`** in the **Python** ecosystem.
+
+<Callout type="info">
+Once you have a `wasmer.toml` manifest, you can simply execute `wasmer run` in the CLI to run your package locally.
+
+```bash copy
+wasmer run . --command=<your-module>
+```
+
+</Callout>
+
+### Build your package
+
+Now, create your WebAssembly modules:
+
+<Tabs items={['Rust (WASIX)', 'Rust (WASI)']}>
+  <Tab>
+
+    ```bash copy
+    cargo install cargo-wasix
+    cargo wasix build --release
+    ```
+
+  </Tab>
+  <Tab>
+    WASI is officially supported by Rust; to compile to it you can simply do:
+
+    ```bash copy
+    rustup target add wasm32-wasi
+    cargo build --target=wasm32-wasi
+    ```
+
+  </Tab>
+</Tabs>
+
+Modify `wasmer.toml` to point the module to the wasm file location `target/release/<your-module>.wasm`.
+
+### Publish your package
+
+Now, simply run:
+
+```bash copy
+wasmer publish
+```
+
+This command will publish your package to the [Wasmer Registry](https://wasmer.io/products/registry), so it can be used anywhere.
+
+</Steps>

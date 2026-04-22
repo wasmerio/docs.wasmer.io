@@ -1,0 +1,369 @@
+import { Callout } from '@components/nextra-theme';
+
+# App Configuration (`app.yaml`)
+
+Wasmer Edge's configuration is stored in an `app.yaml` file in the root of your project.
+
+## Example
+
+```yaml filename="app.yaml" copy
+# Required fields
+
+kind: wasmer.io/App.v0
+# username or namespace that owns the app
+owner: my-account
+# App name
+name: my-sample-site
+# Package to run (it can also be `.`)
+package: wasmer/my-sample-site
+
+# OPTIONAL fields
+
+# Enable debug mode
+# If true, http responses will have more detailed error information.
+debug: true
+
+# Environment variables
+env:
+  MY_VAR: "my-value123"
+
+# CLI arguments passed to the binary
+cli_args:
+  - arg1
+  - arg2
+
+capabilities:
+  # Fast startup with instaboot
+  instaboot:
+    requests:
+      - path: /
+      - path: /_bootstrap
+```
+
+## Fields
+
+Detailed description of all available fields.
+
+### `kind`
+
+The `kind` field is used to identify the type of configuration file. It is required and is a constant set to `wasmer.io/App.v0`.
+
+<Callout type="info" emoji="ℹ️">
+  This constant field might be used in the future to support multiple
+  configuration formats.
+</Callout>
+
+### `name`
+
+The `name` field is used to identify the name of the application. It is **required** and must be unique.
+
+- Required: `true`
+- Required format: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`
+
+### `description`
+
+The `description` field is used to provide a description of the application. It is **optional** and can be any string.
+
+- Required: `false`
+
+### `package`
+
+The `package` field is used to specify the name of the package to deploy.
+It is **required** and must specify a package published to the Wasmer registry.
+
+Note: if you have a wasmer.toml in the same directory as the `app.yaml`, `wasmer deploy` will automatically prompt you to publish a new version of the package.
+
+- Required: `true`
+
+### `env`
+
+Specify environment variables for the app.
+Must be a key-value map.
+
+Example:
+```yaml filename="app.yaml" copy
+env:
+  MY_VAR: "my-value123"
+```
+
+- Required: `false`
+
+### `cli_args`
+
+Specify command line arguments passed to the application.
+
+Example:
+```yaml filename="app.yaml" copy
+cli_args:
+  - arg1
+  - arg2
+```
+
+- Required: `false`
+
+### `debug`
+
+The `debug` field is used to enable debug mode for the application. This in turn will show detailed error messages if a request fails, instead of a generic error. It is **optional** and can be any boolean.
+
+- Required: `false`
+- Default: `false`
+
+### `redirect`
+
+#### `redirect.force_https`
+
+Redirect all HTTP requests to HTTPS.
+
+**NOTE**: the default value is `true`, so HTTP requests will be redirected to
+HTTPS automatically.
+
+Set this value to `false` to disable redirects.
+
+- Required: `false`
+- Default: `true`
+
+Example:
+```yaml filename="app.yaml" copy
+redirect:
+  force_https: false
+```
+
+### Volumes
+
+Configure persistent volume storage for your apps.
+
+*Note*: currently volumes are limited to a specific region, and provide
+read-write-many semantics.
+This means databases and other more complex use-cases will not work well just yet.
+
+Learn more about volumes [here](/edge/learn/volumes).
+
+```yaml filename="app.yaml" copy
+volumes:
+  # A name for your volume.
+  # Must be unique for the given app.
+  - name: data
+    # Where to mount the volume into the filesystem.
+    mount: /data
+```
+
+### `capabilities`
+
+#### `database`
+
+Auto-provision a database for the app.
+
+Database credentials are provided as *environment variables*:
+* `DB_HOST`
+* `DB_PORT`
+* `DB_NAME`
+* `DB_USERNAME`
+* `DB_PASSWORD`
+
+Currently only `mysql` is supported.
+
+**Note**: databases are tied to regions. When specifying a database, you should
+also specify your desired region with the `locality.regions` setting.
+Only some of the regions support databases!
+
+Check the [list of available regions](/edge/learn/regions).
+
+```yaml filename="app.yaml" copy
+capabilities:
+  database:
+    engine: mysql
+  locality:
+    regions:
+      - us-socal1
+```
+
+You can list the databases attached to your app using the CLI:
+
+```bash
+wasmer app database list
+```
+
+This command will show you all databases associated with your app, including their names, hosts, and ports. If you need to see the database passwords as well, you can use the `--with-password` flag:
+
+```bash
+wasmer app database list --with-password
+```
+
+#### `instaboot`
+
+Enable fast application startup with startup snapshots.
+
+See [InstaBoot](/edge/learn/instaboot) for more details.
+
+```yaml filename="app.yaml" copy
+capabilities:
+  instaboot:
+    requests:
+      - path: /
+      - path: /_bootstrap
+        # You can optionally specify a maximum age.
+        # If the maximum age is reached, a new snapshot will automatically
+        # be created, and the old ones discarded
+        max_age: 12h
+
+        # Optional request settings:
+        method: POST
+	body: "custom body"
+	headers:
+	- name: X-My-Header
+	  value: my-value
+```
+
+#### `ssh`
+
+Configure SSH and SFTP access for the application.
+
+See the dedicated [SSH/SFTP documentation](/edge/learn/ssh/overview) for more details.
+
+Example:
+```yaml filename="app.yaml" copy
+capabilities:
+  ssh:
+    enabled: true
+    users:
+      - username: <app-shortid>_admin
+        passwords:
+          - type: plain
+            password: "my-secure-password"
+        authorized_keys:
+          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
+```
+
+##### Limitations
+
+* Only a single user is currently supported
+* Usernames must be prefixed with the app short ID: `<app-shortid>_myusername`
+  This means you must first deploy your app, then retrieve the short id
+  by running `wasmer app info <app-identifier>`.
+  The short id can be found in the `Unique URL` field: `https://<short-id>.id.wasmer.app`.
+
+##### SSH Configuration Fields
+
+- **`enabled`** (optional): Enable or disable the SSH server. Defaults to `false` if not specified.
+- **`users`** (optional): Array of SSH users with their authentication methods.
+
+##### User Configuration
+
+Each user in the `users` array can have:
+
+- **`username`** (required): The username for SSH login.
+- **`passwords`** (optional): Array of password authentication methods:
+  - `type: plain` with `password`: Plain text password (not recommended for production)
+  - `type: bcrypt` with `hash`: Bcrypt-hashed password for secure storage
+- **`authorized_keys`** (optional): Array of SSH public keys for key-based authentication.
+
+### `health_checks`
+
+The `health_checks` field is used to check if an application is working correctly. If the health checks fail, edge will restart the application. It is **optional** and it is an array of health check objects
+
+- Required: `false`
+
+Currently the only supported health check type is `http`. It executes an HTTP request against the application. All the supported
+
+##### Example health check
+
+```yaml filename="app.yaml" copy
+health_checks:
+  - http:
+      method: get
+      path: /
+      interval: 30s
+      timeout: 10s
+      unhealthy_threshold: 2
+      healthy_threshold: 1
+      expected_status_codes:
+        - 200
+      # below are optional
+      expected_body_includes: Hello World
+      expected_body_regex: ".*Wasmer.*"
+```
+Fields for HTTP health check:
+- #### `method`: Required
+  HTTP method to use.
+- #### `path`: Required
+  Path to send the request to.
+- #### `interval`: Required
+  Duration between each request.
+- #### `timeout`: Required
+  Timeout duration for requests.
+- #### `unhealthy_threshold`: Required
+  After `unhealthy_threshold` failed HTTP requests, the app is considered unhealthy and will be restarted.
+- #### `healthy_threshold`: Required
+  After `healthy_threshold` successful HTTP requests, the app is considered healthy.
+- #### `expected_status_codes`: Required
+  If the application returns these status codes, the request counts as successful.
+- #### `expected_body_includes`:
+  If this is specified, the response body should include the string defined in this field to be counted as successful.
+- #### `expected_body_regex`:
+  If this is specified, the response body should match the regular expression defined in this field to be counted as successful.
+
+So in the example above, if the application fails two consecutive requests, the application will be restarted. It will keep restarting until it successfully responds to one request.
+
+### `locality`
+
+The `locality` field is used to configure where your app is located.
+
+#### `locality.regions`
+
+Regions that the app should be running in. By default the app runs in all the regions
+locations where Wasmer Edge is available, however for latency optimization, you may want
+to run the apps only in regions that are close to your Database.
+
+Example:
+```yaml filename="app.yaml" copy
+locality:
+  regions:
+  - us-ashburn
+  - de-falkenstein
+```
+
+<Callout type="info" emoji="ℹ️">
+  You can check all regions available to choose from, in the [Edge Regions documentation](/edge/learn/regions).
+</Callout>
+
+
+### `scaling`
+
+The `scaling` field is used to configure how your application scales on Edge.
+
+#### `scaling.mode`
+
+Scaling mode for the app.
+
+**NOTE**: You should usually stick to the default behavior,
+which is enabled when no scaling mode is specified.
+Only use the modes below if you are sure they are appropriate!
+
+Available values:
+
+* `<unset>`
+
+  If no scaling mode is specified, Edge will send multiple requests to each instance, and also scale up additional instances if required.
+  This is the default and the recommended mode if your program can handle multiple requests concurrently (Rust, Go, ...).
+
+* `single_concurrency`
+
+  Special scaling mode for apps that only support **a single request at a time**.
+  You should enable this mode if your app cannot handle multiple requests concurrently.
+
+  Only a single request will be sent to each instance at a time.
+  Edge will dynamically scale up additional instances of your app as required by the incoming request volume, and shut them down when they are no longer needed.
+  This mode is appropriate for single-threaded synchronous [PHP](/edge/guides/php#custom-php-settings)...
+
+Example:
+```yaml filename="app.yaml" copy
+scaling:
+  mode: single_concurrency
+```
+
+- Required: `false`
+
+
+### `jobs`
+
+This section is defined on the [jobs](/edge/configuration/jobs) page.

@@ -1,0 +1,25 @@
+export default {
+  "index": {
+    "title": "Introduction",
+    "theme": {
+      "typesetting": "article"
+    }
+  },
+  "install": "Install Wasmer",
+  "runtime": "Runtime",
+  "registry": "Registry",
+  "edge": "Edge",
+  "sdk": "SDKs",
+  "-- Developers": {
+    "type": "separator",
+    "title": "Developers"
+  },
+  "graphql-api": "GraphQL API",
+  "wai": "WAI",
+  "wasmer-pack": "Wasmer Pack",
+  "contact": {
+    "title": "Contact ↗",
+    "type": "page",
+    "href": "https://twitter.com/wasmerio"
+  }
+}

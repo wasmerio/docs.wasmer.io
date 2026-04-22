@@ -1,0 +1,12 @@
+export default {
+  "apps": "Apps",
+  "instaboot": "InstaBoot",
+  "deployment-modes": "Deployment Modes",
+  "supported-frameworks-and-languages": "Supported Frameworks and Languages",
+  "remote-sessions": "Remote Sessions",
+  "custom-domains": "Adding Custom Domains",
+  "secrets": "Secrets",
+  "regions": "Regions",
+  "volumes": "Volumes",
+  "ssh": "SFTP & SSH"
+}

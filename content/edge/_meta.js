@@ -1,0 +1,12 @@
+export default {
+  "get-started": "Getting Started",
+  "guides": "Guides",
+  "cli": "CLI",
+  "learn": "Learn",
+  "configuration": "App Configuration",
+  "observability": "Observability",
+  "architecture": "Architecture",
+  "vs": "Alternatives Comparison",
+  "faq": "FAQ",
+  "support": "Support"
+}

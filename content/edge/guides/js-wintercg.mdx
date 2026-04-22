@@ -1,0 +1,208 @@
+import { Steps, Callout, FileTree } from '@components/nextra-theme';
+import { Card, Cards } from '@components/nextra-theme';
+import GitHubLogo from "@components/GitHubLogo.tsx";
+import Install from "@components/install.mdx";
+import Login from "@components/login.mdx";
+import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
+
+# Quickstart guide for a JS service worker
+
+In this guide, you'll learn the process of deploying a JS service
+worker on Wasmer Edge. We will cover installation of the CLI, setting up a new
+JavaScript worker, and deploying it.
+
+## Deploying a JS service worker
+
+<Steps>
+
+<Install />
+
+<Login />
+
+<CliVersionCallout />
+
+### Deploy!
+We begin creating a new empty directory.
+```bash copy
+mkdir my-new-js-worker
+cd my-new-js-worker
+```
+
+Then, running a single command, we can set up a JS worker:
+
+```bash copy
+wasmer deploy --template=js-worker
+```
+This will prompt you for the following:
+
+- **App owner**: This is the owner of the app.
+It can be your username or an organization; if you're logged in, the command will prompt you to choose from your namespaces: by default, it will be your username.
+- **App name**: This is the name of your app. By default, it will be the name of the current directory. 
+
+Expect to see output similar to this:
+```bash
+It seems you are trying to create a new app!
+✔ Who should own this app? · wasmer-user
+✔ What should be the name of the app? · jsworker
+✔ Unpacked template
+✔ Do you want to deploy the app now? · yes
+Loading local package (manifest path: ~/wasmer-user/Projects/jsworker/.)
+✔ Correctly built package locally
+✔ Package correctly uploaded
+✔ Successfully pushed release to namespace wasmer-user on the registry
+Deploying app jsworker (wasmer-user) to Wasmer Edge...
+
+App jsworker (wasmer-user) was successfully deployed 🚀
+https://jsworker-wasmer-user.wasmer.app
+
+→ Unique URL: https://48xhpiqcq3mg.id.wasmer.app
+→ Dashboard:  https://wasmer.io/apps/wasmer-user/jsworker
+
+Waiting for new deployment to become available...
+(You can safely stop waiting now with CTRL-C)
+.
+𖥔 Deployment complete
+```
+
+The above command will do the following:
+
+- Download the template from the registry 
+- Deploy it to Wasmer Edge with the user-provided information
+
+Let's check it: 
+```bash copy
+curl https://jsworker-wasmer-user.wasmer.app
+```
+
+<Callout type="info" emoji="ℹ">
+    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.app`
+</Callout>
+
+Expect output similar to:
+```bash
+{
+  "env": {
+    ...
+  },
+  "headers": {
+    ...
+  }
+}
+```
+
+### Update the app 
+Your directory should now look like this:
+
+<FileTree>
+  <FileTree.Folder name="src" defaultOpen>
+    <FileTree.File name="index.js" />
+  </FileTree.Folder>
+  <FileTree.File name="wasmer.toml" />
+  <FileTree.File name="README.md" />
+  <FileTree.File name="app.yaml" />
+</FileTree>
+
+
+
+To illustrate the lifecycle of an app, let's edit the `index.js` file 
+in the `public` folder: 
+
+```js copy filename="src/index.js"
+async function handler(request) {
+  const out = JSON.stringify({
+    env: process.env,
+    headers: Object.fromEntries(request.headers),
+    hello: "world", // 👈 Add this
+  }, null, 2);
+  return new Response(out, {
+    headers: { "content-type": "application/json" },
+  });
+}
+
+addEventListener("fetch", (fetchEvent) => {
+  fetchEvent.respondWith(handler(fetchEvent.request));
+}
+```
+
+Now, simply run `wasmer deploy` again:
+```bash copy
+wasmer deploy
+```
+
+Wait for the deployment to be ready, then check it again:
+```bash copy
+curl https://jsworker-wasmer-user.wasmer.app
+```
+
+Expect output:
+```bash
+{
+  "env": {
+    ...
+  },
+  "headers": {
+    ...
+  },
+  "hello": "world"
+}
+```
+
+### Testing your JS service worker locally
+
+To run your worker locally, simply run
+
+```bash copy
+wasmer run .
+```
+
+<Callout type="info" emoji="ℹ️">
+  You can see all the available options with `wasmer run --help` or click [here](/runtime/cli/) to see the full documentation. 
+</Callout>
+
+The above command will start a web server on `http://127.0.0.1:8080`.
+
+Let's try to cURL the server:
+
+```bash copy
+curl http://127.0.0.1:8080
+```
+
+Expect:
+```bash
+{
+  "env": {
+    ...
+  },
+  "headers": {
+    ...
+  },
+  "hello": "world"
+}
+```
+
+</Steps>
+
+## Conclusion
+
+Congratulations! You have successfully deployed a JS service worker on Wasmer Edge 🚀.
+
+> Tip: To make changes to your JS service worker, simply modify the `index.js` file in the
+> `src` directory and run `wasmer deploy` again to deploy the changes.
+
+### Following up
+Try running:
+```bash copy
+time curl -o /dev/null -s -w '%{time_total}\n' https://<app-name>-<your-user>.wasmer.app
+```
+
+Note how the cold-start isn't so cold! 🔥
+Compare this to some of [the alternatives](/edge/vs/amazon-lambda).
+
+
+### Resources
+
+<Card
+  icon={<GitHubLogo />}
+  title="wasmer-examples/edge-js-service-worker"
+  href="https://github.com/wasmer-examples/js-service-worker-example"
+/>

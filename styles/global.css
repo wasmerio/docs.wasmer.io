@@ -1,10 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import 'nextra-theme-docs/style.css';
 
-:global(.dark) .optimization {
+@variant dark (&:where(.dark *));
+
+.dark .optimization {
   background: linear-gradient(27deg, #3d3d3d, #252525);
 }
+
 
 .features-icon {
   mask-image: linear-gradient(

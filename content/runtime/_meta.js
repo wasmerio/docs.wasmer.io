@@ -1,0 +1,6 @@
+export default {
+  "get-started": "Getting Started",
+  "cli": "CLI",
+  "features": "Features",
+  "runners": "Runners"
+}

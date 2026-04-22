@@ -1,0 +1,59 @@
+import { Steps } from '@components/nextra-theme';
+import { Callout } from '@components/nextra-theme';
+import { Tab, Tabs } from '@components/nextra-theme';
+import Install from "../../components/install.mdx";
+
+
+# Run your first package
+
+This page will guide you through installing Wasmer, and running a package from the Wasmer Registry.
+
+The runtime can run any package published to the Wasmer Registry.
+
+<Steps>
+ 
+<Install />
+
+### Run a package
+
+Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` to print a result.
+
+<Tabs items={['CLI', 'JS' /*, 'Python'*/]}>
+  <Tab>
+    ```bash copy /python/
+    wasmer run python/python -- -c "print(1+1)"
+    ```
+  </Tab>
+  <Tab>
+
+    ```js copy /python/
+    import { Wasmer } from "@wasmer/sdk";
+
+    let python = Wasmer.fromRegistry("python/python");
+    let instance = await python.entrypoint.run({
+      args: `-c "print(1+1)"`
+    });
+    let output = await instance.wait();
+    ```
+
+  </Tab>
+{/* 
+
+  <Tab>
+    ```python copy
+    from wasmer import Wasmer
+
+    python = Wasmer("python/python")
+    runner = python.entrypoint.run('-c "print(1+1)"')
+    print(python.stdout)
+    ```
+
+  </Tab> */}
+</Tabs>
+
+</Steps>
+
+<Callout type="info" emoji="ℹ️">
+  You can also publish your packages to the Wasmer registry, so it can be used
+  everywhere. [Learn how](/registry/get-started).
+</Callout>
