@@ -31,6 +31,11 @@ export default withNextra({
         permanent: true,
       },
       {
+        source: "/runtime/runners/wasix",
+        destination: "/runtime/wasix",
+        permanent: true,
+      },
+      {
         source: "/ecosystem/wasmer/building-from-source",
         destination: "/developers/build-from-source",
         permanent: true,
