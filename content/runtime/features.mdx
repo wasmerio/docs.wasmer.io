@@ -9,12 +9,9 @@ Wasmer supports many different backends, depending on your needs:
   - _Singlepass_: incredibly fast compilation times, ideal for Blockchain [Smart Contracts](https://en.wikipedia.org/wiki/Smart_contract)
   - _Cranelift_: normal compilation times, good performance
   - _LLVM_: slow compilation times, great performance
-* Other Runtimes:
+* Other Backends:
   - _V8_: ideal for iOS, Android and development.
-  - _Wasmi_: ideal for iOS, or any environment where only interpreters can run.
-  - _WAMR_: ideal for IOT devices or any environment where only interpreters with limited memory can run.
-  - _JavaScriptCore_: ideal for macOS. See [announcement](https://wasmer.io/posts/wasmer-3_3-and-javascriptcore)
-  - _Browser_: to target the web
+  - _Browser_: make your Rust code using Wasmer run in the browser
 
 Each of these backends supports different features and has varying support for operating systems and chipsets.
 
@@ -79,9 +76,6 @@ Wasmer features:
 | LLVM           | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
 | Singlepass     | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
 | V8             | ✅    | ✅    | ✅      | ✅   | ✅       | ❌      |
-| Wasmi          | ✅    | ✅    | ✅      | ✅   | ✅       | ✅      |
-| WAMR           | ✅    | ✅    | ✅      | ✅   | ✅       | ❌      |
-| JavaScriptCore | ✅    | ✅    | ✅      | ❌   | ✅       | ❌      |
 | Browser        | ✅    | ✅    | ✅      | ✅   | ✅       | ✅      |
 
 ## Backend support by Instruction Set Architecture (ISA)
@@ -92,7 +86,4 @@ Wasmer features:
 | LLVM           | ✅     | ✅    | ✅        | ✅            | ✅          |
 | Singlepass     | ✅     | ✅    | ✅        | ❌            | ❌          |
 | V8             | ✅     | ✅    | ✅        | ✅            | ✅          |
-| Wasmi          | ✅     | ✅    | ✅        | ✅            | ✅          |
-| WAMR           | ✅     | ✅    | ✅        | ✅            | ✅          |
-| JavaScriptCore | ✅     | ✅    | ❌        | ❌            | ❌          |
 | Browser        | ✅     | ✅    | ✅        | ✅            | ✅          |
