@@ -1,4 +1,5 @@
 import { Cards, Card } from '@components/nextra-theme'
+import { DeployIcon, PublishIcon, RunIcon } from '@components/icons/ProductIcons'
 
 # Introduction
 
@@ -12,9 +13,9 @@ Welcome to the Wasmer Documentation! 👋
 3. [Wasmer Edge](/edge): run containers on Wasmer distributed Edge infrastructure
 
 <Cards>
-  <Card icon={<span>R</span>} title="Run your first package" href="/runtime/get-started" />
-  <Card icon={<span>P</span>} title="Publish a package" href="/registry/get-started" />
-  <Card icon={<span>E</span>} title="Deploy an app" href="/edge/get-started" />
+  <Card icon={<RunIcon width={20} height={20} />} title="Run your first package" href="/runtime/get-started" />
+  <Card icon={<PublishIcon width={20} height={20} />} title="Publish a package" href="/registry/get-started" />
+  <Card icon={<DeployIcon width={20} height={20} />} title="Deploy an app" href="/edge/get-started" />
 </Cards>
 
 
