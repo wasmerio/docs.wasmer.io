@@ -6,10 +6,22 @@ export default {
     }
   },
   "install": "Install Wasmer",
-  "runtime": "Runtime",
-  "registry": "Registry",
-  "edge": "Edge",
-  "sdk": "SDKs",
+  "runtime": {
+    "title": "Runtime",
+    "display": "hidden"
+  },
+  "registry": {
+    "title": "Registry",
+    "display": "hidden"
+  },
+  "edge": {
+    "title": "Edge",
+    "display": "hidden"
+  },
+  "sdk": {
+    "title": "SDKs",
+    "display": "hidden"
+  },
   "-- Developers": {
     "type": "separator",
     "title": "Developers"
@@ -20,6 +32,7 @@ export default {
   "contact": {
     "title": "Contact ↗",
     "type": "page",
-    "href": "https://twitter.com/wasmerio"
+    "href": "https://twitter.com/wasmerio",
+    "display": "hidden"
   }
 }

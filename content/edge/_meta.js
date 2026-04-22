@@ -6,7 +6,7 @@ export default {
   "configuration": "App Configuration",
   "observability": "Observability",
   "architecture": "Architecture",
-  "vs": "Alternatives Comparison",
+  "vs": "Comparison",
   "faq": "FAQ",
   "support": "Support"
 }
