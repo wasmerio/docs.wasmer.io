@@ -1,5 +1,4 @@
 export default {
-    "wasix": "WASIX",
     "wcgi": "WCGI",
     "emscripten": "Emscripten",
     "create": "Create your own Runner"
