@@ -5,6 +5,7 @@ import type { PageMapItem } from 'nextra'
 import { usePathname } from 'next/navigation'
 import { Footer, Layout, Navbar } from 'nextra-theme-docs'
 import DocsNavbarLinks from './DocsNavbarLinks'
+import DocsLogo from './DocsLogo'
 
 type DocsShellProps = {
   children: ReactNode
@@ -31,7 +32,7 @@ export default function DocsShell({ children, pageMaps }: DocsShellProps) {
   const pageMap = pageMaps[section]
 
   const navbar = (
-    <Navbar logo={<b>Wasmer Docs</b>} align="left" className="x:relative">
+    <Navbar logo={<DocsLogo />} align="left" className="x:relative">
       <DocsNavbarLinks />
     </Navbar>
   )

@@ -27,8 +27,14 @@ export default {
     "title": "Developers"
   },
   "graphql-api": "GraphQL API",
-  "wai": "WAI",
-  "wasmer-pack": "Wasmer Pack",
+  "wai": {
+    "title": "WAI",
+    "display": "hidden"
+  },
+  "wasmer-pack": {
+    "title": "Wasmer Pack",
+    "display": "hidden"
+  },
   "contact": {
     "title": "Contact ↗",
     "type": "page",
