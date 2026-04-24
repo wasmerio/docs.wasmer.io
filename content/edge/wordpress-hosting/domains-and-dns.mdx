@@ -1,0 +1,47 @@
+import { Callout } from '@components/nextra-theme';
+import ImageLoader from '@components/ImageLoader';
+
+import domainsAdd from '@assets/deploy/wordpress-hosting/domains-add.png';
+import domainModal from '@assets/deploy/wordpress-hosting/domain-modal.png';
+import domainDns from '@assets/deploy/wordpress-hosting/domain-dns.png';
+
+# Domains and DNS
+
+You can attach your own domain to a WordPress app from the dashboard and then point the required DNS records at Wasmer.
+
+## Add the domain in Wasmer
+
+1. Open your app in the Wasmer dashboard.
+2. Click **Settings**.
+3. Select **Domains** in the sidebar.
+4. Enter the domain you want to use and click **Add**.
+5. Choose the routing option you want.
+6. Mark the domain as the default once verified if you want it to be your primary hostname.
+
+In most cases, the recommended option is to add `www.yourdomain.com` and redirect the root domain to it.
+
+<ImageLoader img={domainsAdd} alt="Domain settings page with a custom domain being added" />
+
+<ImageLoader img={domainModal} alt="Add domain modal with the recommended www domain option selected" />
+
+## Point DNS records
+
+After the domain is added, follow the DNS records shown in the modal.
+
+1. Copy the exact values shown by Wasmer.
+2. Create the required records at your DNS provider.
+3. Wait for DNS propagation.
+4. Return to the Wasmer dashboard and click **Refresh**.
+
+<ImageLoader img={domainDns} alt="DNS instructions showing the root A record and www CNAME record" />
+
+In the common setup shown above:
+
+- The root domain uses an `A` record
+- The `www` domain uses a `CNAME` record
+
+<Callout type="warning">
+If you use Cloudflare, disable the Cloudflare proxy during validation to avoid verification issues.
+</Callout>
+
+For the generic Edge custom domain flow, see [Using custom domains with Wasmer Edge](/edge/learn/custom-domains).

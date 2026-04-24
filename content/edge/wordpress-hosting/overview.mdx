@@ -1,0 +1,29 @@
+import { Card, Cards, Callout } from '@components/nextra-theme';
+
+# WordPress Hosting on Wasmer Edge
+
+Wasmer Edge provides a managed WordPress setup with built-in tools for configuration, databases, storage, SSH access, and custom domains.
+
+Use this section as the starting point for the most common day-to-day WordPress hosting tasks.
+
+<Cards>
+  <Card title="Domains and DNS" href="/edge/wordpress-hosting/domains-and-dns" />
+  <Card title="Customize WP settings" href="/edge/wordpress-hosting/wp-settings" />
+  <Card title="Volumes" href="/edge/wordpress-hosting/volumes" />
+  <Card title="SSH and WP-CLI" href="/edge/wordpress-hosting/ssh-wp-cli" />
+  <Card title="Database management" href="/edge/wordpress-hosting/database-management" />
+  <Card title="Wasmer plugin" href="/edge/wordpress-hosting/wasmer-plugin" />
+</Cards>
+
+## What this covers
+
+- Attaching a custom domain and pointing DNS records correctly
+- Changing WordPress defines such as `WP_DEBUG`
+- Browsing persistent files in the `wp-content` volume
+- Running WP-CLI commands over SSH
+- Opening the database in the built-in DB Explorer
+- Understanding why the Wasmer plugin must remain installed
+
+<Callout type="info">
+These pages are intentionally task-oriented. Each one focuses on a single workflow in the Wasmer dashboard.
+</Callout>

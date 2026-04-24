@@ -7,10 +7,9 @@ export default function CalloutProFeature() {
       This feature is only available for <b>Pro</b> and <b>Enterprise</b> plans.
 		      <br/>
 
-      <a href="https://wasmer.io/pricing" style={{ textDecoration: "underline" }} target="_blank">
-        Upgrade your account now
+      <a href="https://wasmer.io/pro" style={{ textDecoration: "underline" }} target="_blank">
+        Upgrade your account to Pro
       </a>!
     </Callout>
     );
 };
-

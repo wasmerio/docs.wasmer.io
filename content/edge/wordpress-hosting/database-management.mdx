@@ -1,0 +1,33 @@
+import { Callout } from '@components/nextra-theme';
+import ImageLoader from '@components/ImageLoader';
+
+import dbLogin from '@assets/deploy/wordpress-hosting/db-login.png';
+import dbAdminer from '@assets/deploy/wordpress-hosting/db-adminer.png';
+
+# Database Management
+
+Each WordPress app includes a managed MySQL database. The simplest way to inspect it is through the built-in DB Explorer, which opens an Adminer UI in your browser.
+
+## Open the database in Adminer
+
+1. Open the **Databases** tab for your app.
+2. Review the database card if you need the host, port, username, or password.
+3. Click **Go to DB Explorer**.
+4. Browse WordPress tables such as `wp_options`, `wp_posts`, `wp_users`, and `wp_terms`.
+
+<ImageLoader img={dbLogin} alt="Database card in the Wasmer dashboard with the DB Explorer button" />
+
+<ImageLoader img={dbAdminer} alt="Adminer database explorer showing WordPress tables" />
+
+## When to use it
+
+The DB Explorer is useful when you need to:
+
+- Inspect WordPress tables directly
+- Verify a setting in `wp_options`
+- Check whether content, users, or metadata exists
+- Troubleshoot a plugin or theme issue that affects stored data
+
+<Callout type="warning">
+Editing production data directly in the database can break your site immediately. Make small, targeted changes only when you understand the impact.
+</Callout>

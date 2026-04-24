@@ -1,0 +1,35 @@
+import { Callout } from '@components/nextra-theme';
+import ImageLoader from '@components/ImageLoader';
+
+import volumeDashboard from '@assets/deploy/wordpress-hosting/volume-dashboard.png';
+import volumeExplorer from '@assets/deploy/wordpress-hosting/volume-explorer.png';
+
+# Volumes
+
+WordPress content that must survive redeploys lives in a persistent volume. In most WordPress apps, that volume is mounted at `/app/wp-content`.
+
+## Open the Volume UI
+
+1. Open the **Storage** tab for your app.
+2. Find the `wp-content` volume.
+3. Click **Go to File Explorer**.
+4. Browse persistent directories such as `plugins`, `themes`, and `uploads`.
+
+<ImageLoader img={volumeDashboard} alt="Storage tab showing the wp-content volume" />
+
+<ImageLoader img={volumeExplorer} alt="Volume file explorer showing the wp-content directory" />
+
+## What belongs in the volume
+
+The `wp-content` volume is where you should expect persistent WordPress files such as:
+
+- Plugins
+- Themes
+- Uploads
+- Other site-specific content that must survive redeploys
+
+<Callout type="info">
+Files inside the mounted volume persist across redeploys. Files outside the volume do not.
+</Callout>
+
+For more on persistent storage in Edge apps, see [Using persistent storage in Wasmer Edge Apps](/edge/guides/volumes).

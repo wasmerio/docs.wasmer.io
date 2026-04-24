@@ -1,0 +1,49 @@
+import { Callout } from '@components/nextra-theme';
+import ImageLoader from '@components/ImageLoader';
+import CalloutProFeature from '@components/CalloutProFeature';
+
+import sshEnable from '@assets/deploy/wordpress-hosting/ssh-enable.png';
+import sshPassword from '@assets/deploy/wordpress-hosting/ssh-password.png';
+import sshClient from '@assets/deploy/wordpress-hosting/ssh-client.png';
+
+# SSH and WP-CLI
+
+<CalloutProFeature />
+
+SSH access is the easiest way to run WP-CLI commands against your WordPress app.
+
+## Enable SSH access
+
+1. Open your app in the Wasmer dashboard.
+2. Click **Settings**.
+3. Open **SFTP / SSH**.
+4. Enable SSH access.
+5. Reveal the password or copy the generated SSH command.
+
+<ImageLoader img={sshEnable} alt="SFTP and SSH settings with the enable toggle" />
+
+<ImageLoader img={sshPassword} alt="SSH credentials with password reveal and copyable SSH command" />
+
+## Run WP-CLI commands
+
+After connecting from your terminal or SSH client, you can run `wp` commands directly.
+
+<ImageLoader img={sshClient} alt="SSH terminal session running wp help" />
+
+```bash copy
+ssh <username>@<app-host>
+wp core version
+wp plugin list
+wp theme list
+wp option get home
+```
+
+## Important behavior
+
+Wasmer runs SSH sessions in an isolated environment that has access to your app files, volumes, and environment variables.
+
+<Callout type="warning">
+Only changes inside mounted volumes such as `/app/wp-content` persist after the SSH session ends. Avoid editing WordPress core files over SSH.
+</Callout>
+
+For more detail on the platform-wide SSH flow, see [SSH / SFTP Configuration](/edge/learn/ssh/configuration) and [Accessing your Wasmer Apps over SSH](/edge/learn/ssh/app_ssh).

@@ -1,0 +1,22 @@
+import { Callout } from '@components/nextra-theme';
+
+# Wasmer Plugin
+
+The Wasmer plugin is a required integration plugin for managed WordPress apps on Wasmer Edge. You should not deactivate it, delete it, or remove it from the filesystem if you want WordPress to integrate seamlessly with Wasmer.
+
+## Why it matters
+
+The Wasmer plugin is needed to:
+
+- Enable the magic login flow from Wasmer into WordPress
+- Detect your PHP and WordPress configuration
+- Detect installed plugins and themes
+- Keep the WordPress dashboard integration working as expected
+
+## What to avoid
+
+If you are cleaning up plugins, treat the Wasmer plugin as part of the hosting platform, not as an optional site plugin.
+
+<Callout type="warning">
+Do not remove the Wasmer plugin from wp-admin, from the mounted `wp-content/plugins` directory, or through `wp plugin delete`. Removing it breaks Wasmer-specific WordPress integrations.
+</Callout>

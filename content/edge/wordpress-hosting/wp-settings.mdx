@@ -1,0 +1,33 @@
+import { Callout } from '@components/nextra-theme';
+import ImageLoader from '@components/ImageLoader';
+
+import settingsConfig from '@assets/deploy/wordpress-hosting/settings-config.png';
+
+# Customize WordPress settings
+
+You can manage WordPress defines such as `WP_DEBUG=true` from the Wasmer dashboard, without editing `wp-config.php` manually.
+
+## Update WordPress defines
+
+1. Open your app in the Wasmer dashboard.
+2. Click **Settings**.
+3. Select **WordPress** in the sidebar.
+4. Scroll to **Configuration**.
+5. Add or update the define you want to change.
+6. Click **Save and redeploy**.
+
+<ImageLoader img={settingsConfig} alt="WordPress settings screen with configuration defines" />
+
+## Common examples
+
+```text
+WP_DEBUG = true
+WP_DEBUG_LOG = true
+SCRIPT_DEBUG = true
+```
+
+Use the toggle for boolean values like `true` and `false`, and use the text field for strings or numbers.
+
+<Callout type="info">
+Configuration changes are applied during redeploy, which keeps your WordPress settings consistent across future deployments.
+</Callout>
