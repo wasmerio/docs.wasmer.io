@@ -34,11 +34,5 @@ export default {
   "wasmer-pack": {
     "title": "Wasmer Pack",
     "display": "hidden"
-  },
-  "contact": {
-    "title": "Contact ↗",
-    "type": "page",
-    "href": "https://twitter.com/wasmerio",
-    "display": "hidden"
   }
 }
