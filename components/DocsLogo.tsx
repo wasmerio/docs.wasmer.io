@@ -4,9 +4,9 @@ export default function DocsLogo() {
       <svg
         viewBox="0 0 623 124"
         fill="none"
-        height="30"
+        height="26"
         aria-hidden="true"
-        className="block h-[30px] w-auto shrink-0 dark:invert"
+        className="block h-[26px] w-auto shrink-0 dark:invert"
       >
         <path d="M.25 45.28c0-7.97 0-11.95 2.14-13.2 2.15-1.23 5.6.76 12.5 4.75l25.92 14.96c6.9 3.99 10.36 5.98 12.5 9.7 2.15 3.71 2.15 7.7 2.15 15.67v29.93c0 7.97 0 11.96-2.14 13.2-2.15 1.23-5.6-.76-12.5-4.75L14.9 100.58C8 96.59 4.54 94.6 2.4 90.88.24 87.19.24 83.19.24 75.22V45.28Z" fill="#0F0518" />
         <path
