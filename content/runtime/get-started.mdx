@@ -26,8 +26,9 @@ Let's say you want to run version `3.12` of the Wasmer package [`python/python`]
   <Tab>
 
     ```js copy /python/
-    import { Wasmer } from "@wasmer/sdk";
+    import { init, Wasmer } from "@wasmer/sdk";
 
+    await init();
     let python = await Wasmer.fromRegistry("python/python@3.12");
     let instance = await python.entrypoint.run({
       args: ["-c", "print(1+1)"]
