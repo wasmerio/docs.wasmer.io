@@ -1,4 +1,4 @@
-import { Callout } from '@components/nextra-theme';
+import { Callout } from "@components/nextra-theme";
 
 # Wasmer Manifest (`wasmer.toml`)
 
@@ -46,6 +46,29 @@ entrypoint = "wasmer-pack"
 
 [dependencies]
 "sharrattj/coreutils" = "1.0.16"
+```
+
+Dependencies can provide modules for your own commands. To use a module from a
+dependency, set `module` to `"<namespace>/<package>:<module-name>"` in the
+command declaration.
+
+```toml filename="wasmer.toml" copy
+[package]
+name = "myuser/python-tool"
+version = "0.1.0"
+description = "Run a Python snippet from a dependency"
+entrypoint = "python"
+
+[dependencies]
+"python/python" = "3.12"
+
+[[command]]
+name = "python"
+module = "python/python:python"
+runner = "wasi"
+
+[command.annotations.wasi]
+main-args = ["-c", "print('Hello from a dependency module')"]
 ```
 
 ## \[\[module\]\]
@@ -147,7 +170,6 @@ name = "wasmer-pack"
 main-args = ["--port=8080"]
 env = ["COMPATIBILITY_MODE=true"]
 ```
-
 
 ## \[fs\]
 

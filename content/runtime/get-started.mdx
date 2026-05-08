@@ -1,8 +1,7 @@
-import { Steps } from '@components/nextra-theme';
-import { Callout } from '@components/nextra-theme';
-import { Tab, Tabs } from '@components/nextra-theme';
+import { Steps } from "@components/nextra-theme";
+import { Callout } from "@components/nextra-theme";
+import { Tab, Tabs } from "@components/nextra-theme";
 import Install from "../../components/install.mdx";
-
 
 # Run your first package
 
@@ -16,28 +15,29 @@ The runtime can run any package published to the Wasmer Registry.
 
 ### Run a package
 
-Let's say you want to run the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` to print a result.
+Let's say you want to run version `3.12` of the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` argument to print a result.
 
 <Tabs items={['CLI', 'JS' /*, 'Python'*/]}>
   <Tab>
     ```bash copy /python/
-    wasmer run python/python -- -c "print(1+1)"
+    wasmer run python/python@3.12 -- -c "print(1+1)"
     ```
   </Tab>
   <Tab>
 
     ```js copy /python/
-    import { Wasmer } from "@wasmer/sdk";
+    import { init, Wasmer } from "@wasmer/sdk";
 
-    let python = Wasmer.fromRegistry("python/python");
+    await init();
+    let python = await Wasmer.fromRegistry("python/python@3.12");
     let instance = await python.entrypoint.run({
-      args: `-c "print(1+1)"`
+      args: ["-c", "print(1+1)"]
     });
     let output = await instance.wait();
     ```
 
   </Tab>
-{/* 
+{/*
 
   <Tab>
     ```python copy
