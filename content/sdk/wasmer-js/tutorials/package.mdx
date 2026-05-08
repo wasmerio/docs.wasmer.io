@@ -1,4 +1,4 @@
-import { Card, Callout, Steps, FileTree } from "@components/nextra-theme";
+import { Card, Callout, Steps, FileTree } from '@components/nextra-theme';
 import Install from "@components/install.mdx";
 import GitHubLogo from "@components/GitHubLogo";
 import ImageLoader from "@components/ImageLoader";
@@ -59,8 +59,8 @@ entrypoint = 'markdown-renderer'
 ```
 
 <Callout type="info">
-  That `entrypoint` field is important! It tells the Wasmer SDK that the
-  `markdown-renderer` command should be executed by default.
+That `entrypoint` field is important! It tells the Wasmer SDK that the
+`markdown-renderer` command should be executed by default.
 </Callout>
 
 ### Compile to WebAssembly
@@ -68,7 +68,7 @@ entrypoint = 'markdown-renderer'
 Don't forget to compile the `markdown-renderer.wasm`, if you haven't already.
 
 ```sh
-$ cargo build --target=wasm32-wasip1 --release
+$ cargo build --target=wasm32-wasi --release
     Finished release [optimized] target(s) in 0.10s
 ```
 
@@ -76,6 +76,7 @@ $ cargo build --target=wasm32-wasip1 --release
 
 Now our `wasmer.toml` is up to date, we can go ahead and publish to the Wasmer
 registry.
+
 
 ```sh
 wasmer publish
@@ -103,7 +104,6 @@ Opening auth link in your default browser: https://wasmer.io/auth/cli?nonce_id=.
 Waiting for session... Done!
 ✅ Login for Wasmer user "michael-f-bryan" saved
 ```
-
 </Callout>
 
 ### Switch to the `wasmer-examples/markdown-renderer` Package
@@ -113,47 +113,60 @@ Now, let's update the original code to use Wasmer packages instead of running
 
 The code is almost identical, so I'll just explain the parts that have changed.
 
-First, remove the `markdownRendererUrl` import. We will load the published
-package from the registry instead of fetching a local `*.wasm` file.
+First, we import the `Wasmer` and `Command` classes and remove the
+`markdownRendererUrl` import.
 
 ```diff filename="index.ts"
- import { init, Wasmer, Command } from "@wasmer/sdk";
--import markdownRendererUrl from "./markdown-renderer/target/wasm32-wasip1/release/markdown-renderer.wasm?url";
+-import { init, runWasix } from "@wasmer/sdk";
+-import markdownRendererUrl from "./markdown-renderer/target/wasm32-wasi/release/markdown-renderer.wasm?url";
++import { init, Wasmer, Command } from "@wasmer/sdk";
 ```
 
-Next, instead of fetching the local `*.wasm` file and wrapping it with
-`Wasmer.fromWasm()`, we use `Wasmer.fromRegistry("...")` to load a package from
-the registry.
+Next, instead of passing a `fetch()` response to
+`WebAssembly.compileStreaming()`, we use `Wasmer.fromRegistry("...")` to load a
+package from the registry.
 
 ```diff filename="index.ts"
  async function initialize() {
      await init();
--    const response = await fetch(markdownRendererUrl);
--    const wasm = new Uint8Array(await response.arrayBuffer());
--    const pkg = await Wasmer.fromWasm(wasm);
--    return pkg.entrypoint!;
+-    return WebAssembly.compileStreaming(fetch(markdownRendererUrl));
 +    return await Wasmer.fromRegistry("wasmer-examples/markdown-renderer");
  }
 ```
 
-The `renderMarkdown()` function already accepts a `Command`, so it does not need
-to change. A `Command` is an executable element inside a Wasmer package and will
-use [the WASIX runner][wasix-runner] under the hood.
+Next, we update the `renderMarkdown()` method to accept a `Command` rather than
+a `WebAssembly.Module`. A `Command` is an executable element inside a Wasmer
+package and will use [the WASIX runner][wasix-runner] under the hood.
 
-Finally, we update `main()` to rename `command` to `pkg` and pass
+```diff filename="index.ts"
+-async function renderMarkdown(module: WebAssembly.Module, markdown: string) {
+-    const instance = await runWasix(module, {});
++async function renderMarkdown(cmd: Command, markdown: string) {
++    const instance = await cmd.run();
+     const stdin = instance.stdin.getWriter();
+     const encoder = new TextEncoder();
+-
+     await stdin.write(encoder.encode(markdown));
+     await stdin.close();
+
+@@ -29,12 +26,12 @@
+ }
+```
+
+Finally, we update `main()` to rename `module` to `pkg` and pass
 `pkg.entrypoint` to `renderMarkdown()`. We know the
 `wasmer-examples/markdown-renderer` package will always have an entrypoint (we
 wrote it!) so we can skip the `if (!pkg.entrypoint)` check with `!`.
 
 ```diff filename="index.ts"
  async function main() {
--    const command = await initialize();
+-    const module = await initialize();
 +    const pkg = await initialize();
      const output = document.getElementById("html-output") as HTMLIFrameElement;
      const markdownInput = document.getElementById("markdown-input") as HTMLTextAreaElement;
 
      const debouncedRender = debounce(async () => {
--        const renderedHtml = await renderMarkdown(command, markdownInput.value);
+-        const renderedHtml = await renderMarkdown(module, markdownInput.value);
 +        const renderedHtml = await renderMarkdown(pkg.entrypoint!, markdownInput.value);
          if (renderedHtml) {
              output.srcdoc = renderedHtml;
@@ -175,12 +188,13 @@ $ npm run dev
   ➜  press h + enter to show help
 ```
 
+
 <ImageLoader alt="The Markdown Editor" img={previewUrl} />
 
 <Callout type="info">
 If things don't seem to work, check the Dev Tools console. An error like this
-means the package name in `Wasmer.fromRegistry()` does not match a package that
-has been published to the registry:
+indicates we've run into [`SharedArrayBuffer` and Cross-Origin Isolation][coi]
+issues!
 
 ```
 Uncaught (in promise) Error: Unable to find "wasmer-examples/markdown-renderer" in the registry
@@ -195,11 +209,9 @@ Uncaught (in promise) Error: Unable to find "wasmer-examples/markdown-renderer" 
     at C (Library.mjs:11:25290)
 ```
 
-Use the package name you published in `wasmer.toml`. If the console mentions
-`SharedArrayBuffer` or `crossOriginIsolated`, make sure the `vite` dev server
-sets the `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy`
-headers. See [Configure the Dev Server][dev] for more.
-
+The fix is to make the `vite` dev server set the `Cross-Origin-Opener-Policy`
+and `Cross-Origin-Embedder-Policy` headers. See [Configure the Dev Server][dev]
+for more.
 </Callout>
 
 </Steps>
@@ -207,11 +219,10 @@ headers. See [Configure the Dev Server][dev] for more.
 ### Resources
 
 <Card
-  icon={<GitHubLogo />}
-  title="Source Code"
-  href="https://github.com/wasmerio/wasmer-js/tree/main/examples/markdown-editor-improved"
-  target="_blank"
-/>
+    icon={<GitHubLogo />}
+    title="Source Code"
+    href="https://github.com/wasmerio/wasmer-js/tree/main/examples/markdown-editor-improved"
+    target="_blank" />
 
 [run]: ./run
 [registry]: /registry
