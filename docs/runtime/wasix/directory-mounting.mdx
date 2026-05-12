@@ -1,0 +1,64 @@
+# Directory Mounting in WASIX
+
+When running WASIX modules with Wasmer, you can mount directories from your host system to make them accessible to your WebAssembly application. However, there are some important security restrictions you need to be aware of.
+
+## Root Directory Mounting Restriction
+
+For security reasons, WASIX modules do not allow mounting directories directly to the guest's root path (`/`). This restriction applies to both CLI usage and package configuration.
+
+### CLI Usage
+
+When using the Wasmer CLI, you cannot:
+
+- Mount a directory to root using `--dir=/`
+- Map a directory to root using `--mapdir /:<host_path>`
+
+Instead, you should mount directories to specific paths within the guest filesystem.
+
+**❌ Not Allowed:**
+```bash
+wasmer run mymodule.wasm --dir=/
+wasmer run mymodule.wasm --mapdir /:/home/user/data
+```
+
+**✅ Allowed:**
+```bash
+wasmer run mymodule.wasm --dir=/data
+wasmer run mymodule.wasm --mapdir /data:/home/user/data
+```
+
+### Package Configuration
+
+When configuring your `wasmer.toml` file, you cannot mount volumes to the root path.
+
+**❌ Not Allowed:**
+```toml
+[fs]
+"/" = "data"
+```
+
+**✅ Allowed:**
+```toml
+[fs]
+"/data" = "data"
+```
+
+## Error Messages
+
+If you attempt to mount a directory to the root path, you'll receive one of these error messages:
+
+- CLI with `--dir=/`: "Cannot pre-open the root directory with --dir=/ as mounting on the guest's virtual root is not allowed"
+- CLI with `--mapdir`: "Mounting on the guest's virtual root with --mapdir /:<HOST_PATH> is not allowed"
+- Package configuration: "Mounting on the guest's root (e.g. "/" = "<HOST_PATH>" in [fs] section of wasmer.toml) is not allowed"
+
+## Best Practices
+
+To work with this restriction:
+
+1. Always mount directories to specific subdirectories in the guest filesystem
+2. Use descriptive path names that reflect the purpose of the mounted directory
+3. Consider using the default current directory mounting point when appropriate
+
+## Technical Details
+
+This restriction applies specifically to WASIX modules. The system automatically detects whether a module is WASIX and applies the appropriate restrictions. This is part of WASIX's security model to prevent potential security issues that could arise from root directory mounting.
