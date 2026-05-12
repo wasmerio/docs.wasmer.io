@@ -1,0 +1,529 @@
+---
+title: The Threadpool
+---
+
+import { Callout } from "nextra-theme-docs";
+import PullRequest from "@components/PullRequest";
+
+# The Threadpool
+
+This might not be groundbreaking news, but concurrency is hard. That's even more
+the case in a security-conscious, traditionally single-threaded environment like
+the browser.
+
+The `@wasmer/sdk` package doesn't just provide an implementation of the
+`wasi_snapshot_preview1` namespace (i.e. "WASI"), it provides an abstraction for
+an entire operating system, complete with threads and processes. The mechanism
+that underpins all of this, and which is eventually used to execute code from a
+WebAssembly module or the runtime itself, is the WASIX threadpool.
+
+There are many moving components here:
+
+- The `wasmer_wasix::VirtualTaskManager` trait
+- Messages
+- The worker
+- The worker handle
+- The scheduler
+
+<Callout type="info">
+This information is accurate as of January 2024 and all links will point to code
+from the [`v0.6.0`][v0.6.0] release of `@wasmer/sdk`.
+
+Don't take it as gospel, though. Although the overall flow should stay roughly
+the same (modulo a rewrite), the particulars will probably change from release
+to release as bugs are fixed and new functionality is added.
+
+This page is mainly intended to document the threadpool's high-level
+architecture and the challenges we encountered, so that future wanderers may
+learn from our experience.
+</Callout>
+
+## Constraints & Requirements
+
+WASIX imposes a number of requirements on the implementation of a threadpool,
+and browser environments impose even more. To understand why we implemented
+the threadpool the way we did, we'll need to explain some extra context.
+
+### JavaScript is Single-Threaded
+
+All JavaScript code runs in a single-threaded environment, where JavaScript
+values are managed by the runtime's garbage collector and there is an event loop
+that will execute code in response to events (mouse clicks, you can read another
+chunk from a HTTP response, a promise resolved, etc.).
+
+This allows concurrency where multiple tasks can make progress at the same time,
+but you don't get parallelism. Under this paradigm, only piece of code can ever
+run at a time, and the runtime uses magic (async/await and promises) to rapidly
+jump between tasks.
+
+If you want to have true parallelism, where the computer is doing multiple
+things at the exact same time, you need to use a mechanism called [The Web
+Worker API][workers].
+
+A Web Worker works by creating an entirely new JavaScript runtime on another OS
+thread and executing the `*.js` file you pass to it. The original runtime and
+newly created runtime are completely sandboxed and can't access each other's
+memory.
+
+In Rust, we would say that JavaScript values are `!Send` and `!Sync`.
+
+<Callout type="warning" emoji="⚠️">
+The [`JsValue`][jsvalue] created that [`wasm-bindgen`][wasm-bindgen] gives Rust
+access to is fundamentally just an index into some table in the "current"
+JavaScript runtime, so it shares the same `JsValue: !Send + !Sync` limitation.
+Method calls and property accesses are implemented by calling host functions
+which use JavaScript to do the actual work - it's all just smoke and mirrors.
+
+Importantly, this means unsafely passing a `JsValue` to another JavaScript
+environment (e.g. by using `unsafe impl Send for ...` and passing it via Rust's
+linear memory) will mean that trying to use the `JsValue` will mean you access a
+different JavaScript object that just happens to be on the same index as the
+original object on the original runtime.
+</Callout>
+
+### Communicating Between JavaScript Environments
+
+Instead of communicating via shared memory, JavaScript environments can
+communicate by sending messages between them and their parent using the
+[`postMessage()`][post-message] API. This accepts a JavaScript object and will
+create a copy of the object inside the receiving runtime, which will be given
+access to this object via a [`message`][message-event] event.
+
+Using `postMessage()` with Web Workers looks something like this:
+
+```js filename="main.js"
+const first = document.querySelector("#number1");
+const second = document.querySelector("#number2");
+const result = document.querySelector(".result");
+
+const myWorker = new Worker("worker.js");
+
+[first, second].forEach(input => {
+    input.onchange = function() {
+        myWorker.postMessage([first.value, second.value]);
+        console.log("Message posted to worker");
+    }
+})
+
+myWorker.onmessage = function(e) {
+    result.textContent = e.data;
+    console.log("Message received from worker");
+}
+```
+
+```js filename="worker.js"
+onmessage = function(e) {
+    console.log("Worker: Message received from main script");
+    const result = e.data[0] * e.data[1];
+    console.log("Worker: Posting message back to main script");
+    postMessage(`Result: ${result}`);
+}
+```
+
+The `postMessage()` API comes with a couple of core limitations, though.
+
+First off, **not everything can be passed to `postMessage()`**.
+
+Secondly, **communication is only between a Worker and the JavaScript
+environment that created it.**
+
+
+### The `wasmer_wasix::VirtualTaskManager` trait
+
+Similar to a native OS, the `wasmer_wasix` crate has a component in charge of
+scheduling work so it can be executed in parallel.
+
+The `VirtualTaskManager` trait has [the following definition][vtm]:
+
+```rs filename="lib/wasix/src/runtime/task_manager/mod.rs"
+pub trait VirtualTaskManager: Debug + Send + Sync + 'static {
+    /// Run an asynchronous operation on the thread pool.
+    fn task_shared(
+        &self,
+        task: Box<dyn FnOnce() -> BoxFuture<'static, ()> + Send + 'static>,
+    ) -> Result<(), WasiThreadError>;
+
+    /// Run a blocking WebAssembly operation on the thread pool.
+    fn task_wasm(&self, task: TaskWasm) -> Result<(), WasiThreadError>;
+
+    /// Run a blocking operation on the thread pool.
+    fn task_dedicated(
+        &self,
+        task: Box<dyn FnOnce() + Send + 'static>,
+    ) -> Result<(), WasiThreadError>;
+
+    /// Build a new Webassembly memory.
+    fn build_memory(
+        &self,
+        mut store: &mut StoreMut,
+        spawn_type: SpawnMemoryType,
+    ) -> Result<Option<Memory>, WasiThreadError> { ... }
+
+    /// Pause the current thread of execution.
+    fn sleep_now(
+        &self,
+        time: Duration,
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + Sync + 'static>>;
+
+    /// Returns the amount of parallelism that is possible on this platform.
+    fn thread_parallelism(&self) -> Result<usize, WasiThreadError>;
+
+    /// Schedule a blocking task to run on the threadpool, explicitly
+    /// transferring a [`Module`] to the task.
+    fn spawn_with_module(
+        &self,
+        module: Module,
+        task: Box<dyn FnOnce(Module) + Send + 'static>,
+    ) -> Result<(), WasiThreadError> { ... }
+}
+```
+
+If we want to use WASIX in the browser, we need to somehow adapt our threadpool
+implementation to match the `wasmer_wasix::VirtualTaskManager` interface.
+
+
+The `VirtualTaskManager` trait was designed to work within limitations imposed
+by the browser, so it provides a pretty fat, [leaky][leaky-abstractions]
+abstraction. You can see the browser-specific details leaking through in the
+form of `spawn_with_module()` and `task_wasm()` which need to be dedicated
+methods because they need to transfer JavaScript objects to the threadpool's
+worker threads[^leaky-details].
+
+[^leaky-details]: A `wasmer::Module` is just a wrapper around `js_sys::WebAssembly::Module`.
+      Similarly, `wasmer_wasix::TaskWasm` contains a `wasmer::Module` with the
+      WebAssembly module's compiled code and a `js_sys::WebAssembly::Memory`
+      which contains its address space.
+
+### Messages
+
+### The Worker
+
+### The Worker Handle
+
+### The Scheduler
+
+## Challenges and Lessons Learned
+
+Without a doubt, the biggest challenge with implementing a threadpool in the
+browser is the interaction between JavaScript objects and the event loop.
+
+If you aren't careful, it's easy to cause deadlocks or accidentally access a
+`!Send` value from a thread that didn't create it.
+
+### Thread Safety & Soundness
+
+### Deadlocks When Using the JavaScript Event Loop
+
+One common footgun is to use the JavaScript event loop to run an asynchronous
+task and await it from inside a syscall.
+
+For example, you might be using the browser's `fetch()` API to send HTTP
+requests. The browser's `Request` object and the `Promise` returned by `fetch()`
+are `!Send` because they are tied to the current JavaScript event loop, but most
+APIs expect futures to be `Send`.
+
+One workaround for this situation is to run the promise on the current event
+loop using [`wasm_bindgen_futures::spawn_local()`][spawn-local] and use channels
+to send the final result back to a caller.
+
+```rs
+fn send_http_request(
+    request: http::Request,
+) -> impl Future<Item=Result<http::Response, Error>> + Send + Sync + 'static {
+    let (sender, receiver) = oneshot::channel();
+
+    wasm_bindgen_futures::spawn_local(async move {
+        let request = rust_request_to_js(request);
+        let result = fetch(request).await;
+        let result = js_response_to_rust(result);
+        let _ = sender.send(result);
+    });
+
+    receiver
+}
+
+fn fetch(request: web_sys::Request) -> js_sys::Promise {
+    ...
+}
+```
+
+Under most conditions it's perfectly fine to call
+[`wasm_bindgen_futures::spawn_local()`][spawn-local] directly, however there is
+a pretty nasty gotcha when it comes to syscalls...
+
+- The Wasmer VM doesn't support `async` host functions, so all syscalls must
+  block
+- Some syscalls need to run asynchronous operations
+- To call async code from a sync function, we use
+  [`wasmer_wasix::syscalls::__asyncify_light()`][asyncify-light] which uses
+  [`futures::executor::block_on()`][futures-block-on] to poll the future on
+  the current thread until it resolves
+- In order for a [`wasm_bindgen_futures::spawn_local()`] future to run to
+  completion, you need to return control to the JavaScript event loop
+
+This causes a nasty deadlock where the syscall won't return until the
+`fetch()` promise resolves, but the `fetch()` promise can't resolve
+until the syscall returns.
+
+A "fix" is to use the thread pool to spawn a task which does the
+`spawn_local()` on another thread. This works because the task is unlikely to
+be sent to the worker currently blocked on the syscall. You can see this trick
+used in [the web HTTP client][web-http-client-spawn-js].
+
+```rs
+impl WebHttpClient {
+        fn spawn_js(
+        &self,
+        request: HttpRequest,
+    ) -> Result<oneshot::Receiver<Result<HttpResponse, Error>>, WasiThreadError> {
+        let (sender, receiver) = oneshot::channel();
+
+        fn spawn_fetch(request: HttpRequest, sender: oneshot::Sender<Result<HttpResponse, Error>>) {
+            wasm_bindgen_futures::spawn_local(async move {
+                let result = fetch(request).await;
+                let _ = sender.send(result);
+            });
+        }
+
+        match self.tasks.as_deref() {
+            Some(tasks) => {
+                tasks.task_shared(Box::new(|| {
+                    Box::pin(async move {
+                        spawn_fetch(request, sender);
+                    })
+                }))?;
+            }
+            None => {
+                spawn_fetch(request, sender);
+            }
+        }
+
+        Ok(receiver)
+    }
+}
+```
+
+### Communicating With JavaScript Objects
+
+The JavaScript objects you get via `wasm-bindgen` are tied to the JavaScript
+runtime for the current thread, and therefore not thread-safe (i.e.
+`!Send + !Sync`).
+
+This limitation makes things difficult when you need to access them in a
+multi-threaded environment.
+
+A prime example of this is using the browser's [FileSystem API][fs-api] to
+implement the [`virtual_fs::FileSystem`][fs-trait] trait (<PullRequest repository="wasmerio/wasmer-js" number={337} name="Allow users to mount directories using the browser's native FileSystem API" />).
+The sticking point is that `virtual_fs::FileSystem` requires all implementations
+to be usable concurrently within a multi-threaded environment.  If
+`FileSystemDirectoryHandle` is a JavaScript object, we won't be able to call any
+of its methods directly.
+
+Again, the actor model can help here.
+
+Instead of trying to implement `virtual_fs::FileSystem` for some object
+containing a `FileSystemDirectoryHandle`, implement it on some sort of channel
+object that can be sent across threads and use
+`wasm_bindgen_futures::spawn_local()` to listen for messages on the original
+thread and use them to execute `FileSystemDirectoryHandle`.
+
+```rs
+#[async_trait::async_trait(?Send)]
+pub(crate) trait Handler<Msg> {
+    type Output: Send + 'static;
+
+    async fn handle(&mut self, msg: Msg) -> Result<Self::Output, FsError>;
+}
+
+#[derive(Debug, Clone)]
+struct Directory(FileSystemDirectoryHandle);
+
+impl FileSystem for Mailbox<Directory> {
+    ...
+}
+
+type Thunk<A> = Box<dyn FnOnce(&mut A) -> LocalBoxFuture<'_, ()> + Send>;
+
+#[derive(Debug, Clone)]
+pub(crate) struct Mailbox<A> {
+    sender: mpsc::Sender<Thunk<A>>,
+}
+
+impl<A> Mailbox<A> {
+    /// Spawn an actor on the current thread.
+    pub(crate) fn spawn(mut actor: A) -> Self
+    where
+        A: 'static,
+    {
+        let (sender, mut receiver) = mpsc::channel::<Thunk<A>>(1);
+
+        wasm_bindgen_futures::spawn_local(async move {
+            while let Some(thunk) = receiver.next().await {
+                thunk(&mut actor).await;
+            }
+        });
+
+        Mailbox { sender }
+    }
+
+    /// Asynchronously send a message to the actor.
+    pub(crate) async fn send<M>(&self, msg: M) -> Result<<A as Handler<M>>::Output, FsError>
+    where
+        A: Handler<M>,
+        M: Send + 'static,
+    {
+        ...
+    }
+}
+```
+
+One complication in this approach is that `Mailbox::send()` is an `async`
+function, while most `FileSystem` methods are synchronous.
+
+You can solve this by using `InlineWaker::block_on()` to block the current
+thread until the future resolves. As with the `WebHttpClient` scenario above,
+blocking the current thread until an asynchronous task resolves may deadlock if
+you are blocking the thread that originally called `Mailbox::spawn()`.
+
+```rust
+struct Mailbox<A> {
+    ...
+    current_thread: u32,
+}
+
+impl<A> Mailbox<A> {
+    /// Send a message to the actor and synchronously block until a response
+    /// is received.
+    ///
+    /// # Deadlocks
+    ///
+    /// To avoid deadlocks, this will error out with [`FsError::Lock`] if called
+    /// from the thread that the actor was spawned on.
+    pub(crate) fn handle<M>(&self, msg: M) -> Result<<A as Handler<M>>::Output, FsError>
+    where
+        A: Handler<M>,
+        M: Send + 'static,
+    {
+        // Note: See the module doc-comments for more context on deadlocks
+        let current_thread = wasmer::current_thread_id();
+        if self.original_thread == current_thread {
+            tracing::error!(
+                thread.id=current_thread,
+                caller=%std::panic::Location::caller(),
+                "Running a synchronous FileSystem operation on this thread will result in a deadlock"
+            );
+            return Err(FsError::Lock);
+        }
+
+        InlineWaker::block_on(self.send(msg))
+    }
+}
+```
+
+### Web Workers and `console.log()`
+
+One quirk of the way most testing frameworks work is that they are only able
+to intercept `console.log()` calls on the main UI thread.
+
+A consequence of this is that if you spawn a Web Worker that crashes, your test
+will fail without giving you any useful backtraces or hints at what went wrong.
+
+If you are using a logger like [`tracing-wasm`][tracing-wasm] which logs
+directly to `console.log()`, it means you'll also miss any logs that get
+emitted.
+
+<Callout type="info">
+If you are ever troubleshooting tests which involve multi-threading and feel
+like you are missing context, try running the test manually in the browser.
+</Callout>
+
+The fix for this was to use the `tracing-subscriber` crate directly and provide
+it with a hand-written `MakeWriter` that passes all messages back to the main
+thread so they can be logged there.
+
+```rs
+#[wasm_bindgen(js_name = "initializeLogger")]
+pub fn initialize_logger() -> Result<(), crate::utils::Error> {
+    tracing_subscriber::fmt::fmt()
+        .with_writer(ConsoleLogger::spawn())
+        .with_span_events(FmtSpan::CLOSE)
+        .without_time()
+        .try_init()
+        .map_err(|e| anyhow::anyhow!(e))?;
+
+    Ok(())
+}
+
+/// A [`std::io::Write`] implementation which will pass all messages to the main
+/// thread for logging with [`web_sys::console`].
+///
+/// This is useful when using Web Workers for concurrency because their
+/// `console.log()` output isn't normally captured by test runners.
+#[derive(Debug)]
+struct ConsoleLogger {
+    buffer: Vec<u8>,
+    sender: mpsc::UnboundedSender<String>,
+}
+
+impl ConsoleLogger {
+    fn spawn() -> impl for<'w> MakeWriter<'w> + 'static {
+        let (sender, mut receiver) = mpsc::unbounded_channel();
+
+        wasm_bindgen_futures::spawn_local(async move {
+            while let Some(msg) = receiver.recv().await {
+                let js_string = JsValue::from(msg);
+                web_sys::console::log_1(&js_string);
+            }
+        });
+
+        move || ConsoleLogger {
+            buffer: Vec::new(),
+            sender: sender.clone(),
+        }
+    }
+}
+
+impl Write for ConsoleLogger {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        self.buffer.extend(buf);
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        let buffer = std::mem::take(&mut self.buffer);
+
+        let text = String::from_utf8(buffer)
+            .map_err(|e| std::io::Error::new(ErrorKind::InvalidInput, e))?;
+
+        self.sender
+            .send(text)
+            .map_err(|e| std::io::Error::new(ErrorKind::BrokenPipe, e))?;
+
+        Ok(())
+    }
+}
+
+impl Drop for ConsoleLogger {
+    fn drop(&mut self) {
+        if !self.buffer.is_empty() {
+            let _ = self.flush();
+        }
+    }
+}
+```
+
+[asyncify-light]: https://github.com/wasmerio/wasmer/blob/fc7c89fb1bfecc332d9f26238740e14c1df605cd/lib/wasix/src/syscalls/mod.rs#L480-L523
+[fs-api]: https://developer.mozilla.org/en-US/docs/Web/API/File_System_API
+[fs-trait]: https://github.com/wasmerio/wasmer/blob/fc7c89fb1bfecc332d9f26238740e14c1df605cd/lib/virtual-fs/src/lib.rs#L93-L108
+[futures-block-on]: https://docs.rs/futures/latest/futures/executor/fn.block_on.html
+[message-event]: https://developer.mozilla.org/en-US/docs/Web/API/Worker/message_event
+[post-message]: https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage
+[spawn-local]: https://docs.rs/wasm-bindgen-futures/latest/wasm_bindgen_futures/fn.spawn_local.html
+[tracing-wasm]: https://docs.rs/tracing-wasm
+[v0.6.0]: https://github.com/wasmerio/wasmer-js/releases/tag/wasmer-sdk-v0.6.0
+[vtm]: https://github.com/wasmerio/wasmer/blob/0265db1eb1ea574cf6c4f05a30d74f3c37c6d9da/lib/wasix/src/runtime/task_manager/mod.rs
+[web-http-client-spawn-js]: https://github.com/wasmerio/wasmer/blob/fc7c89fb1bfecc332d9f26238740e14c1df605cd/lib/wasix/src/http/web_http_client.rs#L88-L116
+[workers]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
+[jsvalue]: https://docs.rs/wasm-bindgen/latest/wasm_bindgen/struct.JsValue.html
+[wasm-bindgen]: https://github.com/rustwasm/wasm-bindgen
+[leaky-abstractions]: https://www.joelonsoftware.com/2002/11/11/the-law-of-leaky-abstractions/
