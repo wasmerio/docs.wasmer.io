@@ -4,14 +4,25 @@ import { Callout } from '@components/nextra-theme';
 
 Wasmer is powered by [WebAssembly](https://webassembly.org).
 
-Wasmer supports many different backends, depending on your needs:
-* Wasmer Native Backends:
-  - _Singlepass_: incredibly fast compilation times, ideal for Blockchain [Smart Contracts](https://en.wikipedia.org/wiki/Smart_contract)
-  - _Cranelift_: normal compilation times, good performance
-  - _LLVM_: slow compilation times, great performance
-* Other Backends:
-  - _V8_: ideal for iOS, Android and development.
-  - _Browser_: make your Rust code using Wasmer run in the browser
+Wasmer runs WebAssembly through a **backend**, and ships several depending on your needs. They fall into two groups by *how* they execute your code:
+
+* Compiler backends: Wasmer compiles your WebAssembly to native machine code itself, then runs it directly on the CPU:
+  - _Singlepass_: very fast compilation, ideal for blockchain [smart contracts](https://en.wikipedia.org/wiki/Smart_contract)
+  - _Cranelift_: moderate compilation speed, good runtime performance
+  - _LLVM_: slow compilation, excellent runtime performance
+
+* Engine backends: Wasmer doesn't compile anything itself; it hands your WebAssembly to an existing engine to run. This is what lets Wasmer work where generating native machine code isn't allowed, such as on iOS or inside a web page:
+  - _V8_: delegates to Google's V8 engine. ideal for iOS, Android, and development
+  - _Browser_: delegates to the browser's own WebAssembly engine, so Wasmer can run client-side inside a web page
+
+<Callout type="info">
+  Why run Wasmer in a browser when browsers already run WebAssembly? Because the
+  browser's built-in `WebAssembly` API only runs *bare* modules. It provides no
+  files, stdin/stdout, arguments, or environment. The Browser backend lets Wasmer
+  supply that missing operating-system layer ([WASIX](/runtime/wasix)) in the page,
+  so a full program (for example, a CLI tool, an interpreter like Python) can run entirely
+  client-side.
+</Callout>
 
 Each of these backends supports different features and has varying support for operating systems and chipsets.
 
