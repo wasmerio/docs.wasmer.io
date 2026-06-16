@@ -31,7 +31,7 @@ Each of these backends supports different features and has varying support for o
   - **Bulk-memory operations**: e.g. instructions with behavior similar to C's `memmove` and `memset` in WebAssembly;
   - **Multi-value return**: return multiple values from functions making data transfer between host and guest simpler;
   - **Import & export of mutable globals**: adds ability to import and export mutable globals;
-  - **Non-trapping float-to-int conversions**: this proposal would establish a convention for saturating operations, to avoid introducing trapping;
+  - **Non-trapping float-to-int conversions**: adds a convention for saturating operations, to avoid introducing trapping;
   - **Sign-extension operations**: adds five new integer instructions for sign-extending 8-bit, 16-bit, and 32-bit values;
   - **Reference types**: easier and more efficient interop with host environment;
   - **SIMD**: Single Instruction, Multiple data: do heavy number crunching more quickly and/or with lower power usage.
