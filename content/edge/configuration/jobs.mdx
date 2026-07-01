@@ -7,33 +7,37 @@ that execute commands or make HTTP requests. Jobs can be useful for
 running periodic maintenance tasks, executing background processes, or
 ensuring essential workflows are automated.
 
-
 ## Job Structure
 
 Each job consists of the following fields:
 
 - **name** *(str, required)* – A unique name for the job.
 - **trigger** *(str, required)* – Defines when the job should run.
-  - This can be a cron expression (e.g., `'*/15 * * * *'` for every 15
-  minutes).
-  - It can also be `'post-deployment'` to run after deployment.
-  - `'pre-deployment'` is currently not supported.
+  - Use a duration such as `15m`, `1h`, or `24h` for simple interval
+    schedules.
+  - Use a cron expression for uniform schedules, such as
+    `'*/15 * * * *'` for every 15 minutes.
+  - Use `pre-deployment` to run before a new app version is created.
+  - Use `post-deployment` to run after a new app version is created.
 - **action** *(required)* – Specifies the task to run. More details
   in the [next section](#job-actions). A job can:
   - Run a command using `execute`.
   - Make an HTTP request using `fetch`.
-- **retries** *(int, Optional)* – The maximum number of times the job
-  should retry upon failure.
-- **timeout** *(duration, Optional)* – The maximum time a job is
-  allowed to run before timing out (e.g., `'10m'` for 10 minutes).
-- **max_schedule_drift** *(duration, Optional)* – The maximum
-  allowed delay before the job is considered late. (e.g., `'10m'` for
-  10 minutes)
-
 
 Fully working examples configuration can be found
 [here](#example-jobs-configuration).
 
+## Schedules and Deployment Triggers
+
+Scheduled jobs can use either a duration or a cron expression. Cron expressions
+must produce a uniform interval. For example, `*/15 * * * *` is valid because it
+runs every 15 minutes, while a schedule such as `0 9 * * MON-FRI` is not uniform
+because the interval between Friday and Monday is different.
+
+Scheduled jobs are subject to the platform minimum interval, which defaults to 5
+minutes. Deployment jobs use the special `pre-deployment` and `post-deployment`
+triggers and run once during deployment instead of being installed as recurring
+cron jobs.
 
 ## Job Actions
 
@@ -54,9 +58,16 @@ two types of actions for a job:
          LOG_LEVEL: DEBUG
          EXTRA_FLAGS: "--enable-feature-1 --enable-feature-2"
    ```
-   - `command` *(str, Optional)* – The command to execute.
+   - `command` *(str, Optional)* – The command to execute. If omitted,
+     the app workload command is used.
+   - `package` *(str, Optional)* – Package source override for this job.
    - `cli_args` *(List[str], Optional)* – Arguments for the command.
-   - `env` *(map, Optional)* – Environment variables.
+   - `env` *(map[str, str], Optional)* – Environment variables.
+   - `retries` *(int, Optional)* – Maximum retry count.
+   - `timeout` *(duration, Optional)* – Maximum runtime. Defaults to
+     `180s`.
+   - `max_schedule_drift` *(duration, Optional)* – Maximum allowed delay
+     before a scheduled job is considered late. Defaults to `180s`.
 
 2. **Making an HTTP request (`fetch`)**
 
@@ -67,26 +78,32 @@ two types of actions for a job:
        path: /wp-cron.php
        timeout: '10m'
        headers:
-         - name: Accept
-           value: application/json
-         - name: User-Agent
-           value: Wasmer-CronJob
-
+         Accept: application/json
+         User-Agent: Wasmer-CronJob
+       expect:
+         status_codes: [200, 204]
    ```
-   - `path` *(str, required)* – The request URL path.
-   - `method` *(str, Optional)* – HTTP method (defaults to `GET`).
-   - `headers` *(list[object[name, value]], Optional)* – HTTP headers as
-     yaml objects. The objects have two fields, `name` which is the
-     header name, and `value` which is the value of header field.
+   - `path` *(str, Optional)* – The request URL path. Defaults to `/`.
+   - `method` *(str, Optional)* – HTTP method. Defaults to `GET`.
+   - `headers` *(map[str, str], Optional)* – HTTP headers keyed by header
+     name. Only string values are sent.
    - `body` *(str, Optional)* – Request body.
-   - `timeout` *(duration, Optional)* – Maximum time to wait for
-     a response.
+   - `expect.status_codes` *(List[int], Optional)* – Expected HTTP status
+     codes.
+   - `expect.body_includes` *(str, Optional)* – Text that must be present
+     in the response body.
+   - `expect.body_regex` *(str, Optional)* – Regular expression that must
+     match the response body.
+   - `retries` *(int, Optional)* – Maximum retry count.
+   - `timeout` *(duration, Optional)* – Maximum time to wait for a response.
+     Defaults to `180s`.
+   - `max_schedule_drift` *(duration, Optional)* – Maximum allowed delay
+     before a scheduled job is considered late. Defaults to `180s`.
 
 ## Example Jobs Configuration
 
 Below are examples of various job types based on their trigger and
 action.
-
 
 ### Fetch job
 
@@ -101,23 +118,56 @@ jobs:
       fetch:
         path: /
         timeout: 30s
+        headers:
+          User-Agent: Wasmer-CronJob
 ```
 
+### Interval job
+
+This job runs on a simple duration schedule.
+
+```yaml copy
+kind: wasmer.io/App.v0
+package: wasmer/hello
+jobs:
+  - name: ping-server-every-hour
+    trigger: 1h
+    action:
+      fetch:
+        path: /healthz
+        timeout: 30s
+```
 
 ### Execute job
 
-This job runs `php --version` every minute.
+This job runs `php --version` every 15 minutes.
 
 ```yaml copy
 kind: wasmer.io/App.v0
 package: wasmer/wordpress
 jobs:
   - name: check-php-version
-    trigger: '*/1 * * * *'
+    trigger: '*/15 * * * *'
     action:
       execute:
         command: php
         cli_args: ["--version"]
+```
+
+### Pre deployment job
+
+This job runs before a new app version is created.
+
+```yaml copy
+kind: wasmer.io/App.v0
+package: wasmer/hello
+jobs:
+  - name: migrate-database
+    trigger: pre-deployment
+    action:
+      execute:
+        command: migrate
+        timeout: 5m
 ```
 
 ### Post deployment job
@@ -129,7 +179,7 @@ each deployment.
 kind: wasmer.io/App.v0
 package: wasmer/hello
 jobs:
-  - name: ping-server-every-15-minutes
+  - name: warm-up-caches
     trigger: post-deployment
     action:
       fetch:
@@ -140,6 +190,8 @@ jobs:
 
 ## Use Cases
 
+- **Pre-deployment migrations:** Run setup or migration commands before
+  publishing the new version.
 - **Post-deployment setup:** The `installation` job ensures necessary
   setup commands run after deployment.
 - **Scheduled background tasks:** The `wp-cron` job triggers
