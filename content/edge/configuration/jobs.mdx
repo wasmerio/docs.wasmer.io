@@ -78,15 +78,17 @@ two types of actions for a job:
        path: /wp-cron.php
        timeout: '10m'
        headers:
-         Accept: application/json
-         User-Agent: Wasmer-CronJob
+         - name: Accept
+           value: application/json
+         - name: User-Agent
+           value: Wasmer-CronJob
        expect:
          status_codes: [200, 204]
    ```
    - `path` *(str, Optional)* – The request URL path. Defaults to `/`.
    - `method` *(str, Optional)* – HTTP method. Defaults to `GET`.
-   - `headers` *(map[str, str], Optional)* – HTTP headers keyed by header
-     name. Only string values are sent.
+   - `headers` *(List[Header], Optional)* – HTTP headers passed as a list of
+     `name`/`value` pairs.
    - `body` *(str, Optional)* – Request body.
    - `expect.status_codes` *(List[int], Optional)* – Expected HTTP status
      codes.
@@ -110,7 +112,7 @@ action.
 This job fetches the `/` path on its app every 15 minutes.
 ```yaml copy
 kind: wasmer.io/App.v0
-package: wasmer/hello
+package: wasmer/static-web-server
 jobs:
   - name: ping-server-every-15-minutes
     trigger: '*/15 * * * *'
@@ -119,7 +121,8 @@ jobs:
         path: /
         timeout: 30s
         headers:
-          User-Agent: Wasmer-CronJob
+          - name: User-Agent
+            value: Wasmer-CronJob
 ```
 
 ### Interval job
@@ -128,62 +131,65 @@ This job runs on a simple duration schedule.
 
 ```yaml copy
 kind: wasmer.io/App.v0
-package: wasmer/hello
+package: wasmer/static-web-server
 jobs:
   - name: ping-server-every-hour
     trigger: 1h
     action:
       fetch:
-        path: /healthz
+        path: /
         timeout: 30s
 ```
 
 ### Execute job
 
-This job runs `php --version` every 15 minutes.
+This job runs a shell command every 15 minutes and writes the output to the
+job logs. Use `execute` when a cron job should run a package command instead of
+making an HTTP request.
 
 ```yaml copy
 kind: wasmer.io/App.v0
-package: wasmer/wordpress
+package: wasmer/bash
 jobs:
-  - name: check-php-version
+  - name: write-heartbeat
     trigger: '*/15 * * * *'
     action:
       execute:
-        command: php
-        cli_args: ["--version"]
+        command: bash
+        cli_args: ["-lc", "date -u && echo cron heartbeat"]
 ```
 
 ### Pre deployment job
 
-This job runs before a new app version is created.
+This job runs a setup command before a new app version is created.
 
 ```yaml copy
 kind: wasmer.io/App.v0
-package: wasmer/hello
+package: wasmer/static-web-server
 jobs:
-  - name: migrate-database
+  - name: prepare-release
     trigger: pre-deployment
     action:
       execute:
-        command: migrate
+        package: wasmer/bash
+        command: bash
+        cli_args: ["-lc", "echo preparing release"]
         timeout: 5m
 ```
 
 ### Post deployment job
 
-This job fetches the `/warm-up-caches` path on its app after
-each deployment.
+This job fetches the `/` path on its app after each deployment.
 
 ```yaml copy
 kind: wasmer.io/App.v0
-package: wasmer/hello
+package: wasmer/static-web-server
 jobs:
-  - name: warm-up-caches
+  - name: warm-up-app
     trigger: post-deployment
     action:
       fetch:
-        path: /warm-up-caches
+        path: /
         timeout: 30s
 ```
 
