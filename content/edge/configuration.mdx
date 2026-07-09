@@ -38,6 +38,10 @@ capabilities:
     requests:
       - path: /
       - path: /_bootstrap
+
+  # Cache eligible HTTP responses at the edge
+  cdn_cache:
+    enabled: true
 ```
 
 ## Fields
@@ -227,6 +231,24 @@ capabilities:
 	- name: X-My-Header
 	  value: my-value
 ```
+
+#### `cdn_cache`
+
+Enable CDN Cache for the app. CDN Cache stores eligible HTTP responses at the
+edge and reuses them for matching requests before they reach your app.
+
+```yaml filename="app.yaml" copy
+capabilities:
+  cdn_cache:
+    enabled: true
+```
+
+- Required: `false`
+- Default: disabled
+
+`enabled` is currently the only supported CDN Cache setting. See the dedicated
+[CDN Cache documentation](/edge/learn/cdn-cache) for cache header
+semantics, dashboard configuration, and purge options.
 
 #### `ssh`
 
