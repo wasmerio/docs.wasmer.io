@@ -1,0 +1,195 @@
+import { Callout } from '@components/nextra-theme';
+
+# CDN Cache
+
+Wasmer Edge can cache HTTP responses at the edge before requests reach your app.
+This is useful for static assets, generated files, public API responses, and other
+content that can be reused safely across visitors.
+
+<Callout type="warning">
+  CDN Cache is currently in beta. The only app configuration setting available
+  today is `capabilities.cdn_cache.enabled`. Path-based caching rules will be
+  added later.
+</Callout>
+
+## How it works
+
+When CDN Cache is enabled, Wasmer Edge checks each incoming request before
+forwarding it to your app:
+
+1. If a fresh cached response exists, Edge returns it directly.
+2. If no usable cached response exists, Edge forwards the request to your app.
+3. If your app's response is cacheable, Edge stores it for future matching
+   requests.
+
+The cache is scoped to the app version that served the response. Deploying a new
+app version starts using a new cache namespace, so responses from the previous
+version are not reused for the new version.
+
+CDN Cache follows standard HTTP caching headers. Your app decides what can be
+cached by returning headers such as `Cache-Control`, `Expires`, `ETag`,
+`Last-Modified`, and `Vary`.
+
+## Enable CDN Cache
+
+Add `capabilities.cdn_cache.enabled: true` to your `app.yaml`, then deploy the
+app again.
+
+```yaml filename="app.yaml" copy
+kind: wasmer.io/App.v0
+owner: my-account
+name: my-app
+package: my-account/my-app
+
+capabilities:
+  cdn_cache:
+    enabled: true
+```
+
+`enabled` is the only CDN Cache setting supported in `app.yaml` today. If
+`capabilities.cdn_cache.enabled` is omitted or set to `false`, CDN Cache is not
+enabled for the app.
+
+You can also enable it from the Wasmer dashboard:
+
+1. Open your app in the Wasmer dashboard.
+2. Go to **App Settings**.
+3. Open the **CDN Cache** section.
+4. Enable CDN Cache.
+
+## Purge cached responses
+
+You can stop using old cached CDN responses or purge them in three ways:
+
+- Deploy a new app version with `wasmer deploy`. Because cache entries are
+  scoped by app version, the new version will not reuse cached responses from
+  the previous version.
+- Click the purge button in the dashboard's **App Settings** > **CDN Cache**
+  section.
+- Run the CLI purge command:
+
+```bash copy
+wasmer app cdn purge
+```
+
+Run the command from a directory containing the app's `app.yaml`, or pass the
+app identifier supported by the `wasmer app` commands.
+
+## What requests can be cached
+
+Only `GET` and `HEAD` requests are eligible for CDN Cache. Other HTTP methods
+bypass the cache and go directly to your app.
+
+Requests also bypass CDN Cache when they include any of these headers or
+directives:
+
+- `Authorization`
+- `Cookie`
+- `Pragma: no-cache`
+- `Cache-Control: no-store`
+- `Cache-Control: no-cache`
+- `Cache-Control: max-age=0`
+
+This means authenticated or personalized requests are not stored in the shared
+CDN cache.
+
+## What responses can be cached
+
+A response must have explicit caching headers to be stored. Responses without
+`Cache-Control` or `Expires` are not cached by default.
+
+A response is not stored when it:
+
+- includes `Set-Cookie`
+- includes `Vary: *`
+- has a `5xx` status code
+- does not include `Content-Length`
+- is larger than the platform's maximum CDN object size
+
+Unknown-length streamed responses are not cached. If you want a response to be
+eligible, include a correct `Content-Length` header.
+
+## Cache-Control semantics
+
+Use `Cache-Control` to tell Wasmer Edge whether a response can be stored and how
+long it stays fresh.
+
+```http
+Cache-Control: public, max-age=3600
+```
+
+The response above can be cached for one hour.
+
+Common directives:
+
+- `public`: allows the response to be stored by the shared CDN cache.
+- `max-age=<seconds>`: sets how long the response is fresh.
+- `s-maxage=<seconds>`: sets the shared-cache freshness lifetime and takes
+  precedence over `max-age`.
+- `no-store`: prevents CDN Cache from storing the response.
+- `private`: prevents the shared CDN cache from storing the response.
+- `no-cache`: allows storage, but requires revalidation before reuse.
+- `must-revalidate` and `proxy-revalidate`: require revalidation and prevent
+  serving stale cached responses.
+
+If `Cache-Control` is not present, `Expires` can make a response cacheable. When
+both headers are present, `Cache-Control` takes precedence.
+
+## Revalidation
+
+Wasmer Edge supports standard HTTP revalidation for stale cached responses.
+
+If the cached response includes `ETag`, Edge can revalidate with
+`If-None-Match`. If it includes `Last-Modified`, Edge can revalidate with
+`If-Modified-Since`. When your app returns `304 Not Modified`, Edge keeps the
+cached body and updates cache metadata from the revalidation response.
+
+For example:
+
+```http
+Cache-Control: public, max-age=60
+ETag: "asset-v1"
+```
+
+After 60 seconds, Edge can ask your app whether the cached response is still
+valid instead of downloading the full body again.
+
+## Vary
+
+`Vary` is honored when matching cached responses. For example, a response with
+`Vary: Accept-Language` is cached separately for different `Accept-Language`
+request header values.
+
+```http
+Cache-Control: public, max-age=3600
+Vary: Accept-Encoding
+```
+
+`Vary: *` prevents caching. When a response has a non-identity
+`Content-Encoding`, Edge also keys the cache by `Accept-Encoding` even if the
+origin response forgot to include `Vary: Accept-Encoding`.
+
+## Stale responses
+
+Wasmer Edge can briefly serve stale responses during revalidation or upstream
+errors when the response is allowed to be served stale.
+
+By default, Edge uses short stale windows to smooth traffic spikes and improve
+availability during temporary upstream errors. You can control this with
+standard response directives:
+
+```http
+Cache-Control: public, max-age=300, stale-while-revalidate=30, stale-if-error=600
+```
+
+Edge will not serve stale responses when the request includes
+`Cache-Control: no-cache`, or when the cached response requires revalidation
+with directives such as `no-cache`, `must-revalidate`, or `proxy-revalidate`.
+
+## Current limitations
+
+- CDN Cache is beta.
+- `capabilities.cdn_cache.enabled` is the only app-level configuration setting.
+- Path-based caching rules are not available yet. For now, enablement applies to
+  the app, and each response controls caching through HTTP headers.
+- Dashboard and CLI purges currently purge the app's CDN cache as a whole.

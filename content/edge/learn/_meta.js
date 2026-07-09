@@ -1,5 +1,6 @@
 export default {
   "apps": "Apps",
+  "cdn-cache": "CDN Cache",
   "instaboot": "InstaBoot",
   "deployment-modes": "Deployment Modes",
   "supported-frameworks-and-languages": "Supported Frameworks and Languages",
