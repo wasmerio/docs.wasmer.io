@@ -14,6 +14,13 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://docs.wasmer.io'),
 }
 
+// Self-hosted Umami analytics (analytics.wasmer.io). Both values are baked in
+// at build time, so local dev and preview builds send nothing unless they are
+// set. They ship to the browser, so they are public — repo variables, not
+// secrets.
+const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID
+const umamiSrc = process.env.NEXT_PUBLIC_UMAMI_SRC
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -30,7 +37,11 @@ export default async function RootLayout({
 
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
-      <Head />
+      <Head>
+        {umamiWebsiteId && umamiSrc && (
+          <script defer src={umamiSrc} data-website-id={umamiWebsiteId} />
+        )}
+      </Head>
       <body>
         <DocsShell
           pageMaps={{
