@@ -169,7 +169,7 @@ volumes:
 
 #### `database`
 
-Auto-provision a database for the app.
+Auto-provision a managed database for the app.
 
 Database credentials are provided as *environment variables*:
 * `DB_HOST`
@@ -178,10 +178,17 @@ Database credentials are provided as *environment variables*:
 * `DB_USERNAME`
 * `DB_PASSWORD`
 
-Currently only `mysql` is supported.
+Supported values for `engine`:
 
-**Note**: databases are tied to regions. When specifying a database, you should
-also specify your desired region with the `locality.regions` setting.
+* `mysql` — MySQL
+* `postgres` — PostgreSQL
+
+If `engine` is omitted, the database is MySQL. The engine of an existing
+database cannot be changed; delete the database first. An app can have one
+database.
+
+**Note**: databases are tied to regions. When specifying a database, you must
+also specify a single region with the `locality.regions` setting.
 Only some of the regions support databases!
 
 Check the [list of available regions](/edge/learn/regions).
@@ -189,11 +196,14 @@ Check the [list of available regions](/edge/learn/regions).
 ```yaml filename="app.yaml" copy
 capabilities:
   database:
-    engine: mysql
-  locality:
-    regions:
-      - us-socal1
+    engine: postgres
+locality:
+  regions:
+    - fr-roub1
 ```
+
+See the [Databases documentation](/edge/learn/databases) for connection
+examples, credential rotation, backups, and troubleshooting.
 
 You can list the databases attached to your app using the CLI:
 

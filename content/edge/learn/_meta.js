@@ -7,6 +7,7 @@ export default {
   "remote-sessions": "Remote Sessions",
   "custom-domains": "Adding Custom Domains",
   "email": "Sending Email",
+  "databases": "Databases",
   "secrets": "Secrets",
   "regions": "Regions",
   "volumes": "Volumes",

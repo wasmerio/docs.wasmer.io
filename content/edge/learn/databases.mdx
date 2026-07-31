@@ -1,0 +1,321 @@
+import { Callout } from '@components/nextra-theme';
+
+# Databases
+
+Wasmer Edge can provision one managed SQL database for your app. Two engines are available: **MySQL** and **PostgreSQL**.
+
+When the database is ready, Wasmer injects the connection details into your app as environment variables. The database persists across deployments. Credentials can be rotated at any time.
+
+<Callout type="info">
+An app can have **one** database. WordPress apps always use MySQL. See [Limitations](#limitations).
+</Callout>
+
+## Engines
+
+| Engine     | `app.yaml` value | API (GraphQL) value | Default          |
+| ---------- | ---------------- | ------------------- | ---------------- |
+| MySQL      | `mysql`          | `MYSQL`             | ✅ (when engine is not specified) |
+| PostgreSQL | `postgres`       | `POSTGRES`          |                  |
+
+The engine value in `app.yaml` is case-insensitive. The spelling `postgresql` also works. The spelling `psql` is **not** accepted and fails with:
+
+```
+Unsupported database engine `psql`. Supported engines: mysql, postgres.
+```
+
+If you do not specify an engine, you get MySQL. This keeps older apps, API clients, and WordPress deployments working unchanged.
+
+## Create a database
+
+### From the app dashboard
+
+1. Open your app in the [Wasmer dashboard](https://wasmer.io).
+2. Open the **Databases** tab.
+3. Click **Create database**. This button is only shown while the app has no database.
+4. In the **New database** dialog, enter a name. See [Database names](#database-names).
+5. Under **Engine**, select **MySQL** or **PostgreSQL**. MySQL is selected by default.
+6. Click **Create database**. The button shows **Creating database…** while Wasmer provisions the database.
+
+When provisioning completes, the dialog closes and a database card appears. The card shows the engine, **Host**, **Port**, **Name**, **Username**, and masked **Password**. If provisioning fails, the error is shown inside the dialog and you can try again.
+
+### From `app.yaml`
+
+Add the `capabilities.database` section to your app configuration. Minimal deployable example:
+
+```yaml filename="app.yaml" copy
+kind: wasmer.io/App.v0
+name: my-app
+owner: my-account
+package: .
+capabilities:
+  database:
+    engine: postgres
+locality:
+  regions:
+    - fr-roub1
+```
+
+Then deploy:
+
+```bash
+wasmer deploy
+```
+
+Wasmer provisions the database on the first deployment and injects the [connection variables](#connection-variables). Later deployments reuse the same database and keep the same engine.
+
+Use `engine: mysql` for MySQL. If your app should live in a specific [database region](#regions), set exactly one region under `locality.regions`.
+
+### From the repo import and upload flows
+
+The **Import from Git** and **Deploy from upload** flows on wasmer.io include an **Enable Database** section. Turn it on and select **MySQL** or **PostgreSQL** in the engine dropdown. MySQL is selected by default. The database is provisioned during the first autobuild deployment.
+
+## Database names
+
+Database names are validated by the backend:
+
+- The first character must be a letter.
+- The other characters can be letters, numbers, and underscores.
+- The last character must be a letter or a number.
+- The minimum length is 5 characters.
+- The name must not start with an underscore.
+- The name must be unique across all Wasmer databases. If the name is taken, creation fails with ``Database with name `<name>` already exists``.
+
+When you deploy through `app.yaml` without a name, Wasmer generates one in the form `db_xxxxxxxx`.
+
+## Connection variables
+
+Wasmer injects exactly five environment variables into your app at runtime:
+
+| Variable      | Content                                    |
+| ------------- | ------------------------------------------ |
+| `DB_HOST`     | Hostname of the database server            |
+| `DB_PORT`     | Port of the database server                |
+| `DB_NAME`     | Name of the database                       |
+| `DB_USERNAME` | Username                                   |
+| `DB_PASSWORD` | Password                                   |
+
+<Callout type="warning">
+Always read the host and port from `DB_HOST` and `DB_PORT`. Managed instances do **not** listen on the standard ports (`3306`/`5432`).
+</Callout>
+
+A `DATABASE_URL` variable is **not** injected. If your framework needs one, build it in your app:
+
+```python filename="example.py" copy
+import os
+
+DATABASE_URL = (
+    f"postgresql://{os.environ['DB_USERNAME']}:{os.environ['DB_PASSWORD']}"
+    f"@{os.environ['DB_HOST']}:{os.environ['DB_PORT']}/{os.environ['DB_NAME']}"
+    "?sslmode=require"
+)
+```
+
+The variables appear together with your other app [secrets](/edge/learn/secrets). They are updated automatically when you rotate credentials.
+
+### Hostnames
+
+`DB_HOST` points to a regional database alias. The prefix tells you the engine:
+
+- `db.<region>.…` and `mysql.<region>.…` are **MySQL** hosts.
+- `psql.<region>.…` are **PostgreSQL** hosts.
+
+Do not hardcode these hostnames. Use `DB_HOST`, which always points to the correct instance for your database.
+
+## Connect to your database
+
+Wasmer databases accept TLS connections. The server certificate is issued by a private certificate authority, so your client cannot verify the chain against public root certificates. Configure your client to use TLS without chain verification (for example `sslmode=require`). Do not turn TLS off.
+
+To connect from your own machine, first get the credentials from the database card in the dashboard, or from the CLI:
+
+```bash
+wasmer app database list --with-password
+```
+
+### `psql` (PostgreSQL)
+
+```bash
+psql "postgresql://<username>:<password>@<host>:<port>/<name>?sslmode=require"
+```
+
+### `mysql` (MySQL)
+
+```bash
+mysql -h <host> -P <port> -u <username> -p<password> <name>
+```
+
+### Django
+
+For PostgreSQL:
+
+```python filename="settings.py" copy
+import os
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ["DB_NAME"],
+        "USER": os.environ["DB_USERNAME"],
+        "PASSWORD": os.environ["DB_PASSWORD"],
+        "HOST": os.environ["DB_HOST"],
+        "PORT": os.environ["DB_PORT"],
+        "OPTIONS": {"sslmode": "require"},
+    }
+}
+```
+
+For MySQL, set `"ENGINE": "django.db.backends.mysql"` and remove the `sslmode` option.
+
+### Node.js
+
+For PostgreSQL with [node-postgres](https://node-postgres.com) (`pg`):
+
+```js filename="db.mjs" copy
+import pg from "pg";
+
+export const pool = new pg.Pool({
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  database: process.env.DB_NAME,
+  user: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  // TLS stays on. Chain verification is off because the server
+  // certificate comes from a private CA.
+  ssl: { rejectUnauthorized: false },
+});
+```
+
+For MySQL with [mysql2](https://github.com/sidorares/node-mysql2):
+
+```js filename="db.mjs" copy
+import mysql from "mysql2/promise";
+
+export const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  database: process.env.DB_NAME,
+  user: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+});
+```
+
+## Regions
+
+Databases are only available in some [Edge regions](/edge/learn/regions). The current database regions are:
+
+| Region     | Country | City        | MySQL | PostgreSQL |
+| ---------- | ------- | ----------- | ----- | ---------- |
+| `fr-roub1` | France  | Roubaix     | ✅    | ✅         |
+| `ca-beau1` | Canada  | Beauharnois | ✅    | ✅         |
+
+Region behavior when you create a database:
+
+- If your app is already pinned to a region, the database is created there. If that region does not support databases, creation fails.
+- If `locality.regions` in `app.yaml` names exactly one valid database region, that region is used.
+- If `locality.regions` names more than one region, creation fails with `Apps with databases must specify a single region.`
+- Otherwise the database is created in the **default database region**, and the app is pinned to it.
+
+After the database exists, the app and the database stay in the same region.
+
+## View credentials
+
+From the dashboard, open the **Databases** tab. The database card shows **Host**, **Port**, **Name**, and **Username**. Click the eye icon on the **Password** row to reveal the password. Every value has a copy button.
+
+From the CLI:
+
+```bash
+# Without passwords:
+wasmer app database list
+
+# With passwords:
+wasmer app database list --with-password
+```
+
+## Rotate credentials
+
+If credentials leaked, or you rotate them on a schedule, use the rotation action:
+
+1. Open the **Databases** tab.
+2. Click **Rotate Credentials** on the database card.
+
+Rotation starts immediately; there is no confirmation step. Both the **username** and the **password** change. The card and the injected `DB_USERNAME` and `DB_PASSWORD` variables update automatically. Your app receives the new values without a new deployment.
+
+<Callout type="warning">
+The old credentials stop working as soon as rotation completes. Update external clients (local tools, CI jobs) with the new values.
+</Callout>
+
+## Delete a database
+
+1. Open the **Databases** tab.
+2. Click **Delete database** on the database card.
+3. Confirm with **Delete database** in the dialog.
+
+<Callout type="warning">
+Deletion drops the database and its user immediately. All data in the database is destroyed. If you need the data, export it first (`pg_dump` / `mysqldump`), or ask [support](/edge/support) about a backup restore.
+</Callout>
+
+After deletion, the **Create database** button returns. The injected `DB_*` variables keep their old values until you create a new database or redeploy.
+
+## Change the engine
+
+Changing the engine of an existing database is not supported. There is no MySQL ↔ PostgreSQL conversion and no data migration.
+
+To switch engines: export your data, [delete the database](#delete-a-database), then [create a new one](#create-a-database) with the other engine.
+
+If a deployment requests a different engine than the existing database, it fails with:
+
+```
+Changing the engine of an existing database is not supported; delete the database before creating a postgres one.
+```
+
+## Database explorer
+
+Click **Go to DB Explorer** on the database card to open an [Adminer](https://www.adminer.org/) session in a new browser tab. You are logged in automatically. The explorer works for both engines.
+
+Use it to inspect tables, run queries, and verify data. For WordPress apps, see [WordPress database management](/edge/wordpress-hosting/database-management).
+
+## Backups
+
+Wasmer keeps automatic backups of managed databases for at least **14 days**. Backups run on the database instances; you do not configure them.
+
+To restore from a backup, contact [support](/edge/support) with your app name and the target date. You can also make your own exports at any time with `pg_dump` or `mysqldump` and your database credentials.
+
+## Limitations
+
+- One database per app. A second create fails with `App already has an active database: <app-name>`.
+- The engine of an existing database cannot be changed. Delete the database first.
+- **WordPress** apps always use MySQL. The creation flow offers no engine choice, and the API rejects other engines with `WordPress apps only support MySQL databases`.
+- Databases created before engine selection existed are MySQL.
+- Databases are only available in the [database regions](#regions).
+
+## Troubleshooting
+
+**`Unsupported database engine `psql`. Supported engines: mysql, postgres.`**
+Use `engine: postgres` in `app.yaml`. The short form `psql` is not a valid engine value.
+
+**`Region <name> does not support databases.`**
+The requested region has no database service. Use one of the [database regions](#regions).
+
+**``App `<name>` is pinned to region `<region>`.``**
+Your app already runs in a pinned region and the database request named a different one. Create the database in the pinned region, or migrate the app first.
+
+**`Apps with databases must specify a single region.`**
+`locality.regions` lists more than one region. Keep exactly one region for apps with a database.
+
+**`conflict: App already has an active database`**
+The app reached the one-database limit. Delete the existing database before creating a new one.
+
+**Connection refused or timeout**
+Make sure that your client uses `DB_HOST` and `DB_PORT`. The managed instances do not listen on the standard ports (`3306`/`5432`). If you connect from your own machine, make sure that your network allows outbound connections to the database port.
+
+**TLS or certificate errors (for example `self-signed certificate in certificate chain`)**
+The server certificate is issued by a private certificate authority. Configure the client to require TLS without chain verification: `sslmode=require` for PostgreSQL clients, `ssl: { rejectUnauthorized: false }` for `pg` in Node.js. Do not turn TLS off.
+
+**Provisioning failed in the dashboard**
+The error message is shown in the **New database** dialog. Failed attempts do not leave a partial database behind, so you can retry. If the error persists, contact [support](/edge/support).
+
+## Related pages
+
+- [App configuration (`app.yaml`)](/edge/configuration#database)
+- [Secrets](/edge/learn/secrets)
+- [Regions](/edge/learn/regions)
+- [WordPress database management](/edge/wordpress-hosting/database-management)
