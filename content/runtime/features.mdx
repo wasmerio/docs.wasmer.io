@@ -54,7 +54,7 @@ WebAssembly features:
 |                                       | Singlepass | Cranelift | LLVM |
 | ------------------------------------- | ---------- | --------- | ---- |
 | Bulk memory operations                | ✅         | ✅        | ✅   |
-| Multi-value return                    | ✅[^1]     | ✅[^1]    | ✅   |
+| Multi-value return                    | ✅[^1]     | ✅        | ✅   |
 | Import & export of mutable globals    | ✅         | ✅        | ✅   |
 | Non-trapping float-to-int conversions | ✅         | ✅        | ✅   |
 | Sign-extension operations             | ✅         | ✅        | ✅   |
@@ -91,10 +91,10 @@ Wasmer features:
 
 ## Backend support by Instruction Set Architecture (ISA)
 
-|                | x86_64 | arm64 | riscv64gc | riscv32gc | loongarch64 |
-| -------------- | ------ | ----- | --------- | ------------- | ----------- |
-| Cranelift      | ✅     | ✅    | ✅        | ❌            | ❌          |
-| LLVM           | ✅     | ✅    | ✅        | ✅            | ✅          |
-| Singlepass     | ✅     | ✅    | ✅        | ❌            | ❌          |
-| V8             | ✅     | ✅    | ✅        | ✅            | ✅          |
-| Browser        | ✅     | ✅    | ✅        | ✅            | ✅          |
+|                | x86_64 | arm64 | riscv64gc | loongarch64 |
+| -------------- | ------ | ----- | --------- | ----------- |
+| Cranelift      | ✅     | ✅    | ✅        | ❌          |
+| LLVM           | ✅     | ✅    | ✅        | ✅          |
+| Singlepass     | ✅     | ✅    | ✅        | ❌          |
+| V8             | ✅     | ✅    | ✅        | ✅          |
+| Browser        | ✅     | ✅    | ✅        | ✅          |
