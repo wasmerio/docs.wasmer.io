@@ -10,6 +10,15 @@ The overview of the Wasmer ecosystem can be found in `pages/index.mdx`:
 - Wasmer Runtime in `pages/runtime.mdx`: the runtime that is able to run any software via WebAssembly securely (similar to Docker)
 - Wasmer Registry in `pages/registry.mdx`: the registry that hosts all the packages (similar to Docker Hub, Github or NPM)
 
+## Agent Skills
+
+`.agents/skills/` holds productized Agent Skills (agentskills.io format)
+that ship with the docs: `wasmer-cli-usage` (run, build, package, and debug
+programs with the wasmer CLI) and `wasmer-edge` (deploy and maintain apps
+on Wasmer Edge, with a GraphQL cookbook in `references/`). `.claude` is a
+symlink to `.agents`. Keep the skills in sync with the pages they overlap;
+their facts are verified against the CLI, so trust them over stale prose.
+
 ## Project Structure & Module Organization
 
 - Source: Next.js + Nextra docs site using TypeScript.
