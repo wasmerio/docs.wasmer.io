@@ -25,7 +25,7 @@ volumes:
   - name: data
     mount: /public/things_i_want_to_persist
 ```
-to `app.yaml`. This will mount a persistent volume named `data` into `/public/persistent_volume` directory of your application
+to `app.yaml`. This will mount a persistent volume named `data` into `/public/things_i_want_to_persist` directory of your application
 
 Now, let's re-deploy the app
 
@@ -37,7 +37,7 @@ After deployment completes, you can open your app's dashboard, printed in the de
 To see the persistent volume under the storage tab (e.g. https://wasmer.io/apps/{username}/{appname}/storage).
 All the data that your application creates under the mounted directory will persist through app crashes, restarts and updates. 
 The volumes are also s3 compatible.
-You can use any s3 client to retrieve and upload data to your bucket
+You can enable S3 access per volume and use any s3 client to retrieve and upload data
 
 
 # Accessing volume from outside of your app
@@ -49,27 +49,40 @@ You can use any s3 client to retrieve and upload data to your bucket
 />
 
 ## via s3 clients
-You can provide the credentials specific to your app to any s3 client for accessing your volume. The credentials are available in your app's dashboard
+S3 access is opt-in per volume. First, enable it:
 
-Also, wasmer cli has a convenient way to configure rclone. `wasmer app volume configure` will print rclone configuration for connecting your apps volume
+```bash
+wasmer app volume enable-s3
+```
+
+Then retrieve the per-volume credentials (access key, secret key and endpoint):
+
+```bash
+wasmer app volume credentials
+```
+
+You can provide these credentials to any s3 client for accessing your volume.
+
+By default the credentials are printed as an rclone configuration snippet for connecting to your volume; `--format=rclone` selects it explicitly, and `json`, `yaml` and `table` formats are also available
 
 ## via wasmer.io
-In the storage section of your app's dashboard, you can see links to browse your volumes. 
+In the storage section of your app's dashboard, you can see your volumes. 
 
-Clicking browse volumes will redirect and authenticate you to an S3 frontend to view your content of your volume
-Note: You can only view, you can't upload files with the s3 frontend yet. 
+Clicking "Go to File Explorer" on a volume opens a file explorer to browse its files
+
+You can also manage files remotely over [SFTP](/edge/learn/ssh/sftp)
 
 # Proving persistency
 
-Now, let's upload "hello world" file to the volume. Get your volumes credentials and upload using an s3 client
+Now, let's upload "hello world" file to the volume. Enable S3 access, add the rclone configuration printed by `wasmer app volume credentials` to your rclone config, and upload
 ```bash
 echo "Hello World!" > index.html
 rclone copy ./index.html edge-volume:/data
 ```
 (`/data` is the name of the volume, since you can mount multiple volumes to your app, you access to your data under via rclone in /\{volume_name\})
 The template app we used will show the file you uploaded at https://your_app_url.wasmer.app/things_i_want_to_persist/index.html
-You can also use the s3 client or the s3 frontend that we host for you to view your uploaded file
+You can also view your uploaded file with your s3 client or the dashboard file explorer
 
 Now, let's force a container restart.
 When updating your app with `wasmer deploy`, a new instance of your app will be created. So a new filesystem will be in use for your app and the volumes will be mounted
-After running `wasmer deploy`, you can see your `index.html` is still there. View from the app at url https://your_app_url.wasmer.app/things_i_want_to_persist/index.html, or from your s3 client, or from our hosted s3 frontend!
+After running `wasmer deploy`, you can see your `index.html` is still there. View from the app at url https://your_app_url.wasmer.app/things_i_want_to_persist/index.html, from your s3 client, or from the dashboard file explorer

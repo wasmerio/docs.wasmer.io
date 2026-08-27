@@ -187,8 +187,9 @@ If `engine` is omitted, the database is MySQL. The engine of an existing
 database cannot be changed; delete the database first. An app can have one
 database.
 
-**Note**: databases are tied to regions. When specifying a database, you must
-also specify a single region with the `locality.regions` setting.
+**Note**: databases are tied to regions. Specifying a region with the
+`locality.regions` setting is optional; if omitted, the database is created in
+the default database region. Specifying multiple regions is an error.
 Only some of the regions support databases!
 
 Check the [list of available regions](/edge/learn/regions).
@@ -226,20 +227,19 @@ See [InstaBoot](/edge/learn/instaboot) for more details.
 ```yaml filename="app.yaml" copy
 capabilities:
   instaboot:
+    # You can optionally specify a maximum age.
+    # If the maximum age is reached, a new snapshot will automatically
+    # be created, and the old ones discarded
+    max_age: 12h
     requests:
       - path: /
       - path: /_bootstrap
-        # You can optionally specify a maximum age.
-        # If the maximum age is reached, a new snapshot will automatically
-        # be created, and the old ones discarded
-        max_age: 12h
-
         # Optional request settings:
         method: POST
-	body: "custom body"
-	headers:
-	- name: X-My-Header
-	  value: my-value
+        body: "custom body"
+        headers:
+          - name: X-My-Header
+            value: my-value
 ```
 
 #### `cdn_cache`

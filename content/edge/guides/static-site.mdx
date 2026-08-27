@@ -70,14 +70,16 @@ The above command will do the following:
 1. Deploy it to Wasmer Edge
 
 <Callout type="error" emoji="⚠️">
-Don't change the `public` directory attribute in the `wasmer.toml` file for this tutorial.
+Don't change the `root` setting in the `Staticfile` for this tutorial.
 If you want to learn how to specify a different directory for build output, check out our [React Static Site](/edge/guides/react-static-site) tutorial.
 </Callout>
 
 Try clicking the URL which is under the deployment message `https://my-new-site-wasmer-user.wasmer.app`, and expect to see something like:
 
 <Callout type="info" emoji="ℹ">
-    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.app`
+    The deployment URL follows the format `https://<app-name>.wasmer.app`. If
+    the name is already taken, a suffixed variant such as
+    `https://<app-name>-<app-owner>.wasmer.app` is used instead.
 </Callout>
 
 <StaticSite image={staticSiteImg} />
@@ -91,6 +93,7 @@ Your directory structure should look like this:
   <FileTree.Folder name="my-new-site" defaultOpen>
     <FileTree.File name="LICENSE" />
     <FileTree.File name="README.md" />
+    <FileTree.File name="Staticfile" />
     <FileTree.File name="app.yaml" />
 	<FileTree.Folder name="public" defaultOpen>
   	  <FileTree.File name="index.html" />
@@ -98,7 +101,6 @@ Your directory structure should look like this:
   	<FileTree.Folder name="settings" defaultOpen>
   	  <FileTree.File name="config.toml" />
   	</FileTree.Folder>
-    <FileTree.File name="wasmer.toml" />
   </FileTree.Folder>
 </FileTree>
 

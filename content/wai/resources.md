@@ -1,5 +1,9 @@
 # Resources
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 A resource represents an opaque object where the representation and underlying
 implementation is completely hidden from the outside world. Resources may have
 associated methods, static methods, or no methods at all.

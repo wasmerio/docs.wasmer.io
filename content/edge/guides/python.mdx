@@ -72,11 +72,13 @@ The above command will do the following:
 
 Let's check it: 
 ```bash copy
-curl https://python-http-server-wasmer.user.app
+curl https://python-http-server-wasmer-user.wasmer.app
 ```
 
 <Callout type="info" emoji="ℹ">
-    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.app`
+    The deployment URL follows the format `https://<app-name>.wasmer.app`. If
+    the name is already taken, a suffixed variant such as
+    `https://<app-name>-<app-owner>.wasmer.app` is used instead.
 </Callout>
 
 Expect output similar to this:
@@ -91,7 +93,6 @@ Your directory should now look like this:
   <FileTree.Folder name="src" defaultOpen>
     <FileTree.File name="main.py" />
   </FileTree.Folder>
-  <FileTree.File name="wasmer.toml" />
   <FileTree.File name="README.md" />
   <FileTree.File name="LICENSE" />
   <FileTree.File name="app.yaml" />
@@ -139,33 +140,10 @@ wasmer deploy
 Once it's successfully redeployed, let's try to cURL the server:
 
 ```bash copy
-curl https://python-http-server-wasmer.user.app
+curl https://python-http-server-wasmer-user.wasmer.app
 ```
 
 Expect it to contain the additional data field:
-```bash
-{"message": "wasmer/python-http-server is running on Python!", "hello": "world"}
-```
-
-### Testing your Python application locally
-
-To run your Python application locally simply run 
-```bash copy
-wasmer run . --env PORT=9090
-``````
-
-This will start a local server on  `http://localhost:9090`.
-
-<Callout type="info" emoji="ℹ️">
-  You can see all the available options with `wasmer run --help` or click [here](/runtime/cli/) to see the full documentation. 
-</Callout>
-
-Let's try to cURL the server:
-
-```shell
-curl http://127.0.0.1:9090
-```
-Expect:
 ```bash
 {"message": "wasmer/python-http-server is running on Python!", "hello": "world"}
 ```

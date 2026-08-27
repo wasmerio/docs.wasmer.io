@@ -15,8 +15,8 @@ Each job consists of the following fields:
 - **trigger** *(str, required)* – Defines when the job should run.
   - Use a duration such as `15m`, `1h`, or `24h` for simple interval
     schedules.
-  - Use a cron expression for uniform schedules, such as
-    `'*/15 * * * *'` for every 15 minutes.
+  - Use a cron expression, such as `'*/15 * * * *'` for every 15
+    minutes.
   - Use `pre-deployment` to run before a new app version is created.
   - Use `post-deployment` to run after a new app version is created.
 - **action** *(required)* – Specifies the task to run. More details
@@ -29,13 +29,12 @@ Fully working examples configuration can be found
 
 ## Schedules and Deployment Triggers
 
-Scheduled jobs can use either a duration or a cron expression. Cron expressions
-must produce a uniform interval. For example, `*/15 * * * *` is valid because it
-runs every 15 minutes, while a schedule such as `0 9 * * MON-FRI` is not uniform
-because the interval between Friday and Monday is different.
+Scheduled jobs can use either a duration or a cron expression. Schedules do not
+need to be uniform: an expression such as `0 9 * * MON-FRI` is valid. The only
+requirement is that consecutive runs are at least the platform minimum interval
+apart, which defaults to 1 minute.
 
-Scheduled jobs are subject to the platform minimum interval, which defaults to 5
-minutes. Deployment jobs use the special `pre-deployment` and `post-deployment`
+Deployment jobs use the special `pre-deployment` and `post-deployment`
 triggers and run once during deployment instead of being installed as recurring
 cron jobs.
 
@@ -196,9 +195,9 @@ jobs:
 
 ## Use Cases
 
-- **Pre-deployment migrations:** Run setup or migration commands before
-  publishing the new version.
-- **Post-deployment setup:** The `installation` job ensures necessary
-  setup commands run after deployment.
-- **Scheduled background tasks:** The `wp-cron` job triggers
-  WordPress’s cron system every 15 minutes.
+- **Pre-deployment migrations:** The `prepare-release` job runs setup or
+  migration commands before publishing the new version.
+- **Post-deployment setup:** The `warm-up-app` job requests the app
+  after each deployment.
+- **Scheduled background tasks:** The `ping-server-every-15-minutes`
+  job fetches the app every 15 minutes.

@@ -1,5 +1,9 @@
 # Wasmer Pack
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 The Wasmer Pack project is a code generator that takes in a WebAssembly library
 and the [WAI][wai] files defining its interface, and generates packages for
 using it natively in your favourite programming language.

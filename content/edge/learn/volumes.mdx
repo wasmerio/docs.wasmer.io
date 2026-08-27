@@ -4,7 +4,8 @@ import { Callout } from '@components/nextra-theme';
 
 Volumes provide persistent disk storage for applications.
 
-They also support remote access with any S3 compatible client.
+They also support remote access with any S3 compatible client, once S3 access
+is enabled for a volume.
 
 
 <Callout type="warning">
@@ -78,25 +79,34 @@ You can inspect volumes in two ways:
 * using the CLI:
 
 ```bash copy
-wasmer app volumes list [app]
+wasmer app volume list [app]
 ```
 
 ## Remotely Accessing Volumes
 
 Volumes are not only available to your apps, but can also be remotely accessed
-through the standard S3 API, or through a builtin web UI.
+through the standard S3 API. S3 access is opt-in per volume.
 
-You can use the CLI to retrieve the credentials:
+First, enable S3 access for a volume:
 
 ```bash copy
-wasmer app volumes credentials --format=json
+wasmer app volume enable-s3
 ```
 
-This will print the S3 API URL, access key and secret key in the JSON format.
+Then use the CLI to retrieve the credentials:
 
+```bash copy
+wasmer app volume credentials --format=json
+```
+
+This will print a record for each S3-enabled volume with its S3 endpoint,
+access key and secret key in the JSON format. The available formats are
+`rclone` (the default), `json`, `yaml` and `table`.
 
 <Callout type="info">
-You can visit the above URL in your browser to access a builtin web UI!
+To browse a volume's files in the browser, open the "Storage" tab on your app
+dashboard and click "Go to File Explorer". You can also manage files remotely
+over [SFTP](/edge/learn/ssh/sftp).
 </Callout>
 
 ### Configuring rclone
@@ -107,7 +117,7 @@ to your volumes. It even allows mounting a volume to your local machine!
 You can get an rclone configuration snippet through the CLI:
 
 ```bash copy
-wasmer app volumes credentials --format=rclone
+wasmer app volume credentials --format=rclone
 ```
 
 This will print out a configuration snippet that can be added to the rclone
@@ -143,8 +153,11 @@ In order to rotate (i.e. automatically assign a different value) the credentials
 you can simply run this command with the CLI: 
 
 ```bash copy
-wasmer app volumes rotate-secrets 
+wasmer app volume rotate-secrets 
 ```
+
+Rotation applies to the S3-enabled volumes of the app. To rotate a single
+volume, pass `--volume <name|mount|id>`.
 
 This command will rotate their values and show the new ones directly in the CLI. 
 

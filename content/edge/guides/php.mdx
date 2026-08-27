@@ -7,7 +7,7 @@ import CliVersionCallout from "@components/deploy/CliVersionCallout.mdx";
 
 # Quickstart guide for a PHP application
 
-In this guide, you'll learn the process of deploying a PHPapplication on Wasmer Edge.
+In this guide, you'll learn the process of deploying a PHP application on Wasmer Edge.
 We will cover installation of the CLI, setting up a new PHP application, and deploying it.
 
 ## Deploying a PHP application 
@@ -74,7 +74,6 @@ Your directory should now look like this:
   </FileTree.Folder>
   <FileTree.File name="README.md" />
   <FileTree.File name="app.yaml" />
-  <FileTree.File name="wasmer.toml" />
 </FileTree>
 
 Let's check it: 
@@ -82,7 +81,9 @@ Let's check it:
 curl https://php-starter-wasmer-user.wasmer.app
 ```
 <Callout type="info" emoji="ℹ">
-    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.app`
+    The deployment URL follows the format `https://<app-name>.wasmer.app`. If
+    the name is already taken, a suffixed variant such as
+    `https://<app-name>-<app-owner>.wasmer.app` is used instead.
 </Callout>
 
 Expect output similar to this:
@@ -92,7 +93,7 @@ emoji   =>      😀 😃 😄 😁 😆
 2       =>      5
 5       =>      89009
 Random number   =>      630
-PHP Version     =>      8.3.4
+PHP Version     =>      8.3.x
 ```
 
 ### Update the app 
@@ -158,7 +159,7 @@ Because of that, we want to showcase how you can make your app ready for product
 
 #### `scaling.mode` in `app.yaml`
 
-If you check the `app.yaml` file, you will see the setting [`scaling.mode`](https://github.com/wasmer-examples/php-wasmer-starter/blob/main/app.yaml#L5-L6):
+You can set [`scaling.mode`](/edge/configuration#scalingmode) in your `app.yaml` file:
 
 ```yaml copy /single_concurrency/
 scaling:
@@ -169,7 +170,10 @@ scaling:
 
 #### `php.ini` settings.
 
-You can customize the PHP settings with a custom `php.ini`.
+You can customize the PHP settings with a custom `php.ini`. This requires
+adding your own `wasmer.toml` manifest to the project, which replaces the
+default package configuration generated for the template.
+
 Create a `config/php.ini` inside of your folder, and use the following settings:
 
 ```ini filename="config/php.ini" copy
@@ -181,7 +185,7 @@ upload_max_filesize = "20M"
 post_max_size = "25M"
 ```
 
-Now, copy the `config` directory inside of the filesystem (`fs`) in `wasmer.toml`, and set the environment variable `PHPRC`
+Now, in your `wasmer.toml`, map the `config` directory into the filesystem (`fs`) and set the environment variable `PHPRC`
 
 ```toml filename="wasmer.toml" /config/ /PHPRC/
 [fs]

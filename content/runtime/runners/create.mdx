@@ -1,13 +1,12 @@
 # How to create a Runner
 
-Runners allow anyone to create custom ways to run Wasmer packages or WebAssembly modules.
+Runners define how a Wasmer package or WebAssembly module is executed.
 
-This can be incredibly useful for different use cases:
-* You are a game creator, such as [WASM-4](https://wasm4.org/), and you want to create a custom runner so your games can be published and run with Wasmer.
-* You have created a new [ABI](https://en.wikipedia.org/wiki/Application_binary_interface) for using, for example, WebGPU on the server and in the browser, and you want to allow those programs to be published and run with Wasmer.
+The `wasmer` CLI ships with the [WASI(X)](/runtime/wasix) runner only, and
+custom runners cannot be registered with it. If you embed the
+[`wasmer-wasix`](https://docs.rs/wasmer-wasix) crate in your own application,
+you can implement its `Runner` trait to execute packages in a custom way.
 
-Other use cases?
-
-If you are interested in creating a custom runner, please let us know here:
+If you are interested in custom runners, please let us know here:
 
 https://github.com/wasmerio/wasmer/discussions/3997

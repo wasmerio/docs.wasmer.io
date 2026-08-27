@@ -6,7 +6,8 @@ These questions were either asked on Discord or were felt to be important to inc
 ## Does traffic ever get sent to more-geographically distant nodes that are already active ?
 
 Traffic currently is always handled in the initial region (aka data center) the user is assigned to.
-There will soon be a way to restrict your apps to only run in specified regions, though.
+You can restrict your apps to only run in specified regions with the
+[`locality.regions` setting](/edge/configuration#localityregions) in `app.yaml`.
 
 ## What is threshold for 'spill over' when nodes are overloaded? Are allocations to edge nodes based on vCPU or request volume ?
 
@@ -22,7 +23,7 @@ What we will add a graceful termination flow like on Linux: instances will recei
 
 It would probably be advisable.
 It's possible for multiple versions of your app to run on multiple servers in the same region, and for a bunch of new instances to get spawned, so you might have quite bursty connection counts.
-If you need more control, one of the features that we hope to finish in this quarter (before end of year) is persistent instances, which will keep running, and won't be dynamically spawned or terminated.
+If you need more control, one of the features on our roadmap is persistent instances, which will keep running, and won't be dynamically spawned or terminated.
 
 A note about database locality:
-We will have configuration that allows you to restrict your app to certain regions, so if you want to keep your instances close to the location of your database, that will be possible.
+The [`locality.regions` setting](/edge/configuration#localityregions) allows you to restrict your app to certain regions, so you can keep your instances close to the location of your database.

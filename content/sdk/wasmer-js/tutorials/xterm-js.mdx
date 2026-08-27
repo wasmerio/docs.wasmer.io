@@ -28,15 +28,15 @@ npm init -y
 
 ### Add Dependencies
 
-Once initialized, install `@wasmer/sdk`, `xterm`, and `xterm-addon-fit` by
-running:
+Once initialized, install `@wasmer/sdk`, `@xterm/xterm`, and `@xterm/addon-fit`
+by running:
 
 ```sh copy
-npm install @wasmer/sdk xterm xterm-addon-fit
+npm install @wasmer/sdk @xterm/xterm @xterm/addon-fit
 ```
 
 These packages are crucial; `@wasmer/sdk` is our WebAssembly runtime, while
-`xterm` and its add-on are used to create the terminal interface in the browser.
+`@xterm/xterm` and its add-on are used to create the terminal interface in the browser.
 
 ### Install Vite
 
@@ -92,7 +92,7 @@ Then, import xterm's CSS in your TypeScript file for styling the terminal. This
 import is necessary for the terminal's visual appearance and functionality.
 
 ```typescript filename="index.ts" copy
-import "xterm/css/xterm.css";
+import "@xterm/xterm/css/xterm.css";
 ```
 
 ### Implement the TypeScript Logic
@@ -102,8 +102,8 @@ importing necessary modules:
 
 ```typescript filename="index.ts" copy
 import type { Instance } from "@wasmer/sdk";
-import { Terminal } from "xterm";
-import { FitAddon } from "xterm-addon-fit";
+import { Terminal } from "@xterm/xterm";
+import { FitAddon } from "@xterm/addon-fit";
 ```
 
 ### Initialize the SDK

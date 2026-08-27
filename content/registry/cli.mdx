@@ -77,14 +77,14 @@ Options:
       --wasmer-dir <WASMER_DIR>
           Set Wasmer's home directory
           
-          [env: WASMER_DIR=/home/imago/.local/share/wasmenv/current]
-          [default: /home/imago/.local/share/wasmenv/current]
+          [env: WASMER_DIR=~/.wasmer]
+          [default: ~/.wasmer]
 
       --cache-dir <CACHE_DIR>
           The directory cached artefacts are saved to
           
-          [env: WASMER_CACHE_DIR=/home/imago/.wasmer/cache]
-          [default: /home/imago/.local/share/wasmenv/current/cache]
+          [env: WASMER_CACHE_DIR=~/.wasmer/cache]
+          [default: ~/.wasmer/cache]
 
   -v, --verbose...
           Generate verbose output (repeat for more verbosity)
@@ -107,7 +107,7 @@ Options:
       --token <TOKEN>
           The API token to use when communicating with the registry (inferred from the environment by default)
           
-          [env: WASMER_TOKEN=wap_1f8cd65ed491ab8087f54f8078f389a7bb6e7236c808aac61a487b4236f90d2f]
+          [env: WASMER_TOKEN=]
 
       --color <COLOR>
           When to display colored output

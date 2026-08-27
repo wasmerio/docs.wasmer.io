@@ -1,5 +1,9 @@
 # Choosing Between Resources and Records
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 The difference between a [resource](/wai/resources) and a
 [record](/wai/records) can be subtle when first starting out,
 but there is a simple rule of thumb that will work 90% of the time:

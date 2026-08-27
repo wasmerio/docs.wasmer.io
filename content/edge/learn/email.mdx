@@ -90,12 +90,11 @@ Many web frameworks offer a sendmail transport as an alternative to SMTP. If
 yours does, point it at the `sendmail` binary and no further Wasmer-specific
 configuration is needed. A few examples:
 
-- **Django** -- set `EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'` or use a sendmail backend package.
+- **Django** -- set `EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'` or use a sendmail backend package.
 
 ## Rate Limits
 
-Email sending is available on all plans. The free tier includes a limited
-sending allowance; paid tiers offer higher quotas. See the
+Email sending requires a paid plan. Sending quotas vary by plan. See the
 <a href="https://wasmer.io/pricing" target="_blank" rel="noreferrer">Wasmer pricing page</a>
 for current plan details and limits.
 

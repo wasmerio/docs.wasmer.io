@@ -75,7 +75,9 @@ curl https://jsworker-wasmer-user.wasmer.app
 ```
 
 <Callout type="info" emoji="ℹ">
-    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.app`
+    The deployment URL follows the format `https://<app-name>.wasmer.app`. If
+    the name is already taken, a suffixed variant such as
+    `https://<app-name>-<app-owner>.wasmer.app` is used instead.
 </Callout>
 
 Expect output similar to:
@@ -97,7 +99,6 @@ Your directory should now look like this:
   <FileTree.Folder name="src" defaultOpen>
     <FileTree.File name="index.js" />
   </FileTree.Folder>
-  <FileTree.File name="wasmer.toml" />
   <FileTree.File name="README.md" />
   <FileTree.File name="app.yaml" />
 </FileTree>
@@ -105,7 +106,7 @@ Your directory should now look like this:
 
 
 To illustrate the lifecycle of an app, let's edit the `index.js` file 
-in the `public` folder: 
+in the `src` folder: 
 
 ```js copy filename="src/index.js"
 async function handler(request) {
@@ -121,7 +122,7 @@ async function handler(request) {
 
 addEventListener("fetch", (fetchEvent) => {
   fetchEvent.respondWith(handler(fetchEvent.request));
-}
+});
 ```
 
 Now, simply run `wasmer deploy` again:
@@ -135,39 +136,6 @@ curl https://jsworker-wasmer-user.wasmer.app
 ```
 
 Expect output:
-```bash
-{
-  "env": {
-    ...
-  },
-  "headers": {
-    ...
-  },
-  "hello": "world"
-}
-```
-
-### Testing your JS service worker locally
-
-To run your worker locally, simply run
-
-```bash copy
-wasmer run .
-```
-
-<Callout type="info" emoji="ℹ️">
-  You can see all the available options with `wasmer run --help` or click [here](/runtime/cli/) to see the full documentation. 
-</Callout>
-
-The above command will start a web server on `http://127.0.0.1:8080`.
-
-Let's try to cURL the server:
-
-```bash copy
-curl http://127.0.0.1:8080
-```
-
-Expect:
 ```bash
 {
   "env": {
@@ -203,6 +171,6 @@ Compare this to some of [the alternatives](/edge/vs/amazon-lambda).
 
 <Card
   icon={<GitHubLogo />}
-  title="wasmer-examples/edge-js-service-worker"
-  href="https://github.com/wasmer-examples/js-service-worker-example"
+  title="wasmer-examples/js-worker-wasmer-starter"
+  href="https://github.com/wasmer-examples/js-worker-wasmer-starter"
 />

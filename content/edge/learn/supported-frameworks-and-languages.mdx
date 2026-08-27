@@ -32,10 +32,10 @@ manage.py         # Django projects
 - Typical signals: framework configs (e.g., `next.config.*`, `astro.config.*`) and package scripts (`build`, `dev`). Wasmer builds and packages for Edge.
 
 ## Databases (auto‑detected)
-- Support: MySQL (currently supported).
-- Behavior: If your app requires a database, Wasmer will automatically detect it and attach a MySQL database to your app.
+- Support: MySQL and PostgreSQL.
+- Behavior: If your app requires a database, Wasmer will automatically detect it and attach a database to your app.
 - Connection: When running on Wasmer Edge, these environment variables are prepopulated with the connection details:
-  - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`.
+  - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`.
 
 ## Quick Reference
 ```
@@ -43,7 +43,7 @@ PHP:       any *.php  → installs Composer deps
 Python:    requirements.txt | pyproject.toml → installs deps, runs framework steps
 Static:    index.html | Staticfile → served as static
 JS:        Next.js / Astro → auto build + package
-DB:        MySQL (auto‑detected) → env: DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+DB:        MySQL / PostgreSQL (auto‑detected) → env: DB_HOST, DB_PORT, DB_NAME, DB_USERNAME, DB_PASSWORD
 ```
 
 To get started, pick a template at https://wasmer.io/templates and push your code. The platform will handle dependency installation, build, packaging, and rollout to Wasmer Edge automatically.

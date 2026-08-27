@@ -57,71 +57,55 @@ pnpm run build
 Run the commands below to initialize files for Wasmer Edge:
 
 ```bash copy
-wasmer app create --template static-site
+wasmer app create --template static-website
 ```
+
+The above command will give you the following prompt:
 
 ```bash
-  Who should own this package?:
-  > <your-username>
-  What package do you want to use?:
-  > Create new package # 👈🏼 let's select this for this tutorial
-    Use existing package
-  What should the package be called?: react-edge-tutorial # 👈🏼 You can choose any name you like
-  What should be the name of the app?: <your-username>-react-edge-tutorial
-  Would you like to publish the app now? yes
-  Creating the app...
-  Publishing package...
-  [1/2] ⬆️   Uploading...
-  [2/2] 📦  Publishing...
-  Successfully published package `<your-username>/react-edge-tutorial@0.1.0`
-  Deploying app <your-username>/<your-username>-react-edge-tutorial...
-
-   ✅ App <your-username>/<your-username>-react-edge-tutorial was successfully deployed!
-
-  > App URL: https://<your-username>-react-edge-tutorial.wasmer.app
-  > Versioned URL: https://x43izt2fk0n5.id.wasmer.app # 🌐 You can access our URL too
-  > Admin dashboard: https://wasmer.io/apps/<your-username>/<your-username>-react-edge-tutorial
-
-  Waiting for the app to become reachable...
-  (You can safely exit now with CTRL-C)
+✔ Who should own this app? · <your-username>
+✔ What should be the name of the app? · react-edge-tutorial
+✔ What would you like to deploy? · Start with a template
+✔ Select a language (6 available) · N/A
+✔ Selected template · Static website
+✔ Unpacked template
+✔ Do you want to deploy the app now? · no
 ```
 
-The `wasmer app create --template static-site` command will prompt you for the following:
+The `wasmer app create --template static-website` command will prompt you for the following:
 
-- **Package owner**: This is the owner of the package. It can be your username or an organization.
-- **Package**: This is the package you want to use. You can either select an existing package or create a new one.
-- **Package name**: This is the name of your package. It must be unique across all packages on your namespace.
+- **App owner**: This is the owner of the app. It can be your username or an organization.
 - **App name**: This is the name of your app. It must be unique across all apps on your namespace.
-- **Publish**: This will publish the new package and app to the registry.
-
-<Callout type="default" emoji="⚙️">
-  As you see above in the last line of the output, the CLI will prompt you to
-  publish the new package and app. We recommend publishing the package and app.
-</Callout>
+- **Deploy**: Answer `no` for now; we still need to point the server at the React build output.
 
 The above command will do the following:
 
-- Create a Wasmer package config (`wasmer.toml`)
-- Create an app config (`app.yaml`)
-- Create a **public** directory that holds the website data
+- Unpack the template files (`Staticfile`, `settings/`, and a **public** directory that holds the website data)
+- Generate an app config (`app.yaml`)
 
 <Callout type="default" emoji="⚙️">
-  As mentioned above, the default public directory is `public`. You **must**
-  change this for a react project to `build` or `dist` or any suitable directory
-  other than public because it might contain your static assets such as
-  **favicon**. The starter project in step 3.1, is setup with vite so the build
-  directory is automatically set to `dist`.
+  By default the template serves the `public` directory (the `root` setting in
+  the `Staticfile`). You **must** change this for a react project to `build` or
+  `dist` or any suitable directory other than public because it might contain
+  your static assets such as **favicon**. The starter project in step 3.1, is
+  setup with vite so the build directory is automatically set to `dist`.
   <br /> For a react project you can do this by setting the `outDir` using the `-o`
   flag in the `build` script in `package.json`:
 >
   ```json
   "scripts": {
-    "build": "tsc && vite build" // 👈🏼 Ensure the build output ends up in the same place as wasmer.toml>fs.public
+    "build": "tsc && vite build" // 👈🏼 Ensure the build output ends up in the same place as the Staticfile root
   }
   ```
 </Callout>
 
-After this you would have to change your `wasmer.toml` to match your project's build directory:
+After this, point the server at your project's build directory in the `Staticfile`:
+
+```yaml copy filename="Staticfile"
+root: dist # 👈🏼 dist or any other directory (keep consistent with package.json)
+```
+
+If you also want to run the site locally, add a `wasmer.toml` manifest that maps your build directory:
 
 ```toml copy filename="wasmer.toml"
 [package]
@@ -130,7 +114,7 @@ version = "0.1.0"
 description = "Your cool react project's description"
 
 [dependencies]
-"sharrattj/static-web-server" = "1"
+"wasmer/static-web-server" = "1"
 
 [fs]
 public = "dist" # 👈🏼 dist or any other directory (keep consistent with package.json)
@@ -200,14 +184,14 @@ App is now reachable!
 ```
 
 <Callout type="info" emoji="ℹ️">
-  You must be in the directory holding the `wasmer.toml` and `app.yaml` config
-  files.
+  You must be in the directory holding the `app.yaml` config file.
 </Callout>
 
 <Callout type="info" emoji="ℹ️">
-  `wasmer deploy` automatically publishes your package and bumps the minor
-  version. You can check all the available options with `wasmer deploy --help`
-  or click [here](/edge/cli) to see the full documentation.
+  `wasmer deploy` publishes your package and bumps the patch version by default
+  (`--bump`, e.g. `0.1.0` → `0.1.1`). You can check all the available options
+  with `wasmer deploy --help` or click [here](/edge/cli) to see the full
+  documentation.
 </Callout>
 
 Now you can access your site on the web at the URL provided in the output.

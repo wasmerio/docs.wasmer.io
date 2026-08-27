@@ -59,7 +59,6 @@ The above command will initialize a project with the following structure.
       <FileTree.File name="config.toml" />
     </FileTree.Folder>
     <FileTree.File name="app.yaml" />
-    <FileTree.File name="wasmer.toml" />
     <FileTree.File name="LICENSE" />
     <FileTree.File name="README.md" />
   </FileTree.Folder>
@@ -113,7 +112,9 @@ The files you've put into the `./public` directory is now accessible from anywhe
 </Callout>
 
 <Callout type="info" emoji="ℹ">
-    The deployment URL follows the format `https://<app-name>-<app-owner>.wasmer.app`
+    The deployment URL follows the format `https://<app-name>.wasmer.app`. If
+    the name is already taken, a suffixed variant such as
+    `https://<app-name>-<app-owner>.wasmer.app` is used instead.
 </Callout>
 
 ### Accessing the files
@@ -136,7 +137,14 @@ https://wasmer-edge-as-cdn.wasmer.app/image3.jpg
 
 ### Magic..! 🧙 How does it work?
 
-Have a look inside your local `wasmer.toml` file, here you'll find how the CDN is setup: 
+The template ships its CDN configuration in the `settings/config.toml` file,
+which configures the [`wasmer/static-web-server`](https://wasmer.io/wasmer/static-web-server)
+package that serves your files. When you deploy, the files in `./public` are
+bundled together with that configuration and served by the web server.
+
+If you add your own `wasmer.toml` manifest to the project, this is the
+underlying package wiring it declares:
+
 ```toml filename="wasmer.toml"
 [dependencies]
 "wasmer/static-web-server" = "^1"

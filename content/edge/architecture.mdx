@@ -112,11 +112,9 @@ Wasmer Edge is generally available in the following regions:
 - `us-hillsboro` – US, Oregon
 - `us-ashburn` – US, Virginia
 - `us-losa1` – US, California
+- `ca-beau1` – Canada, Beauharnois
+- `fr-roub1` – Europe, France
 - `de-falkenstein` – Europe, Germany
-- `be-mons1` – Europe, Belgium
-- `gb-lond1` – Europe, United Kingdom
-- `fr-pari1` – Europe, France
-- `sg-sing1` – Asia, Singapore
 
 As we monitor traffic patterns and demand, we may add or adjust regions over time.
 Ultimately, Wasmer Edge abstracts regions away for most stateless applications;
@@ -192,8 +190,9 @@ Watch this space for further announcements on WASIX and other supporting ABI's a
 
 Wasmer Edge provides persistent storage through **volumes**. Volumes are currently
 regional, meaning data is stored and accessed within a single Edge region. They are
-exposed as mounted directories inside your apps and can also be accessed remotely
-via an S3-compatible API and a built-in web UI.
+exposed as mounted directories inside your apps. You can also access them
+remotely by enabling S3-compatible access with per-volume credentials, or through
+the file explorer in the dashboard.
 
 For details on capabilities, limitations, and usage (including backup and
 restoration policies), see the dedicated [Volumes documentation](/edge/learn/volumes).

@@ -1,5 +1,9 @@
 # Enums, Flags, Variants, and Unions
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 The concept of "this value can be X or Y or Z" can be expressed in several ways
 depending on the context.
 

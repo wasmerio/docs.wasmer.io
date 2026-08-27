@@ -1,5 +1,9 @@
 # Functions
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 Functions are one of the most important concepts in WAI. They are what guests
 and hosts use to expose functionality to each other, and have a name,
 parameters, and results.

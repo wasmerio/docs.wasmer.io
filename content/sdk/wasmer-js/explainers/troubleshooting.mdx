@@ -72,7 +72,7 @@ This error typically appears when attempting to run a package like `ffmpeg` in
 the following manner:
 
 ```typescript
-import { init, Wasmer } from "@wasmer/sdk";
+import { init, runWasix, Wasmer } from "@wasmer/sdk";
 
 await init();
 
@@ -80,7 +80,7 @@ const pkg = await Wasmer.fromRegistry("wasmer/ffmpeg@1.0.5");
 const ffmpeg = pkg.commands["ffmpeg"].binary();
 const module = await WebAssembly.compile(ffmpeg);
 
-let instance = await run(module, {
+let instance = await runWasix(module, {
     program: "ffmpeg",
     args: ["-i", "input.mp4", "-vf", `"transpose=2"`, "output.mp4"],
 });
@@ -90,7 +90,7 @@ let result = await instance.wait();
 ### Root Cause
 
 The issue stems from how memory is allocated for the WebAssembly module. When
-using `WebAssembly.compile()` and `run()` directly, the browser doesn't provide
+using `WebAssembly.compile()` and `runWasix()` directly, the browser doesn't provide
 detailed information about the memory requirements of the module, such as the
 number of pages needed.
 
@@ -108,17 +108,17 @@ To work around this, Wasmer has [a `wasm-types-polyfill`
 feature][wasm-types-polyfill], which parses the original `*.wasm` file to
 determine the correct amount of memory required. To utilize this workaround, you
 should pass the original `*.wasm` file's contents as a `Uint8Array` to the
-`run()` method.
+`runWasix()` function.
 
 ```typescript /ffmpeg,/
-import { init, Wasmer } from "@wasmer/sdk";
+import { init, runWasix, Wasmer } from "@wasmer/sdk";
 
 await init();
 
 const pkg = await Wasmer.fromRegistry("wasmer/ffmpeg@1.0.5");
 const ffmpeg = pkg.commands["ffmpeg"].binary();
 
-let instance = await run(ffmpeg, {
+let instance = await runWasix(ffmpeg, {
     program: "ffmpeg",
     args: ["-i", "input.mp4", "-vf", `"transpose=2"`, "output.mp4"],
 });
@@ -132,7 +132,7 @@ correctly.
 Here is the recommended way to run a package's command:
 
 ```typescript
-const pkg = await Wasmer.fromRegistry("ffmpeg/ffmpeg");
+const pkg = await Wasmer.fromRegistry("wasmer/ffmpeg@1.0.5");
 const instance = await pkg.entrypoint.run({ args: [...] });
 const output = await instance.wait();
 ```
@@ -198,35 +198,23 @@ Error: Unable to determine the hardware concurrency
   causes: []
 ```
 
-This error typically arises when executing `@wasmer/sdk` code within a Node.js
-environment.
+This error typically arises when executing the browser build of `@wasmer/sdk`
+within a Node.js environment.
 
 ### Root Cause
 
-The `@wasmer/sdk` package is currently designed for browser environments and
-relies on specific browser features.
-
-The error is caused by the absence of the `navigator` object in Node.js, which
-`@wasmer/sdk` attempts to access to determine the hardware concurrency level
-(specifically, `navigator.hardwareConcurrency`). Since Node.js doesn't provide
-this browser-specific object, the SDK cannot function as expected.
-
-<Callout type="warning">
-  This is the first of several places where `@wasmer/sdk` is not yet compatible
-  with Node.js.
-
-  A future release of Node.js with
-  [nodejs/node#47769](https://github.com/nodejs/node/pull/47769) may resolve the
-  `navigator.hardwareConcurrency` issue only for `@wasmer/sdk` to fail at
-  another place where Node.js diverges from web APIs.
-</Callout>
+The default `@wasmer/sdk` entry point targets browsers and relies on
+browser-specific features, such as `navigator.hardwareConcurrency`, which
+Node.js does not provide.
 
 ### Solution
 
-As of now, `@wasmer/sdk` does not support Node.js.
+Node.js is supported through the dedicated `@wasmer/sdk/node` entry point.
+Import the SDK from there when running under Node.js:
 
-To resolve this issue, you need to run your code in a supported browser
-environment rather than in Node.js.
+```typescript
+import { init, runWasix } from "@wasmer/sdk/node";
+```
 
 ## ReferenceError: `document is not defined`
 
@@ -271,10 +259,10 @@ of DOM-related code.
 
 ```typescript
 // Before
-import { Wasmer, init, initializeLogger, Instance } from "@wasmer/sdk/dist/WasmerSDKBundled.js";
+import { Wasmer, init, initializeLogger, Instance } from "@wasmer/sdk/wasm-inlined";
 
 // After
-const { Wasmer, init, initializeLogger } = await import("@wasmer/sdk/dist/WasmerSDKBundled");
+const { Wasmer, init, initializeLogger } = await import("@wasmer/sdk/wasm-inlined");
 ```
 
 ### Update your `vite.config.js`

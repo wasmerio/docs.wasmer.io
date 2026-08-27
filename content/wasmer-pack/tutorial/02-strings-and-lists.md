@@ -1,5 +1,9 @@
 # Strings and Lists
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 Now we know how to write a WebAssembly library and add two numbers, let's work
 with something slightly more interesting - strings and lists!
 

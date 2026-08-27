@@ -68,7 +68,7 @@ That `entrypoint` field is important! It tells the Wasmer SDK that the
 Don't forget to compile the `markdown-renderer.wasm`, if you haven't already.
 
 ```sh
-$ cargo build --target=wasm32-wasi --release
+$ cargo build --target=wasm32-wasip1 --release
     Finished release [optimized] target(s) in 0.10s
 ```
 
@@ -118,7 +118,7 @@ First, we import the `Wasmer` and `Command` classes and remove the
 
 ```diff filename="index.ts"
 -import { init, runWasix } from "@wasmer/sdk";
--import markdownRendererUrl from "./markdown-renderer/target/wasm32-wasi/release/markdown-renderer.wasm?url";
+-import markdownRendererUrl from "./markdown-renderer/target/wasm32-wasip1/release/markdown-renderer.wasm?url";
 +import { init, Wasmer, Command } from "@wasmer/sdk";
 ```
 

@@ -1,8 +1,8 @@
 # Wasmer Runners
 
-Wasmer has a pluggable runner architecture.
-Currently, Wasmer supports the following runners:
+A runner defines how Wasmer executes the commands in a package.
+The Wasmer runtime supports the following runner:
 
-- [WASIX](/runtime/wasix)
-- [Emscripten](/runtime/runners/emscripten)
-- [WCGI](/runtime/runners/wcgi)
+- [WASIX](/runtime/wasix) (including plain WASI)
+
+[WCGI](/runtime/runners/wcgi) packages use the same packaging workflow, and run on [Wasmer Edge](/edge).
