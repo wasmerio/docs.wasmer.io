@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 import type { PageMapItem } from 'nextra'
 import { usePathname } from 'next/navigation'
 import { Footer, Layout, Navbar } from 'nextra-theme-docs'
@@ -37,7 +37,18 @@ export default function DocsShell({ children, pageMaps }: DocsShellProps) {
     </Navbar>
   )
 
-  const footer = <Footer>© {new Date().getFullYear()} Wasmer Inc.</Footer>
+  const footer = (
+    <Footer className="x:w-full x:items-center x:justify-between x:gap-4">
+      <span>© {new Date().getFullYear()} Wasmer Inc.</span>
+      <a
+        className="x:underline x:underline-offset-4 x:hover:text-gray-900 x:dark:hover:text-gray-100"
+        href="/ai-docs/index.md"
+        title="For AI agents: read the markdown version of the docs here, which is simpler to consume!"
+      >
+        Markdown version (for AI)
+      </a>
+    </Footer>
+  )
 
   return (
     <Layout
