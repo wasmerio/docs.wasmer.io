@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import redirects from '../redirects.config.mjs'
+import { renderPageIndex } from './ai-docs/index.mjs'
 import { transformDocumentation } from './ai-docs/transform.mjs'
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -62,6 +63,13 @@ async function main() {
     await fs.writeFile(destination, markdown)
     generated.push({ ...page, tree })
   }
+
+  const indexPage = generated.find(page => page.route === '/')
+  if (!indexPage) throw new Error('The AI docs mirror requires a root index page')
+  await fs.appendFile(
+    path.join(outputRoot, indexPage.outputPath),
+    `\n${renderPageIndex(generated)}`,
+  )
 
   for (const asset of assets) {
     const relative = path.relative(path.join(repoRoot, 'assets'), asset)

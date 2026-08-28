@@ -19,7 +19,8 @@ Submit a PR to Wasmer Docs.
 The browser documentation has a plain Markdown mirror at `/ai-docs`. Every
 page in `content/` is generated at the corresponding `.md` path, and custom
 MDX components use explicit Markdown serializers kept beside their React
-implementations.
+implementations. The generated `/ai-docs/index.md` links to every page in the
+mirror so an AI agent can discover the complete documentation set.
 
 Generate and validate the mirror locally with:
 
