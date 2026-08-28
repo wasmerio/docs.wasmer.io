@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "Documentation for Wasmer's Products",
   "scripts": {
+    "predev": "pnpm run generate:ai-docs",
     "dev": "next dev",
+    "prebuild": "pnpm run generate:ai-docs",
     "build": "next build && pnpm run generate:redirects",
     "postbuild": "pagefind --site out --output-path out/_pagefind",
+    "generate:ai-docs": "node scripts/generate-ai-docs.mjs",
     "generate:redirects": "node scripts/generate-redirects.mjs",
+    "test:ai-docs": "node --test tests/ai-docs/*.test.mjs",
     "start": "sh -c 'python3 -m http.server \"${PORT:-3000}\" -d out'"
   },
   "repository": {
@@ -57,8 +61,14 @@
     "postcss-cli": "^10.1.0",
     "postcss-import": "^15.1.0",
     "postcss-lightningcss": "^1.0.0",
+    "remark-gfm": "^4",
+    "remark-mdx": "^3",
+    "remark-parse": "^11",
+    "remark-stringify": "^11",
     "tailwindcss": "^4.2.4",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "unified": "^11",
+    "unist-util-visit": "^5"
   },
   "packageManager": "pnpm@9.7.1+sha512.faf344af2d6ca65c4c5c8c2224ea77a81a5e8859cbc4e06b1511ddce2f0151512431dd19e6aff31f2c6a8f5f2aced9bd2273e1fed7dd4de1868984059d2c4247"
 }

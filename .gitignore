@@ -3,6 +3,7 @@
 *.tsbuildinfo
 node_modules
 out/
+public/ai-docs/
 
 release/
 /Shipit

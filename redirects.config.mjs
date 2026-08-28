@@ -1,4 +1,11 @@
 export const redirects = [
+  // AI-agent Markdown documentation
+  {
+    source: '/ai-docs',
+    destination: '/ai-docs/index.md',
+    permanent: false,
+  },
+
   // Runtime
   {
     source: '/ecosystem/wasmer',
@@ -92,6 +99,16 @@ export const redirects = [
   {
     source: '/javascript-sdk/:path*',
     destination: '/sdk/wasmer-js/:path*',
+    permanent: true,
+  },
+  {
+    source: '/edge/quickstart/http-server',
+    destination: '/edge/guides/rust-http-server',
+    permanent: true,
+  },
+  {
+    source: '/edge/learn/ssh/documentation',
+    destination: '/edge/learn/ssh/configuration',
     permanent: true,
   },
   {
