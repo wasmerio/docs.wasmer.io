@@ -28,7 +28,7 @@ function getSection(pathname: string) {
 
 export default function DocsShell({ children, pageMaps }: DocsShellProps) {
   const pathname = usePathname()
-  const section = getSection(pathname)
+  const section = getSection(pathname ?? '/')
   const pageMap = pageMaps[section]
 
   const navbar = (

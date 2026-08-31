@@ -32,7 +32,7 @@ export default function DocsNavbarLinks() {
     <div className="hidden md:flex md:flex-1 md:items-center">
       <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1">
         {sections.map(({ href, label }) => {
-          const active = pathname === href || pathname.startsWith(`${href}/`)
+          const active = pathname === href || !!pathname?.startsWith(`${href}/`)
 
           return (
             <Link

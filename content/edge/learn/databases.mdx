@@ -208,14 +208,12 @@ Databases are only available in some [Edge regions](/edge/learn/regions). The cu
 | `fr-roub1` | France  | Roubaix     | ✅    | ✅         |
 | `ca-beau1` | Canada  | Beauharnois | ✅    | ✅         |
 
-`us-losa1` is the **default database region**.
-
 Region behavior when you create a database:
 
 - If your app is already pinned to a region, the database is created there. If that region does not support databases, creation fails.
 - If `locality.regions` in `app.yaml` names exactly one valid database region, that region is used.
 - If `locality.regions` names more than one region, creation fails with `Apps with databases must specify a single region.`
-- Otherwise the database is created in the default database region (`us-losa1`), and the app is pinned to it.
+- Otherwise the database is created in a default region, and the app is pinned to it.
 
 After the database exists, the app and the database stay in the same region.
 
