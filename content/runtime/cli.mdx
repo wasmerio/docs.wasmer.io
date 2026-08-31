@@ -1,3 +1,5 @@
+import { Callout } from '@components/nextra-theme';
+
 # `wasmer run` CLI
 
 Run a WebAssembly file or Wasmer container.
@@ -12,10 +14,11 @@ All packages published on [Wasmer Registry](/registry) can be run with the `wasm
 wasmer run python/python
 ```
 
-Some packages, such as `cowsay`, have multiple commands that we can run (e.g., `cowsay` or `cowthink`)
+Some packages, such as `cowsay`, have multiple commands that we can run (e.g., `cowsay` or `cowthink`).
+Select one with `-e` (required when the package declares no entrypoint):
 
 ```bash copy
-wasmer run syrusakbary/cowsay --command-name=cowthink Hello world
+wasmer run syrusakbary/cowsay -e cowthink -- Hello world
 ```
 
 If your current directory has a `wasmer.toml` file, you can simply run the local package with:
@@ -58,6 +61,34 @@ You can also pass environment variables:
 ```bash copy
 wasmer run my_wasi_program.wasm --env MYVAR=MYVALUE -- arg1 arg2 arg3
 ```
+
+### File access and networking
+
+The guest cannot see your filesystem or network unless you grant access:
+
+```bash copy
+wasmer run my_wasi_program.wasm --volume /host/data:/data
+```
+
+`--volume HOST_DIR:GUEST_DIR` is repeatable, one flag per mapping.
+
+Guest ports are virtual: a server that logs `Listening on :3000` is not
+reachable on host port 3000 by itself. Run with `--net` to enable full
+networking and forward ports to the host:
+
+```bash copy
+wasmer run my_server.wasm --net
+```
+
+`--net` accepts filters, for example `--net "dns:allow=example.com:80"`.
+If the program only needs outbound HTTP requests, prefer the narrower
+`--http-client`.
+
+<Callout type="warning">
+The flags `--dir`, `--mapdir`, and `--command-name` were removed in
+wasmer 7.x. Use `--volume` for directory access and `-e` to select a
+command.
+</Callout>
 
 ### Profiling WebAssembly Code
 
