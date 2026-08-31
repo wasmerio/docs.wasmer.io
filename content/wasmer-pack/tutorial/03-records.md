@@ -1,5 +1,9 @@
 # Records
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 You're just doing great! Now, let us introduce record types, often called "structs" in other languages.
 
 ## Project Setup

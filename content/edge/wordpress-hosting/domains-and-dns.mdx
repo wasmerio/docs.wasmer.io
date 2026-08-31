@@ -14,11 +14,16 @@ You can attach your own domain to a WordPress app from the dashboard and then po
 1. Open your app in the Wasmer dashboard.
 2. Click **Settings**.
 3. Select **Domains** in the sidebar.
-4. Enter the domain you want to use and click **Add**.
-5. Choose the routing option you want.
-6. Mark the domain as the default once verified if you want it to be your primary hostname.
+4. Enter the domain you want to use. A dialog opens with two routing options.
+5. Choose a routing option: add `www.yourdomain.com` and redirect the root domain to it (recommended), or add the domain exactly as entered.
+6. Check **Make this domain the default once verified** if you want it to be your primary hostname.
+7. Click **Add**.
 
-In most cases, the recommended option is to add `www.yourdomain.com` and redirect the root domain to it.
+Apex domains cannot be added without redirection: if you enter a root domain such as `yourdomain.com`, you must redirect it to a subdomain like `www.yourdomain.com`. Support for apex domains without redirection is coming soon.
+
+<Callout type="warning">
+If your domain has existing `AAAA` records at your DNS provider, remove them. Stale `AAAA` records break domain verification and traffic routing.
+</Callout>
 
 <ImageLoader img={domainsAdd} alt="Domain settings page with a custom domain being added" />
 

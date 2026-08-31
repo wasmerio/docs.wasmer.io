@@ -1,5 +1,9 @@
 # Records
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 A record is an abstract data type containing a series of named fields. It has no
 associated behavior and acts as a way to group data together. In C++, this
 would be referred to as a [plain old data][pod] type.

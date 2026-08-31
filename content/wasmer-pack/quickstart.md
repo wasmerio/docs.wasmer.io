@@ -1,5 +1,9 @@
 # Wasmer Pack Quickstart Guide
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 This guide walks you through creating, publishing, and using a simple library
 with Wasmer Pack, WAI, and WAPM.
 

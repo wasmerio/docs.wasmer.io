@@ -1,5 +1,9 @@
 # Exposing Resources
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 So far we've covered basic functions, numbers, strings, lists, records, and
 variants, but there's one key aspect in programming we haven't touched on yet -
 objects with behavior and internal state!

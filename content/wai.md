@@ -1,5 +1,9 @@
 # WebAssembly Interfaces (WAI)
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 The WebAssembly spec that was first released in 2017 was only a minimum viable
 product and deliberately left several features incomplete to be iterated upon by
 the ecosystem.

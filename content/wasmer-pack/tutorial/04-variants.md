@@ -1,5 +1,9 @@
 # Variants
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 ## Intro
 
 - A promise statement

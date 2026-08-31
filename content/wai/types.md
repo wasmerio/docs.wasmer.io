@@ -1,5 +1,9 @@
 # Built-in Types
 
+> **Deprecated:** This tooling is deprecated and no longer maintained.
+> WAPM has merged into the [Wasmer registry](https://wasmer.io/products/registry).
+> This content is kept for historical reference.
+
 All types that can be used in a `*.wai` file are intended to be mappable to native
 types in a general purpose programming language.
 

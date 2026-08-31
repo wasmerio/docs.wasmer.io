@@ -15,7 +15,7 @@ Wasmer Edge and Cloudflare Workers share these similarities:
 
 Wasmer Edge and Cloudflare Workers differ in significant ways:
 
-- Wasmer Edge has dedicated **private networking** for every workload
+- Wasmer Edge is building dedicated **private networking** for workloads (under active development)
 - Wasmer Edge **supports multithreaded applications**, while "multi-threading and shared memory are not permitted in [Cloudflare] Workers"
 - Wasmer Edge **can run Python, Rust**, and other languages without any JS glue code, while Cloudflare Workers can only run WebAssembly through JavaScript.
   Example: Django can't run in Cloudflare workers.
