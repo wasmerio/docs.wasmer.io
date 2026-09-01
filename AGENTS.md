@@ -57,4 +57,8 @@ their facts are verified against the CLI, so trust them over stale prose.
 
 - Deployment: `pnpm build` + `wasmer deploy` in `publish.yaml` using `wasmer.toml`.
 - Secrets: GitHub Actions use `WASMER_CIUSER_PROD_TOKEN`—do not commit tokens or credentials.
+- Analytics: self-hosted Umami at `analytics.wasmer.io`, backend in the private
+  `wasmerio/umami-analytics` repo (running on Wasmer Edge via EdgeJS). The tracker is injected in
+  `app/layout.tsx` only when the `NEXT_PUBLIC_UMAMI_WEBSITE_ID` and `NEXT_PUBLIC_UMAMI_SRC` repo
+  variables are set at build time, so dev and preview builds send nothing.
 - External links: Prefer absolute `https://` links; validate they open in a new tab per theme defaults where appropriate.
