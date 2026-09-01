@@ -93,12 +93,37 @@ export const redirects = [
   },
   {
     source: '/javascript-sdk',
-    destination: '/runtime/javascript-sdk',
+    destination: '/runtime/js',
     permanent: true,
   },
   {
     source: '/javascript-sdk/:path*',
-    destination: '/sdk/wasmer-js/:path*',
+    destination: '/runtime/js',
+    permanent: true,
+  },
+  {
+    source: '/runtime/javascript-sdk',
+    destination: '/runtime/js',
+    permanent: true,
+  },
+  {
+    source: '/runtime/python-sdk',
+    destination: '/runtime/python',
+    permanent: true,
+  },
+  {
+    source: '/sdk',
+    destination: '/runtime',
+    permanent: true,
+  },
+  {
+    source: '/sdk/wasmer-js',
+    destination: '/runtime/js',
+    permanent: true,
+  },
+  {
+    source: '/sdk/wasmer-js/:path*',
+    destination: '/runtime/js',
     permanent: true,
   },
   {

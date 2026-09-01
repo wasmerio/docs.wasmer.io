@@ -1,7 +1,7 @@
 export default {
   "get-started": "Getting Started",
-  "javascript-sdk": "JavaScript SDK",
-  "python-sdk": "Python SDK",
+  "js": "JavaScript SDK",
+  "python": "Python SDK",
   "cli": "CLI",
   "features": "Features",
   "wasix": "WASIX",

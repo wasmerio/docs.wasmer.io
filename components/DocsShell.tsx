@@ -13,7 +13,6 @@ type DocsShellProps = {
     root: PageMapItem[]
     edge: PageMapItem[]
     registry: PageMapItem[]
-    sdk: PageMapItem[]
     runtime: PageMapItem[]
   }
 }
@@ -21,7 +20,6 @@ type DocsShellProps = {
 function getSection(pathname: string) {
   if (pathname === '/edge' || pathname.startsWith('/edge/')) return 'edge'
   if (pathname === '/registry' || pathname.startsWith('/registry/')) return 'registry'
-  if (pathname === '/sdk' || pathname.startsWith('/sdk/')) return 'sdk'
   if (pathname === '/runtime' || pathname.startsWith('/runtime/')) return 'runtime'
   return 'root'
 }

@@ -19,12 +19,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode
 }>) {
-  const [rootPageMap, edgePageMap, registryPageMap, sdkPageMap, runtimePageMap] =
+  const [rootPageMap, edgePageMap, registryPageMap, runtimePageMap] =
     await Promise.all([
       getPageMap('/'),
       getPageMap('/edge'),
       getPageMap('/registry'),
-      getPageMap('/sdk'),
       getPageMap('/runtime'),
     ])
 
@@ -37,7 +36,6 @@ export default async function RootLayout({
             root: rootPageMap,
             edge: edgePageMap,
             registry: registryPageMap,
-            sdk: sdkPageMap,
             runtime: runtimePageMap,
           }}
         >

@@ -91,6 +91,63 @@ Files passed to `sandboxes.create()` are written under `/workspace`. Use
 `sandbox.fs` to read, write, rename, list, and remove files while the sandbox
 is alive. Use `sandbox.installPackage()` to add another package later.
 
+## Work with files
+
+Create initial files with the sandbox, then use `sandbox.fs` to exchange data
+with commands while the sandbox is alive:
+
+```javascript copy
+const sandbox = await wasmer.sandboxes.create({
+  packages: ['python/python@=3.13.18'],
+  files: {
+    'input.txt': 'hello from JavaScript',
+  },
+});
+
+await sandbox.fs.mkdir('results', { recursive: true });
+await sandbox.fs.writeText('results/message.txt', 'hello from the sandbox');
+
+const output = await sandbox
+  .command('python', [
+    '-c',
+    "print(open('/workspace/input.txt').read().upper())",
+  ])
+  .run();
+
+console.log(output.text());
+console.log(await sandbox.fs.readText('results/message.txt'));
+console.log(await sandbox.fs.readDir('results'));
+```
+
+The filesystem API also provides `readFile()`, `writeFile()`, `stat()`,
+`rename()`, and `remove()`. Paths are relative to `/workspace` unless an
+absolute path is supplied.
+
+## Stream an interactive process
+
+Use `spawn()` for commands that need streaming output, stdin, or terminal
+resizing:
+
+```javascript copy
+const process = await sandbox.command('python', ['-u', '-i']).spawn({
+  terminal: { columns: 80, rows: 24 },
+});
+
+await process.stdin.write("print('hello from Python')\n");
+await process.stdin.write('exit()\n');
+await process.stdin.close();
+
+for await (const line of process.stdout.lines()) {
+  console.log(line);
+}
+
+await process.wait({ check: true });
+```
+
+Attaching a terminal enables piped stdin, stdout, and stderr. Connect those
+streams to a terminal component such as xterm.js for a browser shell. Call
+`process.resizeTerminal(columns, rows)` when the terminal size changes.
+
 ## Networking in Node.js
 
 Network access is disabled unless the sandbox is given a network capability:
@@ -131,6 +188,11 @@ Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
 ```
 
+Check `window.crossOriginIsolated` before creating a sandbox. On static hosts
+that cannot set response headers, a service worker such as
+[`coi-serviceworker`](https://github.com/gzuidhof/coi-serviceworker) can add
+cross-origin isolation, but serving the headers directly is preferred.
+
 Browsers cannot open TCP sockets directly. For outbound TCP and DNS, configure
 a [WISP](https://github.com/MercuryWorkshop/wisp-protocol) endpoint:
 
@@ -153,6 +215,27 @@ default.
   browser storage in a browser. The first run downloads the selected package;
   later sandboxes can reuse it.
 </Callout>
+
+## Troubleshooting
+
+### `SharedArrayBuffer` is unavailable
+
+The browser entrypoint requires a secure, cross-origin-isolated page. Confirm
+the page is served over HTTPS or localhost, both COOP and COEP headers are
+present on the document response, and `window.crossOriginIsolated` is `true`.
+
+### Browser APIs are missing in Node.js
+
+Import `@wasmer/sdk/node` in Node.js. Importing the browser entrypoint under
+Node.js can fail because browser-only facilities such as Web Workers are not
+available there.
+
+### A package is slow on its first run
+
+The first sandbox resolves and downloads its registry packages. Later
+sandboxes reuse the local `.wasmer` cache in Node.js or browser storage in a
+browser. Pin package versions with `@=` when builds must resolve the same
+artifact every time.
 
 See the
 [`@wasmer/sdk` source and complete examples](https://github.com/wasmerio/wasmer-sdk/tree/main/js)
