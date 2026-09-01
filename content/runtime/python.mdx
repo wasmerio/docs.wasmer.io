@@ -1,0 +1,107 @@
+import { Callout } from '@components/nextra-theme';
+
+# Python SDK
+
+`wasmer-sdk` embeds Wasmer and WASIX in a Python application. Sandboxes run
+locally in the application process without Docker, a VM, or a remote sandbox
+service.
+
+## Install
+
+```bash copy
+python -m pip install wasmer-sdk
+```
+
+Published wheels support macOS and Linux on arm64 and x86_64. A wheel works
+across supported Python 3 versions on the same platform because the native
+boundary does not depend on the CPython ABI.
+
+## Run a package
+
+```python copy filename="main.py"
+import asyncio
+
+from wasmer_sdk import Wasmer
+
+
+async def main() -> None:
+    async with Wasmer() as wasmer:
+        sandbox = await wasmer.sandboxes.create(
+            packages=['python/python@=3.13.18'],
+            files={
+                'main.py': 'print(sum(n * n for n in range(10)))',
+            },
+        )
+        async with sandbox:
+            output = await sandbox.command(
+                'python', ['/workspace/main.py']
+            ).run()
+            print(output.text())
+
+
+asyncio.run(main())
+```
+
+Constructing `Wasmer()` is synchronous. Operations that resolve packages,
+create sandboxes, or run commands are asynchronous. Reuse one client for
+multiple sandboxes. The async context managers close workers and runtime
+resources deterministically.
+
+`run()` captures a finite command and raises `ProcessExitError` when it exits
+unsuccessfully. Use `spawn()` for a long-running or interactive process with
+live asynchronous streams.
+
+## Compose software in one sandbox
+
+The Python and JavaScript SDKs share the same package, sandbox, command,
+filesystem, and process model:
+
+```python copy
+sandbox = await wasmer.sandboxes.create(
+    packages=[
+        'python/python@=3.13.18',
+        'wasmer/edgejs@0.2.0',
+        'php/php-32',
+    ],
+)
+
+python = await sandbox.command(
+    'python', ['-c', "print('Python')"]
+).run()
+edgejs = await sandbox.command(
+    'node', ['-e', "console.log('Edge.js')"]
+).run()
+php = await sandbox.command(
+    'php', ['-r', "echo 'PHP\\n';"]
+).run()
+
+print(python.text(), edgejs.text(), php.text(), sep='')
+```
+
+Files passed to `sandboxes.create()` are written under `/workspace`. Use
+`sandbox.fs` to modify the filesystem while the sandbox is alive, or
+`sandbox.install_package()` to add software after creation.
+
+## Networking
+
+Network access is disabled unless it is explicitly enabled:
+
+```python copy
+sandbox = await wasmer.sandboxes.create(
+    packages=['curl/curl'],
+    network='host',
+)
+```
+
+The native SDK gives WASIX sockets access to the host network. Only enable it
+for sandboxes that need networking.
+
+<Callout type="info">
+  Registry metadata, downloaded packages, and compiled artifacts are cached in
+  `.wasmer` by default. Pass `cache_root='.cache/wasmer'` to `Wasmer()` to use
+  another location.
+</Callout>
+
+See the
+[`wasmer-sdk` source and complete Python examples](https://github.com/wasmerio/wasmer-sdk/tree/main/python)
+for process streams, Edge.js servers, and PostgreSQL.

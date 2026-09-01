@@ -1,39 +1,53 @@
 import { Cards, Card } from '@components/nextra-theme'
 import { RunIcon } from '@components/icons/ProductIcons'
 
-# Runtime Introduction
+# Wasmer Runtime
 
-The Wasmer Runtime is the engine that allows running WebAssembly modules and Wasmer packages anywhere.
+The Wasmer Runtime runs WebAssembly modules and packages from the
+[Wasmer Registry](/registry) in lightweight, capability-based sandboxes.
+Use it as a command-line tool or embed it directly in a JavaScript or Python
+application.
 
-Wasmer can be used as a library from any programming language, or as a standalone runtime via the [`Wasmer CLI`](/runtime/cli).
+| Interface | Best for | Install |
+| --- | --- | --- |
+| [Wasmer CLI](/runtime/cli) | Running packages from a terminal or script | `curl https://get.wasmer.io -sSfL \| sh` |
+| [JavaScript SDK](/runtime/js) | Node.js and browser applications | `npm install @wasmer/sdk` |
+| [Python SDK](/runtime/python) | Python applications and AI agents | `python -m pip install wasmer-sdk` |
 
+All three interfaces use the same Wasmer packages and WASIX runtime. The SDKs
+also expose a shared sandbox model for composing packages, files, environment
+variables, networking, and long-running processes inside a host application.
 
-## 🐥 First Steps
+## First steps
 
-To run a package, check out the [Getting Started](/runtime/get-started/) guide. 
+Start with one package, then choose the interface that fits your host
+application.
 
 <Cards>
-<Card icon={<RunIcon width={20} height={20} />} title="Run your first package" href="/runtime/get-started" />
+  <Card icon={<RunIcon width={20} height={20} />} title="Run your first package" href="/runtime/get-started" />
+  <Card icon={<RunIcon width={20} height={20} />} title="JavaScript SDK" href="/runtime/js" />
+  <Card icon={<RunIcon width={20} height={20} />} title="Python SDK" href="/runtime/python" />
 </Cards>
 
 ## Features
 
 - **Secure** by default. No file, network, or environment access, unless explicitly enabled.
 - **Fast**. Run WebAssembly at near-native speeds.
-- **Pluggable**. Embeddable in multiple programming languages.
+- **Embeddable**. Run sandboxes in JavaScript, Python, Rust, and other host
+  applications without a separate daemon.
 - Compliant with the latest WebAssembly proposals (SIMD, Reference Types, Threads, ...)
 
 ## Backends
 
 The Wasmer Runtime supports multiple backends, depending on your needs:
 
-### Wasmer backends:
+### Wasmer backends
 
 - **Singlepass**: A single-pass compiler for fast compilation times and low memory usage.
 - **Cranelift**: A fast compiler backend with a focus on compile times, and runtime performance.
 - **LLVM**: A compiler backend that uses LLVM for optimization and code generation.
 
-### Integration backends:
+### Integration backends
 
 - **Browser**: it allows running Wasmer fully in the browser (via `wasm-bindgen`).
 - **V8**: it allows running Wasmer using the WebAssembly engine inside V8 (can run in interpreter mode or with JIT)

@@ -1,4 +1,0 @@
-export default {
-  "coop-coep-headers": "COOP & COEP Headers",
-  "use-filesystem": "Interacting with the Filesystem"
-}

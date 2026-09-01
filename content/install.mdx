@@ -1,11 +1,11 @@
 # Install Wasmer
 
-import { Callout } from '@components/nextra-theme';
-import { Tabs, Tab } from '@components/nextra-theme';
+import { Callout, Tab, Tabs } from '@components/nextra-theme';
 
-Wasmer allows you to run applications either **standalone** (_via the CLI_) or **embedded** in [other languages](/sdk), such as Rust, C/C++, and JavaScript.
+Run Wasmer as a standalone CLI or embed the Runtime in a JavaScript or Python
+application with an SDK.
 
-<Tabs items={['CLI (Bash)', 'CLI (PowerShell)', 'JS' /*, 'Python' */]}>
+<Tabs items={['CLI (Bash)', 'CLI (PowerShell)', 'JavaScript SDK', 'Python SDK']}>
   <Tab>
     **Unix** (macOS, Linux):
 
@@ -65,22 +65,28 @@ Wasmer allows you to run applications either **standalone** (_via the CLI_) or *
 
 
   <Tab>
-    **NPM**:
+    **npm**:
 
-    ```bash /@wasmer/ /sdk/ copy
-    npm install @wasmer/sdk --save
+    ```bash copy
+    npm install @wasmer/sdk
     ```
 
-    Bun:
+    **pnpm**:
 
-    ```bash /@wasmer/ /sdk/ copy
-    bun install @wasmer/sdk --save
+    ```bash copy
+    pnpm add @wasmer/sdk
     ```
-    
-    Read the [Wasmer-JS SDK docs](/sdk/wasmer-js).
+
+    Import `@wasmer/sdk/node` in Node.js or `@wasmer/sdk/browser` in a
+    browser. Continue with the [JavaScript SDK guide](/runtime/js).
   </Tab>
 
+  <Tab>
+    ```bash copy
+    python -m pip install wasmer-sdk
+    ```
 
-{/* <SyncedTabs.Tab> `bash npm install wasmer` </SyncedTabs.Tab> <SyncedTabs.Tab> ```bash pip install wasmer ``` </SyncedTabs.Tab> */}
+    Continue with the [Python SDK guide](/runtime/python).
+  </Tab>
 
 </Tabs>

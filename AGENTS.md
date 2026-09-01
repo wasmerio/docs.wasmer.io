@@ -22,7 +22,7 @@ their facts are verified against the CLI, so trust them over stale prose.
 ## Project Structure & Module Organization
 
 - Source: Next.js + Nextra docs site using TypeScript.
-- Content: MDX pages under `pages/` (route = file path). Example: `pages/sdk/wasmer-js/how-to/use-filesystem.mdx`.
+- Content: MDX pages under `content/` (route = file path). Example: `content/runtime/js.mdx`.
 - UI: React components in `components/` and `theme/src/components/`; site config in `theme.config.tsx` and `next.config.mjs`.
 - Styling & assets: Tailwind config in `tailwind.config.js`, global styles in `styles/`, static files in `public/`, additional images in `assets/`.
 
@@ -50,7 +50,7 @@ their facts are verified against the CLI, so trust them over stale prose.
 ## Commit & Pull Request Guidelines
 
 - Commits: Write clear, scoped messages in present tense (e.g., `docs: add wasm fs how-to`).
-- PRs: Include a concise description, affected pages/components, screenshots or local URLs (e.g., `http://localhost:3000/sdk/...`) when visual changes apply, and link related issues.
+- PRs: Include a concise description, affected pages/components, screenshots or local URLs (e.g., `http://localhost:3000/runtime/js`) when visual changes apply, and link related issues.
 - CI: GitHub Actions build must pass (`.github/workflows/ci.yaml`). For deploys, main builds publish via Wasmer.
 
 ## Security & Deployment Notes

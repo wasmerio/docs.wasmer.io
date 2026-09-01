@@ -18,10 +18,6 @@ export default {
     "title": "Edge",
     "display": "hidden"
   },
-  "sdk": {
-    "title": "SDKs",
-    "display": "hidden"
-  },
   "-- Developers": {
     "type": "separator",
     "title": "Developers"

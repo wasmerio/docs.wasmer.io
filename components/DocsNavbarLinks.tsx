@@ -10,7 +10,6 @@ const sections = [
   { href: '/runtime', label: 'Runtime' },
   { href: '/registry', label: 'Registry' },
   { href: '/edge', label: 'Edge' },
-  { href: '/sdk/wasmer-js', label: 'SDKs' },
 ]
 
 function XLogoIcon() {

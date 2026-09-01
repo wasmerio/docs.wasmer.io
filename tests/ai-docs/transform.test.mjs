@@ -12,8 +12,8 @@ const routes = new Map([
   ['/install', 'install.md'],
   ['/runtime', 'runtime.md'],
   ['/runtime/get-started', 'runtime/get-started.md'],
-  ['/sdk/wasmer-js', 'sdk/wasmer-js.md'],
-  ['/sdk/wasmer-js/explainers/troubleshooting', 'sdk/wasmer-js/explainers/troubleshooting.md'],
+  ['/runtime/js', 'runtime/js.md'],
+  ['/runtime/python', 'runtime/python.md'],
   ['/wai', 'wai.md'],
   ['/wai/types', 'wai/types.md'],
 ])
@@ -83,7 +83,13 @@ test('rewrites aliases, relative links, and docs.wasmer.io redirects', () => {
     rewriteDocumentationUrl('/javascript-sdk/explainers/troubleshooting#node', {
       currentRoute: '/runtime/get-started', redirects, routes,
     }),
-    '/ai-docs/sdk/wasmer-js/explainers/troubleshooting.md#node',
+    '/ai-docs/runtime/js.md#node',
+  )
+  assert.equal(
+    rewriteDocumentationUrl('/sdk/wasmer-js/how-to/use-filesystem', {
+      currentRoute: '/runtime/get-started', redirects, routes,
+    }),
+    '/ai-docs/runtime/js.md',
   )
   assert.equal(
     rewriteDocumentationUrl('../runtime', {
