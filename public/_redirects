@@ -17,7 +17,7 @@
 /developers/testing https://github.com/wasmerio/wasmer/blob/main/docs/TEST.md 301
 /developers/graphql-api /graphql-api 301
 /registry/search /registry/discover 301
-/javascript-sdk /sdk/wasmer-js 301
+/javascript-sdk /runtime/javascript-sdk 301
 /javascript-sdk/* /sdk/wasmer-js/:splat 301
 /edge/quickstart/http-server /edge/guides/rust-http-server 301
 /edge/learn/ssh/documentation /edge/learn/ssh/configuration 301

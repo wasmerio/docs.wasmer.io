@@ -93,7 +93,7 @@ export const redirects = [
   },
   {
     source: '/javascript-sdk',
-    destination: '/sdk/wasmer-js',
+    destination: '/runtime/javascript-sdk',
     permanent: true,
   },
   {

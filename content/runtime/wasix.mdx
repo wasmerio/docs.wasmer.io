@@ -20,7 +20,7 @@ Wasmer.
 | Rust (plain WASI) | `rustup target add wasm32-wasip1`, then `cargo build --target wasm32-wasip1`                                                     |
 | C / C++ (WASIX)   | Install `wasixcc`, run `wasixcc --download-all` once, then `wasixcc main.c -o app.wasm`                                          |
 | Go                | Go >= 1.21: `GOOS=wasip1 GOARCH=wasm go build -o app.wasm .` TinyGo: `tinygo build -target=wasi -o app.wasm .`                   |
-| Python, PHP, JS   | Do not compile. Run the prebuilt runtimes: `python/python`, `php/php`, `wasmer/winterjs`. Find more with `wasmer package search` |
+| Python, PHP, JS   | Do not compile. Run the prebuilt runtimes: `python/python`, `php/php-32`, `wasmer/edgejs`. Find more with `wasmer package search` |
 
 Go's `wasip1` port is single-threaded WASI, not WASIX. Programs that need
 sockets or subprocesses in Go need a different design or language.
@@ -29,6 +29,10 @@ To check which ABI a module targets, run `wasmer inspect app.wasm` and
 read the import namespaces: `wasi_snapshot_preview1` means WASI,
 `wasix_32v1` means WASIX. A "missing import" error usually means the
 module targets a different ABI or a newer WASIX than the runtime.
+
+These runtime packages can be launched with `wasmer run` or composed inside a
+sandbox through the [JavaScript SDK](/runtime/javascript-sdk) and
+[Python SDK](/runtime/python-sdk).
 
 ## Usage
 

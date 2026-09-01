@@ -1,59 +1,106 @@
-import { Steps } from "@components/nextra-theme";
-import { Callout } from "@components/nextra-theme";
-import { Tab, Tabs } from "@components/nextra-theme";
-import Install from "../../components/install.mdx";
+import { Callout, Steps, Tab, Tabs } from '@components/nextra-theme';
 
 # Run your first package
 
-This page will guide you through installing Wasmer, and running a package from the Wasmer Registry.
-
-The runtime can run any package published to the Wasmer Registry.
+Wasmer packages run from the CLI or inside JavaScript and Python applications.
+This guide uses the [`python/python`](https://wasmer.io/python/python) package
+to calculate `1 + 1`; no system Python installation is used inside the
+sandbox.
 
 <Steps>
- 
-<Install />
 
-### Run a package
+### Install Wasmer
 
-Let's say you want to run version `3.12` of the Wasmer package [`python/python`](https://wasmer.io/python/python) and execute the `-c "print(1+1)"` argument to print a result.
+Choose the interface used by your host application:
 
-<Tabs items={['CLI', 'JS' /*, 'Python'*/]}>
+<Tabs items={['CLI', 'JavaScript', 'Python']}>
   <Tab>
-    ```bash copy /python/
-    wasmer run python/python@3.12 -- -c "print(1+1)"
+    On macOS or Linux:
+
+    ```bash copy
+    curl https://get.wasmer.io -sSfL | sh
     ```
+
+    See [Install Wasmer](/install) for Windows and other installation methods.
   </Tab>
   <Tab>
-
-    ```js copy /python/
-    import { init, Wasmer } from "@wasmer/sdk";
-
-    await init();
-    let python = await Wasmer.fromRegistry("python/python@3.12");
-    let instance = await python.entrypoint.run({
-      args: ["-c", "print(1+1)"]
-    });
-    let output = await instance.wait();
+    ```bash copy
+    npm install @wasmer/sdk
     ```
 
+    Node.js and browser applications use the same package with different
+    entrypoints. This example uses Node.js.
   </Tab>
-{/*
-
   <Tab>
-    ```python copy
-    from wasmer import Wasmer
-
-    python = Wasmer("python/python")
-    runner = python.entrypoint.run('-c "print(1+1)"')
-    print(python.stdout)
+    ```bash copy
+    python -m pip install wasmer-sdk
     ```
 
-  </Tab> */}
+    Published wheels support macOS and Linux on arm64 and x86_64.
+  </Tab>
 </Tabs>
+
+### Run the package
+
+<Tabs items={['CLI', 'JavaScript', 'Python']}>
+  <Tab>
+    ```bash copy
+    wasmer run python/python@=3.13.18 -- -c "print(1+1)"
+    ```
+  </Tab>
+  <Tab>
+    ```javascript copy filename="index.mjs"
+    import { Wasmer } from '@wasmer/sdk/node';
+
+    const wasmer = new Wasmer();
+    const sandbox = await wasmer.sandboxes.create({
+      packages: ['python/python@=3.13.18'],
+    });
+
+    const output = await sandbox
+      .command('python', ['-c', 'print(1+1)'])
+      .run();
+
+    console.log(output.text());
+    await sandbox.close();
+    await wasmer.close();
+    ```
+  </Tab>
+  <Tab>
+    ```python copy filename="main.py"
+    import asyncio
+
+    from wasmer_sdk import Wasmer
+
+
+    async def main() -> None:
+        async with Wasmer() as wasmer:
+            sandbox = await wasmer.sandboxes.create(
+                packages=['python/python@=3.13.18'],
+            )
+            async with sandbox:
+                output = await sandbox.command(
+                    'python', ['-c', 'print(1+1)']
+                ).run()
+                print(output.text())
+
+
+    asyncio.run(main())
+    ```
+  </Tab>
+</Tabs>
+
+Each example prints `2`. The `@=` syntax pins the exact registry package
+version so every run resolves the same artifact.
 
 </Steps>
 
-<Callout type="info" emoji="ℹ️">
-  You can also publish your packages to the Wasmer registry, so it can be used
-  everywhere. [Learn how](/registry/get-started).
+<Callout type="info">
+  A sandbox can combine multiple packages and expose files, streams,
+  networking, and long-running processes. Continue with the
+  [JavaScript SDK](/runtime/javascript-sdk) or
+  [Python SDK](/runtime/python-sdk) guide.
 </Callout>
+
+You can also [publish your own package](/registry/get-started) to run it through
+the CLI and every SDK.
