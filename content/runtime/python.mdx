@@ -25,18 +25,21 @@ from wasmer_sdk import Wasmer
 
 
 async def main() -> None:
-    async with Wasmer() as wasmer:
-        sandbox = await wasmer.sandboxes.create(
-            packages=['python/python@=3.13.18'],
-            files={
-                'main.py': 'print(sum(n * n for n in range(10)))',
-            },
-        )
-        async with sandbox:
-            output = await sandbox.command(
-                'python', ['/workspace/main.py']
-            ).run()
-            print(output.text())
+    wasmer = Wasmer()
+    sandbox = await wasmer.sandboxes.create(
+        packages=['python/python@=3.13.18'],
+        files={
+            'main.py': 'print(sum(n * n for n in range(10)))',
+        },
+    )
+
+    output = await sandbox.command(
+        'python', ['/workspace/main.py']
+    ).run()
+    print(output.text())
+
+    await sandbox.close()
+    await wasmer.close()
 
 
 asyncio.run(main())
@@ -44,8 +47,9 @@ asyncio.run(main())
 
 Constructing `Wasmer()` is synchronous. Operations that resolve packages,
 create sandboxes, or run commands are asynchronous. Reuse one client for
-multiple sandboxes. The async context managers close workers and runtime
-resources deterministically.
+multiple sandboxes. Call `await sandbox.close()` and `await wasmer.close()`
+when they are no longer needed. Both types also support `async with` when a
+context manager is more convenient.
 
 `run()` captures a finite command and raises `ProcessExitError` when it exits
 unsuccessfully. Use `spawn()` for a long-running or interactive process with
