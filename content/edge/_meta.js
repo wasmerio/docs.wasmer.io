@@ -1,5 +1,6 @@
 export default {
   "get-started": "Getting Started",
+  "deploy-button": "Deploy Button",
   "git": "Git",
   "guides": "Guides",
   "wordpress-hosting": "WordPress Hosting",

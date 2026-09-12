@@ -1,0 +1,367 @@
+import { Callout, Steps, Tab, Tabs } from '@components/nextra-theme'
+
+# Deploy to Wasmer button
+
+Add a **Deploy to Wasmer** button to your README, documentation, or website so
+visitors can create their own app from your project. The button opens Wasmer with
+the source and settings you choose. Visitors sign in, review the configuration,
+and deploy.
+
+[![Deploy to Wasmer](/deploy-button.svg)](https://wasmer.io/deploy?template=flask-starter)
+
+**[Open the button generator →](https://wasmer.io/deploy)**
+
+You can generate a button without an account. Use the generator for a preview and
+copyable Markdown, HTML, or URL. The examples below explain the link format for
+authors who want to build links themselves.
+
+## Create a button
+
+<Steps>
+
+### Choose a source
+
+Choose a [Wasmer template](https://wasmer.io/templates), copy a public Git
+repository, or import an existing GitHub repository. See
+[source options](#source-options) for the difference.
+
+### Set up the app
+
+Add default names, required environment variables, build settings, and an optional
+demo. Visitors can review these settings before deploying.
+
+### Share the button
+
+Copy the Markdown into a README, the HTML into a website, or use the URL in your
+own link. Open the link yourself to check the source and configuration before
+publishing it.
+
+</Steps>
+
+## Snippets
+
+This example starts from the Flask template. Replace its URL with the one from
+the generator to use your own project.
+
+<Tabs items={['Markdown', 'HTML', 'URL']}>
+<Tab>
+
+```markdown copy
+[![Deploy to Wasmer](https://wasmer.io/deploy/button.svg)](https://wasmer.io/deploy?template=flask-starter)
+```
+
+</Tab>
+<Tab>
+
+```html copy
+<a href="https://wasmer.io/deploy?template=flask-starter">
+  <img
+    src="https://wasmer.io/deploy/button.svg"
+    alt="Deploy to Wasmer"
+    width="188"
+    height="36"
+  />
+</a>
+```
+
+</Tab>
+<Tab>
+
+```text copy
+https://wasmer.io/deploy?template=flask-starter
+```
+
+</Tab>
+</Tabs>
+
+The badge is an SVG at `https://wasmer.io/deploy/button.svg`, sized 188 × 36 pixels.
+Use that address for embedded buttons so the badge stays consistent across sites.
+
+## Source options
+
+Every link needs exactly one of these parameters:
+
+| Parameter | What happens | Example value |
+| --- | --- | --- |
+| `template` | Opens a published Wasmer template. Its configuration controls the creation flow. | `flask-starter` |
+| `repository-url` | Copies a public GitHub, GitLab, or Bitbucket repository into a new repository in the visitor's GitHub account. | `https://github.com/owner/starter` |
+| `repository` | Imports an existing GitHub repository that the visitor can access. It does not create a copy. | `https://github.com/owner/existing-app` |
+
+Use `repository-url` when sharing a starter with other developers. Use
+`repository` when the person deploying already owns or has access to the existing
+repository. A public source does not grant permission to import it as an existing
+repository.
+
+<Callout type="info">
+  Public sources can come from GitHub, GitLab, or Bitbucket. The destination for
+  a copied repository is GitHub. Creating destination repositories in GitLab or
+  Bitbucket is not supported.
+</Callout>
+
+### Branches and subdirectories
+
+Pass the repository's root HTTPS URL, then specify `branch` and
+`root-directory` separately. This makes branches with slashes unambiguous.
+
+```js copy
+const url = new URL('https://wasmer.io/deploy')
+url.search = new URLSearchParams({
+  'repository-url': 'https://github.com/owner/examples',
+  branch: 'feature/starter',
+  'root-directory': 'examples/web-app',
+  'project-name': 'my-web-app',
+  'repository-name': 'my-web-app',
+}).toString()
+
+console.log(url.toString())
+```
+
+Replace `owner/examples` and the branch with your public repository. Paths are
+relative to the repository root. For a copied source, the selected directory
+becomes the root of the new repository, on its `main` branch. Files outside that
+directory are not included; keep everything the app needs inside it. Copies are
+snapshots with a new initial commit: history is not retained, and sources containing
+submodules, symlinks, or Git metadata are rejected. Archives are limited to 32 MiB
+compressed, 64 MiB extracted, 16 MiB per file, and 5,000 entries. Use the canonical
+repository URL because archive redirects are rejected.
+
+## Default names
+
+| Parameter | Purpose |
+| --- | --- |
+| `project-name` | Suggests a name for the Wasmer app. |
+| `repository-name` | Suggests a name for the new GitHub repository when copying a source. |
+
+Names are suggestions. Visitors can change them, and an unavailable name must be
+changed before creation can complete. `repository-name` does not rename an
+existing repository imported with `repository`.
+
+## Environment variables
+
+Use `env` to list the variable names your app requires, separated by commas.
+Visitors supply the values before deployment. Optional `envDefaults` values
+pre-fill the form; visitors can edit them.
+
+| Parameter | Value |
+| --- | --- |
+| `env` | Comma-separated names, such as `API_TOKEN,API_BASE_URL`. |
+| `envDefaults` | A JSON object mapping names listed in `env` to string values. |
+| `envDescription` | Text explaining what the variables are for. |
+| `envLink` | An HTTPS documentation URL explaining where to get the values. |
+
+```js copy
+const url = new URL('https://wasmer.io/deploy')
+url.search = new URLSearchParams({
+  template: 'flask-starter',
+  env: 'API_TOKEN,API_BASE_URL',
+  envDefaults: JSON.stringify({
+    API_BASE_URL: 'https://api.example.com',
+  }),
+  envDescription: 'Enter your own API token and confirm the public API endpoint.',
+  envLink: 'https://example.com/docs/configuration',
+}).toString()
+```
+
+<Callout type="warning">
+  Put only public configuration in `envDefaults`. A deploy URL is visible in
+  source code, browser history, and shared messages. Never include passwords,
+  API keys, tokens, or database credentials. Ask visitors to enter those values
+  in the form.
+</Callout>
+
+Default values must be strings, and each key must also appear in `env`. Use
+`"true"` instead of `true`, for example. Environment variables are configured on
+the created app; see [managing app secrets](/edge/learn/secrets) to update them
+after deployment.
+
+## Build settings
+
+| Parameter | Purpose |
+| --- | --- |
+| `install-command` | Sets the dependency installation command. |
+| `build-command` | Sets the command that builds the app. |
+| `start-command` | Sets the command that starts the app on Wasmer. This is a Wasmer-specific option. |
+| `root-directory` | Selects the app directory within the source repository. |
+
+Only set commands that match your project's language and framework. Visitors
+should review commands and the repository before deploying. The link configures
+the creation form; it does not run a command when someone views the button.
+
+`start-command` is the production start command. It is not an alias for Vercel's
+`dev-command`, which describes a local development server.
+
+For configuration checked into the repository, see
+[App Configuration](/edge/configuration).
+
+## Show a demo
+
+Add a demo card to help visitors understand the app they are creating. All four
+fields are required together:
+
+| Parameter | Value |
+| --- | --- |
+| `demo-title` | A short title. |
+| `demo-description` | A description of the example app. |
+| `demo-url` | The demo's HTTPS address. |
+| `demo-image` | An HTTPS address for the preview image. |
+
+```js copy
+const url = new URL('https://wasmer.io/deploy')
+url.search = new URLSearchParams({
+  template: 'flask-starter',
+  'demo-title': 'My Flask starter',
+  'demo-description': 'A small API ready to customize.',
+  'demo-url': 'https://example.com/demo',
+  'demo-image': 'https://example.com/demo.png',
+}).toString()
+```
+
+Replace the example addresses with a working demo and image. Use an image you are
+allowed to share and make it available without authentication.
+
+## Return to your website
+
+Set `redirect-url` to an HTTPS page on your website when visitors should return
+after a successful deployment. Wasmer adds public deployment information to the
+callback URL. The return happens automatically only after deployment succeeds.
+The setup form shows the destination host before the visitor deploys.
+
+| Callback query parameter | Value |
+| --- | --- |
+| `project-name` | The deployed Wasmer app name. |
+| `project-dashboard-url` | The app's Wasmer dashboard URL. |
+| `deployment-dashboard-url` | The app's deployment list URL. |
+| `deployment-url` | The completed version's public URL. |
+| `repository-url` | The copied or imported repository URL, when available. |
+
+Existing query parameters on the return URL are preserved, except the callback
+fields above, which Wasmer fills with the completed deployment's values.
+
+Treat callback values as information displayed in a browser. They are not a
+signed receipt or proof that the visitor controls an app. Do not use them to grant
+account access. A failed deployment does not trigger a success callback.
+
+Callbacks do not include API tokens, environment-variable values, or a deployment
+hook. Integrations, developer branding, and hook provisioning need separate
+platform support; see [compatibility](#vercel-parameter-compatibility).
+
+## Limits
+
+- Links can contain up to 12,000 encoded characters. Each value must be nonempty
+  and contain no control characters. Empty defaults inside `envDefaults` are allowed,
+  but visitors must fill every required variable before deployment.
+- Use up to 50 unique environment names, each up to 128 characters. Names start
+  with a letter or underscore and contain only letters, digits, and underscores.
+- Each environment default can contain up to 1,000 characters. Defaults are JSON
+  strings, not numbers or booleans.
+- App names use lowercase letters, digits, and hyphens, up to 63 characters.
+  Repository names allow letters, digits, dots, underscores, and hyphens, up to
+  100 characters.
+- Branches or tags can contain slashes and use up to 250 characters. `branch`
+  applies to repository sources; registered templates select their own source ref.
+- Root directories are relative paths up to 512 characters. Commands are single-line
+  strings up to 2,000 characters.
+- Demo titles use up to 100 characters; demo and environment descriptions use up
+  to 1,000. Metadata links must be public HTTPS URLs, up to 2,048 characters, without
+  credentials or custom ports.
+
+## URL rules
+
+- Use `https://wasmer.io/deploy` and exactly one source parameter.
+- Use `URLSearchParams` to encode values once. Do not manually encode a value and
+  then pass the result through `URLSearchParams` again.
+- Use the documented parameter names with their exact capitalization.
+- Provide each parameter only once. Do not combine `template`, `repository`, and
+  `repository-url` in the same link.
+- Use repository root URLs without credentials, query strings, or fragments.
+  Set the branch and directory separately.
+- Keep secrets out of every parameter, including callback URLs.
+- When writing an HTML link by hand, write `&amp;` between query parameters.
+  Markdown and plain URLs use `&`.
+
+Invalid links show the generator with an error instead of starting app creation.
+
+## Vercel parameter compatibility
+
+Moving a button from Vercel requires changing both the destination URL and any
+unsupported settings. The table covers the 25 parameters documented across
+Vercel's [source](https://vercel.com/docs/deploy-button/source),
+[environment variables](https://vercel.com/docs/deploy-button/environment-variables),
+[demo](https://vercel.com/docs/deploy-button/demo),
+[callback](https://vercel.com/docs/deploy-button/callback),
+[integrations](https://vercel.com/docs/deploy-button/integrations), and
+[build settings](https://vercel.com/docs/deploy-button/build-settings) references.
+
+| Parameter | Wasmer support | Behavior or missing prerequisite |
+| --- | --- | --- |
+| `repository-url` | Supported with a different destination | Public GitHub, GitLab, or Bitbucket source; the copy is created in GitHub. |
+| `project-name` | Supported | Default Wasmer app name. |
+| `repository-name` | Supported | Default name for the copied GitHub repository. |
+| `env` | Supported | Required variable names. |
+| `envDefaults` | Supported | Public string defaults for keys listed in `env`. |
+| `envDescription` | Supported | Help text for the required variables. |
+| `envLink` | Supported | HTTPS configuration documentation. |
+| `demo-title` | Supported | Requires the other three demo fields. |
+| `demo-description` | Supported | Requires the other three demo fields. |
+| `demo-url` | Supported | Requires the other three demo fields. |
+| `demo-image` | Supported | Requires the other three demo fields. |
+| `redirect-url` | Supported with a different response | Returns public Wasmer deployment information after success. |
+| `root-directory` | Supported | Selected source directory; a copied directory becomes the new repository root. |
+| `build-command` | Supported | Build command for the app. |
+| `install-command` | Supported | Dependency installation command. |
+| `developer-id` | Not available | Requires an integration identity and branding system. |
+| `production-deploy-hook` | Not available | Requires creation and delivery of a deploy hook. |
+| `external-id` | Not available | Requires an integration callback flow. |
+| `integration-ids` | Not available | Requires an integration installation flow. |
+| `skippable-integrations` | Not available | Requires optional integration installation. |
+| `products` | Not available | Requires integration product provisioning. |
+| `stores` | Not available | Requires store provisioning through the button. |
+| `dev-command` | Not available | Local development command; does not map to `start-command`. |
+| `ignore-command` | Not available | Requires a build-skipping control. |
+| `output-directory` | Not available | Requires a dedicated output-directory control. |
+
+Wasmer also provides `template`, the existing-repository `repository` option,
+`branch`, and `start-command`. These are Wasmer-specific options.
+
+This is not full Vercel feature parity. In particular, accepting a GitLab or
+Bitbucket source does not provide destination accounts or authentication for those
+providers. Unsupported parameters do not create integrations, stores, or hooks.
+
+## Troubleshooting
+
+### The link shows an invalid-link error
+
+Check that it contains one source, uses the documented parameter names, and has
+no repeated parameters. Confirm `envDefaults` is a JSON object with string values
+and keys listed in `env`. If you provide a demo, include all four fields.
+
+### The repository cannot be copied
+
+The `repository-url` source must be public on a supported host. Confirm its branch
+and selected directory exist. The visitor must connect GitHub and have permission
+to create the destination repository. Try a different destination name if it is
+already taken.
+
+### I cannot import an existing repository
+
+The `repository` option needs access to the original GitHub repository. Ensure
+the Wasmer GitHub connection can access it, including any organization approval.
+See [Wasmer for GitHub](/edge/git/wasmer-for-github).
+
+### The copied app cannot find files
+
+When copying a subdirectory, only that directory is included. Move shared files
+inside it or copy the entire repository and adjust the app configuration.
+
+### The deployment fails
+
+Read the build or runtime error, verify the commands, and supply all required
+environment variables. A button can prepare the form; it cannot make an
+incompatible application deploy successfully. See
+[supported frameworks and languages](/edge/learn/supported-frameworks-and-languages)
+and [logging](/edge/observability/logging).
+
+### Copying the snippet fails
+
+Select the code shown by the generator and copy it manually. Browser permissions
+can prevent access to the clipboard.
