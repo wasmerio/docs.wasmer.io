@@ -21,7 +21,7 @@ authors who want to build links themselves.
 
 ### Choose a source
 
-Choose a [Wasmer template](https://wasmer.io/templates), copy a public Git
+Choose a [Wasmer template](https://wasmer.io/templates), copy a public GitHub
 repository, or import an existing GitHub repository. See
 [source options](#source-options) for the difference.
 
@@ -84,7 +84,7 @@ Every link needs exactly one of these parameters:
 | Parameter | What happens | Example value |
 | --- | --- | --- |
 | `template` | Opens a published Wasmer template. Its configuration controls the creation flow. | `flask-starter` |
-| `repository-url` | Copies a public GitHub, GitLab, or Bitbucket repository into a new repository in the visitor's GitHub account. | `https://github.com/owner/starter` |
+| `repository-url` | Copies a public GitHub repository into a new repository in the visitor's connected GitHub account or organization. | `https://github.com/owner/starter` |
 | `repository` | Imports an existing GitHub repository that the visitor can access. It does not create a copy. | `https://github.com/owner/existing-app` |
 
 Use `repository-url` when sharing a starter with other developers. Use
@@ -93,9 +93,9 @@ repository. A public source does not grant permission to import it as an existin
 repository.
 
 <Callout type="info">
-  Public sources can come from GitHub, GitLab, or Bitbucket. The destination for
-  a copied repository is GitHub. Creating destination repositories in GitLab or
-  Bitbucket is not supported.
+  Public source copying supports GitHub only. GitLab and Bitbucket source support
+  is deferred. The visitor must connect GitHub and install the Wasmer GitHub App
+  in the destination account or organization.
 </Callout>
 
 ### Branches and subdirectories
@@ -108,7 +108,7 @@ const url = new URL('https://wasmer.io/deploy')
 url.search = new URLSearchParams({
   'repository-url': 'https://github.com/owner/examples',
   branch: 'feature/starter',
-  'root-directory': 'examples/web-app',
+  'root-directory': 'examples/Café app',
   'project-name': 'my-web-app',
   'repository-name': 'my-web-app',
 }).toString()
@@ -116,14 +116,29 @@ url.search = new URLSearchParams({
 console.log(url.toString())
 ```
 
-Replace `owner/examples` and the branch with your public repository. Paths are
-relative to the repository root. For a copied source, the selected directory
-becomes the root of the new repository, on its `main` branch. Files outside that
+Replace `owner/examples`, the branch, and the folder with your public repository's
+values. Omit `branch` to use its default branch, or supply a valid Git branch or
+tag name, such as `feature/starter`, `release+preview`, or `v1.0`. Folder paths are
+relative to the repository root and can contain spaces and Unicode, as in
+`examples/Café app`. Use `/` between folders; absolute paths, `.` or `..` path
+segments, `.git` segments, backslashes, and control characters are rejected.
+Use `.` alone, or omit `root-directory`, to select the whole repository.
+
+For a copied source, the selected directory's contents become the root of the new
+repository, on its `main` branch. Files outside that
 directory are not included; keep everything the app needs inside it. Copies are
 snapshots with a new initial commit: history is not retained, and sources containing
 submodules, symlinks, or Git metadata are rejected. Archives are limited to 32 MiB
 compressed, 64 MiB extracted, 16 MiB per file, and 5,000 entries. Use the canonical
 repository URL because archive redirects are rejected.
+
+<Callout type="warning">
+  Folder copying is for self-contained examples. An app that depends on a shared
+  package, a lockfile, or workspace configuration outside its folder will lose
+  those files in the copy. This flow does not select an app folder while retaining
+  the rest of a shared workspace. Copy the whole repository and configure its
+  build separately when those outside files are required.
+</Callout>
 
 ## Default names
 
@@ -257,13 +272,18 @@ platform support; see [compatibility](#vercel-parameter-compatibility).
 - App names use lowercase letters, digits, and hyphens, up to 63 characters.
   Repository names allow letters, digits, dots, underscores, and hyphens, up to
   100 characters.
-- Branches or tags can contain slashes and use up to 250 characters. `branch`
-  applies to repository sources; registered templates select their own source ref.
-- Root directories are relative paths up to 512 characters. Commands are single-line
+- Branches or tags must be valid Git ref names, can contain slashes, and use up to
+  250 UTF-8 bytes. Names such as `feature/starter` and `release+preview` are valid;
+  spaces, `..`, `@{`, control characters, and Git's reserved ref characters are not.
+  `branch` applies to repository sources; registered templates select their own source ref.
+- Root directories are safe relative paths up to 512 UTF-8 bytes, including spaces
+  and Unicode. Commands are single-line
   strings up to 2,000 characters.
 - Demo titles use up to 100 characters; demo and environment descriptions use up
   to 1,000. Metadata links must be public HTTPS URLs, up to 2,048 characters, without
   credentials or custom ports.
+
+Unicode characters can use more than one byte in the branch and folder limits.
 
 ## URL rules
 
@@ -294,7 +314,7 @@ Vercel's [source](https://vercel.com/docs/deploy-button/source),
 
 | Parameter | Wasmer support | Behavior or missing prerequisite |
 | --- | --- | --- |
-| `repository-url` | Supported with a different destination | Public GitHub, GitLab, or Bitbucket source; the copy is created in GitHub. |
+| `repository-url` | GitHub sources only | A public GitHub source is copied into a connected GitHub account or organization. GitLab and Bitbucket sources are deferred. |
 | `project-name` | Supported | Default Wasmer app name. |
 | `repository-name` | Supported | Default name for the copied GitHub repository. |
 | `env` | Supported | Required variable names. |
@@ -323,9 +343,9 @@ Vercel's [source](https://vercel.com/docs/deploy-button/source),
 Wasmer also provides `template`, the existing-repository `repository` option,
 `branch`, and `start-command`. These are Wasmer-specific options.
 
-This is not full Vercel feature parity. In particular, accepting a GitLab or
-Bitbucket source does not provide destination accounts or authentication for those
-providers. Unsupported parameters do not create integrations, stores, or hooks.
+This is not full Vercel feature parity. GitLab and Bitbucket sources and
+destinations are not supported. Unsupported parameters do not create integrations,
+stores, or hooks.
 
 ## Troubleshooting
 
@@ -337,7 +357,7 @@ and keys listed in `env`. If you provide a demo, include all four fields.
 
 ### The repository cannot be copied
 
-The `repository-url` source must be public on a supported host. Confirm its branch
+The `repository-url` source must be public on GitHub. Confirm its branch
 and selected directory exist. The visitor must connect GitHub and have permission
 to create the destination repository. Try a different destination name if it is
 already taken.
@@ -350,8 +370,10 @@ See [Wasmer for GitHub](/edge/git/wasmer-for-github).
 
 ### The copied app cannot find files
 
-When copying a subdirectory, only that directory is included. Move shared files
-inside it or copy the entire repository and adjust the app configuration.
+When copying a subdirectory, its contents become the new repository root and files
+outside it are excluded. Keep all required files inside that directory, or copy
+the entire repository and adjust the app configuration. Shared workspace builds
+are not preserved by selecting only one app folder.
 
 ### The deployment fails
 
