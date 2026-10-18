@@ -78,6 +78,19 @@ import { Cards, Card, FileTree } from '@components/nextra-theme'
   assert.match(markdown, /```text\nsrc\/\n {2}main\.rs\n```/)
 })
 
+test('preserves a canonical linked image through aliased MDX components', async () => {
+  const { markdown } = await transform(`
+import { Anchor as BadgeLink, Image as BadgeImage } from '@components/nextra-theme'
+
+<BadgeLink href="https://wasmer.io/deploy?template=flask-starter" className="x:inline-flex">
+  <BadgeImage src="/deploy-button.svg" alt="Deploy to Wasmer" width={216} height={44} />
+</BadgeLink>
+`)
+
+  assert.match(markdown, /\[!\[Deploy to Wasmer\]\(\/deploy-button\.svg\)\]\(https:\/\/wasmer\.io\/deploy\?template=flask-starter\)/)
+  assert.doesNotMatch(markdown, /<(?:BadgeLink|BadgeImage)/)
+})
+
 test('rewrites aliases, relative links, and docs.wasmer.io redirects', () => {
   assert.equal(
     rewriteDocumentationUrl('/javascript-sdk/explainers/troubleshooting#node', {

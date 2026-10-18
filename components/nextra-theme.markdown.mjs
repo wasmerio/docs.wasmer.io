@@ -8,6 +8,23 @@ function strongLabel(label) {
   ])
 }
 
+export async function anchorToMarkdown(node, context) {
+  const children = await context.transformChildren(node)
+  return [{
+    type: 'link',
+    url: context.getStringAttribute(node, 'href'),
+    children: children.flatMap(child => child.type === 'paragraph' ? child.children : [child]),
+  }]
+}
+
+export async function imageToMarkdown(node, context) {
+  return [{
+    type: 'image',
+    url: context.getStringAttribute(node, 'src'),
+    alt: context.getStringAttribute(node, 'alt'),
+  }]
+}
+
 export async function calloutToMarkdown(node, context) {
   const type = context.getOptionalStringAttribute(node, 'type') || 'note'
   const emoji = context.getOptionalStringAttribute(node, 'emoji')
@@ -155,10 +172,12 @@ export async function fileTreeChildToMarkdown(node, context) {
 }
 
 export const nextraMarkdownComponents = {
+  Anchor: anchorToMarkdown,
   Callout: calloutToMarkdown,
   Card: cardToMarkdown,
   Cards: cardsToMarkdown,
   FileTree: fileTreeToMarkdown,
+  Image: imageToMarkdown,
   'FileTree.File': fileTreeChildToMarkdown,
   'FileTree.Folder': fileTreeChildToMarkdown,
   Steps: stepsToMarkdown,
