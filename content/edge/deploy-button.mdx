@@ -1,4 +1,4 @@
-import { Callout, Steps, Tab, Tabs } from '@components/nextra-theme'
+import { Anchor, Callout, Image, Steps, Tab, Tabs } from '@components/nextra-theme'
 
 # Deploy to Wasmer button
 
@@ -7,7 +7,9 @@ visitors can create their own app from your project. The button opens Wasmer wit
 the source and settings you choose. Visitors sign in, review the configuration,
 and deploy.
 
-[![Deploy to Wasmer](/deploy-button.svg)](https://wasmer.io/deploy?template=flask-starter)
+<Anchor href="https://wasmer.io/deploy?template=flask-starter" className="x:inline-flex">
+  <Image src="/deploy-button.svg" alt="Deploy to Wasmer" width={216} height={44} />
+</Anchor>
 
 **[Open the button generator →](https://wasmer.io/deploy)**
 
@@ -54,7 +56,7 @@ the generator to use your own project.
 <Tab>
 
 ```html copy
-<a href="https://wasmer.io/deploy?template=flask-starter">
+<a href="https://wasmer.io/deploy?template=flask-starter" style="display:inline-flex">
   <img
     src="https://wasmer.io/deploy/button.svg"
     alt="Deploy to Wasmer"
