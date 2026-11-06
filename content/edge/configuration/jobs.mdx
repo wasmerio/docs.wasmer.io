@@ -13,16 +13,28 @@ Each job consists of the following fields:
 
 - **name** *(str, required)* – A unique name for the job.
 - **trigger** *(str, required)* – Defines when the job should run.
-  - Use a duration such as `15m`, `1h`, or `24h` for simple interval
-    schedules.
-  - Use a cron expression, such as `'*/15 * * * *'` for every 15
-    minutes.
+  - Use a duration such as `15m`, `1h`, or `1h30m` for simple interval
+    schedules. Supported units are `s`, `m`, `h` and `d`.
+  - Use a five-field cron expression, such as `'*/15 * * * *'` for every
+    15 minutes.
   - Use `pre-deployment` to run before a new app version is created.
   - Use `post-deployment` to run after a new app version is created.
 - **action** *(required)* – Specifies the task to run. More details
-  in the [next section](#job-actions). A job can:
-  - Run a command using `execute`.
-  - Make an HTTP request using `fetch`.
+  in the [next section](#job-actions). A job must set exactly one of:
+  - `execute` to run a command.
+  - `fetch` to make an HTTP request.
+- **retries** *(int, Optional)* – The maximum number of times the job
+  should retry upon failure. Defaults to `0`.
+- **timeout** *(duration, Optional)* – The maximum time a job is
+  allowed to run before timing out (e.g., `'10m'` for 10 minutes).
+  Defaults to `180s`.
+- **max_schedule_drift** *(duration, Optional)* – If a scheduled run
+  cannot start within this time of when it was due, it is skipped and
+  the job waits for its next run (e.g., `'10m'` for 10 minutes).
+  Defaults to `180s`.
+
+`retries`, `timeout` and `max_schedule_drift` are set on the job itself,
+next to `trigger` and `action`, not inside `execute` or `fetch`.
 
 Fully working examples configuration can be found
 [here](#example-jobs-configuration).
@@ -62,11 +74,6 @@ two types of actions for a job:
    - `package` *(str, Optional)* – Package source override for this job.
    - `cli_args` *(List[str], Optional)* – Arguments for the command.
    - `env` *(map[str, str], Optional)* – Environment variables.
-   - `retries` *(int, Optional)* – Maximum retry count.
-   - `timeout` *(duration, Optional)* – Maximum runtime. Defaults to
-     `180s`.
-   - `max_schedule_drift` *(duration, Optional)* – Maximum allowed delay
-     before a scheduled job is considered late. Defaults to `180s`.
 
 2. **Making an HTTP request (`fetch`)**
 
@@ -84,22 +91,20 @@ two types of actions for a job:
        expect:
          status_codes: [200, 204]
    ```
-   - `path` *(str, Optional)* – The request URL path. Defaults to `/`.
+   - `path` *(str, required)* – The request URL path.
    - `method` *(str, Optional)* – HTTP method. Defaults to `GET`.
    - `headers` *(List[Header], Optional)* – HTTP headers passed as a list of
      `name`/`value` pairs.
    - `body` *(str, Optional)* – Request body.
+   - `timeout` *(duration, Optional)* – Maximum time to wait for a response.
+     Only used when the job-level `timeout` is not set; otherwise the
+     job-level `timeout` applies.
    - `expect.status_codes` *(List[int], Optional)* – Expected HTTP status
      codes.
    - `expect.body_includes` *(str, Optional)* – Text that must be present
      in the response body.
    - `expect.body_regex` *(str, Optional)* – Regular expression that must
      match the response body.
-   - `retries` *(int, Optional)* – Maximum retry count.
-   - `timeout` *(duration, Optional)* – Maximum time to wait for a response.
-     Defaults to `180s`.
-   - `max_schedule_drift` *(duration, Optional)* – Maximum allowed delay
-     before a scheduled job is considered late. Defaults to `180s`.
 
 ## Example Jobs Configuration
 
@@ -152,6 +157,8 @@ package: wasmer/bash
 jobs:
   - name: write-heartbeat
     trigger: '*/15 * * * *'
+    retries: 2
+    max_schedule_drift: 5m
     action:
       execute:
         command: bash
@@ -168,12 +175,12 @@ package: wasmer/static-web-server
 jobs:
   - name: prepare-release
     trigger: pre-deployment
+    timeout: 5m
     action:
       execute:
         package: wasmer/bash
         command: bash
         cli_args: ["-lc", "echo preparing release"]
-        timeout: 5m
 ```
 
 ### Post deployment job
