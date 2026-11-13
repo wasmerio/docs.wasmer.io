@@ -2,12 +2,14 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import redirects from '../redirects.config.mjs'
+import { renderLlmsFull, renderLlmsTxt, renderRobots, renderSitemap } from './ai-docs/crawl.mjs'
 import { renderPageIndex } from './ai-docs/index.mjs'
 import { transformDocumentation } from './ai-docs/transform.mjs'
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const contentRoot = path.join(repoRoot, 'content')
-const outputRoot = path.join(repoRoot, 'public', 'ai-docs')
+const publicRoot = path.join(repoRoot, 'public')
+const outputRoot = path.join(publicRoot, 'ai-docs')
 
 async function findDocumentationFiles(directory) {
   const result = []
@@ -61,7 +63,7 @@ async function main() {
     const destination = path.join(outputRoot, page.outputPath)
     await fs.mkdir(path.dirname(destination), { recursive: true })
     await fs.writeFile(destination, markdown)
-    generated.push({ ...page, tree })
+    generated.push({ ...page, markdown, tree })
   }
 
   const indexPage = generated.find(page => page.route === '/')
@@ -93,7 +95,14 @@ async function main() {
     })
   }
 
+  // Crawl files for search engines and AI assistants, built from the same page list.
+  await fs.writeFile(path.join(publicRoot, 'robots.txt'), renderRobots())
+  await fs.writeFile(path.join(publicRoot, 'sitemap.xml'), renderSitemap(generated))
+  await fs.writeFile(path.join(publicRoot, 'llms.txt'), renderLlmsTxt(generated))
+  await fs.writeFile(path.join(publicRoot, 'llms-full.txt'), renderLlmsFull(generated))
+
   console.log(`Generated ${pages.length} AI docs pages and ${assets.size} assets in public/ai-docs`)
+  console.log('Generated public/robots.txt, public/sitemap.xml, public/llms.txt and public/llms-full.txt')
 }
 
 function visitUrls(node, callback) {
