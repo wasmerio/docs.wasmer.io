@@ -19,6 +19,13 @@ const KEY_PAGES = [
   ['/graphql-api', 'GraphQL API'],
 ]
 
+// Key pages are a curated summary, so they never include CLI pages (those stay in the full index).
+const CLI_MENTION = /\bCLI\b|command[- ]line/i
+
+export function isCliPage(page) {
+  return /(^|\/)cli(\/|$)/i.test(page.route) || CLI_MENTION.test(getPageTitle(page))
+}
+
 export function pageUrl(route) {
   return route === '/' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${route}`
 }
@@ -56,7 +63,7 @@ function escapeLinkText(value) {
 /** llms.txt: what the docs cover, the key pages, and a link to every page's Markdown copy. */
 export function renderLlmsTxt(pages) {
   const byRoute = new Map(pages.map(page => [page.route, page]))
-  const keyPages = KEY_PAGES.filter(([route]) => byRoute.has(route)).map(([route, summary]) => {
+  const keyPages = KEY_PAGES.filter(([route]) => byRoute.has(route) && !isCliPage(byRoute.get(route))).map(([route, summary]) => {
     const page = byRoute.get(route)
     const title = escapeLinkText(getPageTitle(page))
     return `- [${title}](${SITE_ORIGIN}/ai-docs/${page.outputPath}): ${summary}. Web page: ${pageUrl(route)}`

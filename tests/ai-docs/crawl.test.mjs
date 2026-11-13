@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { pageUrl, renderLlmsFull, renderLlmsTxt, renderRobots, renderSitemap } from '../../scripts/ai-docs/crawl.mjs'
+import { isCliPage, pageUrl, renderLlmsFull, renderLlmsTxt, renderRobots, renderSitemap } from '../../scripts/ai-docs/crawl.mjs'
 
 function page(route, outputPath, title, markdown = `# ${title}\n\nBody of ${title}.\n`) {
   return {
@@ -60,4 +60,24 @@ test('llms-full.txt contains every page body with its source URL', () => {
   for (const { route, title } of pages.map(p => ({ route: p.route, title: p.tree.children[0].children[0].value }))) {
     assert.ok(text.includes(`Source: ${pageUrl(route)}\n\n# ${title}`), title)
   }
+})
+
+test('llms.txt key pages never include CLI pages, which stay in the full index', () => {
+  const withCli = [
+    ...pages,
+    page('/edge/cli', 'edge/cli.md', 'Managing your Wasmer Edge apps with the wasmer CLI'),
+    page('/runtime/cli', 'runtime/cli.md', 'wasmer run CLI'),
+  ]
+  const text = renderLlmsTxt(withCli)
+  const [, keyPages] = text.split('## Key pages\n\n')
+  const keySection = keyPages.split('\n## ')[0]
+  assert.doesNotMatch(keySection, /\bCLI\b|command[- ]line/i)
+  assert.match(text.split('## All pages')[1], /edge\/cli\.md/)
+  assert.equal(isCliPage(withCli.at(-1)), true)
+  assert.equal(isCliPage(pages[0]), false)
+})
+
+test('the hand-written parts of llms.txt do not mention a CLI', () => {
+  const text = renderLlmsTxt(pages)
+  assert.doesNotMatch(text.split('## All pages')[0], /\bCLI\b|command[- ]line/i)
 })
