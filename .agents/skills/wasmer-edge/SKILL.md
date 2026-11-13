@@ -115,8 +115,8 @@ wasmer app secrets import --from-file .env --update-existing --redeploy
 ## Database
 
 - Declare `capabilities.database.engine` and exactly one database-capable
-  region (`fr-roub1` or `ca-beau1`). One database per app. The engine is
-  immutable after creation.
+  region (`fr-roub1`). One database per app. The engine is immutable after
+  creation.
 - The platform injects exactly five env vars: `DB_HOST`, `DB_PORT`,
   `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`. There is no `DATABASE_URL`.
   Ports are not standard — never hardcode 3306 or 5432.
