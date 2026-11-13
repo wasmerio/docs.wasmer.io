@@ -14,8 +14,10 @@ The overview of the Wasmer ecosystem can be found in `pages/index.mdx`:
 
 `.agents/skills/` holds productized Agent Skills (agentskills.io format)
 that ship with the docs: `wasmer-cli-usage` (run, build, package, and debug
-programs with the wasmer CLI) and `wasmer-edge` (deploy and maintain apps
-on Wasmer Edge, with a GraphQL cookbook in `references/`). `.claude` is a
+programs with the wasmer CLI), `wasmer-edge` (deploy and maintain apps
+on Wasmer Edge, with a GraphQL cookbook in `references/`), and
+`sign-in-with-wasmer` (add Wasmer as an OpenID Connect login provider to
+an app; verified against the backend source). `.claude` is a
 symlink to `.agents`. Keep the skills in sync with the pages they overlap;
 their facts are verified against the CLI, so trust them over stale prose.
 
