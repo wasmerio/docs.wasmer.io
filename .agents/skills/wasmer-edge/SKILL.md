@@ -51,7 +51,8 @@ wasmer deploy --owner <owner> --non-interactive
   Deploy with `--no-default` to publish a canary version without
   activation. The canary gets its own URL. Promote it later (see
   Versions and rollback).
-- Git-linked deploys: connect the GitHub repo from the app dashboard.
+- Git-linked deploys: connect the GitHub repo in the dashboard
+  (dashboard.wasmer.io): app → Settings → Git.
   After that, a push to the production branch deploys. Before the link
   exists, a push does nothing — keep using `wasmer deploy`.
 - App identifier for all `wasmer app` commands: `owner/name`, an alias,
@@ -199,7 +200,7 @@ own URL, then activate it.
 
 ## Domains
 
-- Dashboard: app → Settings → Domains → Add Domain. CLI:
+- Dashboard (dashboard.wasmer.io): app → Domains → Add domain. CLI:
   `wasmer domain list|get|get-zone-file|sync-zone-file|register`.
 - The API returns the exact DNS records to create
   (`expectedDnsRecords`). Show these to the user — do not guess record

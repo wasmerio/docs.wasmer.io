@@ -74,8 +74,9 @@ Make sure this is what you want before deploying!
 
 You can inspect volumes in two ways:
 
-* in the web frontend on your app dashboard:
-  Go to the "Storage" tab - you will see a list of volumes with their size.
+* in the [Wasmer dashboard](https://dashboard.wasmer.io): open your app and
+  go to the "Storage" tab - you will see a list of volumes with their mount
+  path and usage.
 * using the CLI:
 
 ```bash copy
@@ -103,10 +104,14 @@ This will print a record for each S3-enabled volume with its S3 endpoint,
 access key and secret key in the JSON format. The available formats are
 `rclone` (the default), `json`, `yaml` and `table`.
 
+You can also do both in the dashboard: in your app's "Storage" tab, open the
+volume's actions menu, choose "S3 access" and turn on "Enable S3 access". The
+dialog then shows the endpoint, access key and secret key.
+
 <Callout type="info">
 To browse a volume's files in the browser, open the "Storage" tab on your app
-dashboard and click "Go to File Explorer". You can also manage files remotely
-over [SFTP](/edge/learn/ssh/sftp).
+dashboard and click "Browse files" next to the volume. You can also manage
+files remotely over [SFTP](/edge/learn/ssh/sftp).
 </Callout>
 
 ### Configuring rclone
