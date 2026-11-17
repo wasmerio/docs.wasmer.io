@@ -11,13 +11,15 @@ You can attach your own domain to a WordPress app from the dashboard and then po
 
 ## Add the domain in Wasmer
 
-1. Open your app in the Wasmer dashboard.
-2. Click **Settings**.
-3. Select **Domains** in the sidebar.
-4. Enter the domain you want to use. A dialog opens with two routing options.
-5. Choose a routing option: add `www.yourdomain.com` and redirect the root domain to it (recommended), or add the domain exactly as entered.
+1. Open your app in the [Wasmer dashboard](https://dashboard.wasmer.io).
+2. Select **Domains** in the sidebar.
+3. Click **Add domain**.
+4. Enter your domain, such as `yourdomain.com`, and click **Continue**. A dialog opens with routing options.
+5. Keep the recommended option: redirect `yourdomain.com` to `www.yourdomain.com`. The other options are marked **Coming soon**.
 6. Check **Make this domain the default once verified** if you want it to be your primary hostname.
-7. Click **Add**.
+7. Click **Add domain**.
+
+A subdomain other than `www`, such as `blog.yourdomain.com`, has no routing options: click **Add domain** right after you enter it.
 
 Apex domains cannot be added without redirection: if you enter a root domain such as `yourdomain.com`, you must redirect it to a subdomain like `www.yourdomain.com`. Support for apex domains without redirection is coming soon.
 
@@ -25,20 +27,20 @@ Apex domains cannot be added without redirection: if you enter a root domain suc
 If your domain has existing `AAAA` records at your DNS provider, remove them. Stale `AAAA` records break domain verification and traffic routing.
 </Callout>
 
-<ImageLoader img={domainsAdd} alt="Domain settings page with a custom domain being added" />
+<ImageLoader img={domainsAdd} alt="Domains tab with the Add domain button" />
 
-<ImageLoader img={domainModal} alt="Add domain modal with the recommended www domain option selected" />
+<ImageLoader img={domainModal} alt="Add apex and www domains dialog with the recommended redirect option selected" />
 
 ## Point DNS records
 
-After the domain is added, follow the DNS records shown in the modal.
+After the domain is added, each new domain in the list shows the DNS record to create under **DNS verification required**.
 
 1. Copy the exact values shown by Wasmer.
 2. Create the required records at your DNS provider.
 3. Wait for DNS propagation.
-4. Return to the Wasmer dashboard and click **Refresh**.
+4. Return to the Wasmer dashboard and click **Check DNS** next to each domain.
 
-<ImageLoader img={domainDns} alt="DNS instructions showing the root A record and www CNAME record" />
+<ImageLoader img={domainDns} alt="DNS records to create: a CNAME record for www and an A record for the root domain, each with a Check DNS button" />
 
 In the common setup shown above:
 

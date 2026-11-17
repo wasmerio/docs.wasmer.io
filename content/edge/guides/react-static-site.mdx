@@ -159,28 +159,23 @@ wasmer deploy
   
 Expect output similar to this:
 ```shell
-Loaded app from: /path/to/your/directory/app.yaml
+Loading local package (manifest path: /path/to/your/directory/.)
+✔ Correctly built package locally
+✔ Package correctly uploaded
+✔ Successfully pushed release to namespace <your-username> on the registry
+✔ Successfully tagged package <your-username>/react-edge-tutorial@0.1.0
 
-Publish new version of package '<your-username>/react-edge-tutorial'? yes
-Publishing package...
-[1/2] ⬆️   Uploading...
-[2/2] 📦  Publishing...
-Successfully published package `<your-username>/react-edge-tutorial@0.1.1` # Notice the version number
-Waiting for package to become available.....
-Package '<your-username>/react-edge-tutorial@0.1.1' published successfully!
+Deploying app <your-username>-react-edge-tutorial (<your-username>) to Wasmer Edge...
 
-Deploying app <your-username>-react-edge-tutorial...
+✔ App <your-username>-react-edge-tutorial (<your-username>) deployed successfully.
 
- ✅ App <your-username>-react-edge-tutorial was successfully deployed!
+Live:    https://<your-username>-react-edge-tutorial.wasmer.app
+Manage:  https://wasmer.io/apps/<your-username>/<your-username>-react-edge-tutorial
 
-> App URL: https://<your-username>-react-edge-tutorial.wasmer.app
-> Versioned URL: https://v1piztzfz41v.id.wasmer.app # 🌐 You can access our URL too
-> Admin dashboard: https://wasmer.io/apps/<your-username>/<your-username>-react-edge-tutorial
-
-Waiting for the app to become reachable...
-(You can safely exit now with CTRL-C)
+Waiting for new deployment to become available...
+(You can safely stop waiting now with CTRL-C)
 .
-App is now reachable!
+𖥔 Deployment complete
 ```
 
 <Callout type="info" emoji="ℹ️">
@@ -188,8 +183,9 @@ App is now reachable!
 </Callout>
 
 <Callout type="info" emoji="ℹ️">
-  `wasmer deploy` publishes your package and bumps the patch version by default
-  (`--bump`, e.g. `0.1.0` → `0.1.1`). You can check all the available options
+  `wasmer deploy` publishes your package. If that version is already published,
+  it asks whether to bump the patch version (e.g. `0.1.0` → `0.1.1`); pass
+  `--bump` to bump without asking. You can check all the available options
   with `wasmer deploy --help` or click [here](/edge/cli) to see the full
   documentation.
 </Callout>

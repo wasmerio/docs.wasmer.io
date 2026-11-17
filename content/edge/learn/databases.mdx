@@ -29,14 +29,14 @@ If you do not specify an engine, you get MySQL. This keeps older apps, API clien
 
 ### From the app dashboard
 
-1. Open your app in the [Wasmer dashboard](https://wasmer.io).
+1. Open your app in the [Wasmer dashboard](https://dashboard.wasmer.io).
 2. Open the **Databases** tab.
-3. Click **Create database**. This button is only shown while the app has no database.
-4. In the **New database** dialog, enter a name. See [Database names](#database-names).
+3. Click **Add database**.
+4. In the **Add database** dialog, enter a name under **Database name (optional)**, or leave it blank to get a generated name. See [Database names](#database-names).
 5. Under **Engine**, select **MySQL** or **PostgreSQL**. MySQL is selected by default.
-6. Click **Create database**. The button shows **Creating database…** while Wasmer provisions the database.
+6. Click **Create database**. The button shows **Creating…** while Wasmer provisions the database.
 
-When provisioning completes, the dialog closes and a database card appears. The card shows the engine, **Host**, **Port**, **Name**, **Username**, and masked **Password**. If provisioning fails, the error is shown inside the dialog and you can try again.
+When provisioning completes, the dialog closes and the database appears in the list with its connection details open: **Host**, **Port**, **Database**, **Username**, and masked **Password**, each with the environment variable that holds it. If provisioning fails, the error is shown inside the dialog and you can try again.
 
 ### From `app.yaml`
 
@@ -67,7 +67,7 @@ Use `engine: mysql` for MySQL. If your app should live in a specific [database r
 
 ### From the repo import and upload flows
 
-The **Import from Git** and **Deploy from upload** flows on wasmer.io include an **Enable Database** section. Turn it on and select **MySQL** or **PostgreSQL** in the engine dropdown. MySQL is selected by default. The database is provisioned during the first autobuild deployment.
+The **Import from GitHub** and **Upload your project** flows on [wasmer.io/new](https://wasmer.io/new) include an **Enable Database** section. Turn it on and select **MySQL** or **PostgreSQL** in the engine dropdown. MySQL is selected by default. The database is provisioned during the first autobuild deployment.
 
 ## Database names
 
@@ -80,7 +80,7 @@ Database names are validated by the backend:
 - The name must not start with an underscore.
 - The name must be unique across all Wasmer databases. If the name is taken, creation fails with ``Database with name `<name>` already exists``.
 
-When you deploy through `app.yaml` without a name, Wasmer generates one in the form `db_xxxxxxxx`.
+When you leave the name blank in the dashboard, or deploy through `app.yaml` without a name, Wasmer generates one in the form `db_xxxxxxxx`.
 
 ## Connection variables
 
@@ -125,7 +125,7 @@ Do not hardcode these hostnames. Use `DB_HOST`, which always points to the corre
 
 Wasmer databases accept TLS connections. The server certificate is issued by a private certificate authority, so your client cannot verify the chain against public root certificates. Configure your client to use TLS without chain verification (for example `sslmode=require`). Do not turn TLS off.
 
-To connect from your own machine, first get the credentials from the database card in the dashboard, or from the CLI:
+To connect from your own machine, first get the credentials from the database's connection details in the dashboard, or from the CLI:
 
 ```bash
 wasmer app database list --with-password
@@ -217,7 +217,7 @@ After the database exists, the app and the database stay in the same region.
 
 ## View credentials
 
-From the dashboard, open the **Databases** tab. The database card shows **Host**, **Port**, **Name**, and **Username**. Click the eye icon on the **Password** row to reveal the password. Every value has a copy button.
+From the dashboard, open the **Databases** tab and click the database name to show its connection details: **Host**, **Port**, **Database**, and **Username**. Click the eye icon next to the **Password** to reveal it. Every value has a copy button.
 
 From the CLI:
 
@@ -233,10 +233,11 @@ wasmer app database list --with-password
 
 If credentials leaked, or you rotate them on a schedule, use the rotation action:
 
-1. Open the **Databases** tab.
-2. Click **Rotate Credentials** on the database card.
+1. Open the **Databases** tab and click the database name to show its connection details.
+2. Click **Rotate credentials**.
+3. Confirm with **Rotate credentials** in the dialog.
 
-Rotation starts immediately; there is no confirmation step. Both the **username** and the **password** change. The card and the injected `DB_USERNAME` and `DB_PASSWORD` variables update automatically. Your app receives the new values without a new deployment.
+Both the **username** and the **password** change. The connection details and the injected `DB_USERNAME` and `DB_PASSWORD` variables update automatically. Your app receives the new values without a new deployment.
 
 <Callout type="warning">
 The old credentials stop working as soon as rotation completes. Update external clients (local tools, CI jobs) with the new values.
@@ -244,15 +245,15 @@ The old credentials stop working as soon as rotation completes. Update external 
 
 ## Delete a database
 
-1. Open the **Databases** tab.
-2. Click **Delete database** on the database card.
+1. Open the **Databases** tab and click the database name to show its connection details.
+2. Click **Delete database**.
 3. Confirm with **Delete database** in the dialog.
 
 <Callout type="warning">
 Deletion drops the database and its user immediately. All data in the database is destroyed. If you need the data, export it first (`pg_dump` / `mysqldump`), or ask [support](/edge/support) about a backup restore.
 </Callout>
 
-After deletion, the **Create database** button returns. The injected `DB_*` variables keep their old values until you create a new database or redeploy.
+After deletion, the **Databases** tab shows **No databases yet**. The injected `DB_*` variables keep their old values until you create a new database or redeploy.
 
 ## Change the engine
 
@@ -268,7 +269,7 @@ Changing the engine of an existing database is not supported; delete the databas
 
 ## Database explorer
 
-Click **Go to DB Explorer** on the database card to open an [Adminer](https://www.adminer.org/) session in a new browser tab. You are logged in automatically. The explorer works for both engines.
+Click **Open database explorer** in the database's connection details to open an [Adminer](https://www.adminer.org/) session in a new browser tab. You are logged in automatically. The explorer works for both engines.
 
 Use it to inspect tables, run queries, and verify data. For WordPress apps, see [WordPress database management](/edge/wordpress-hosting/database-management).
 
@@ -310,7 +311,7 @@ Make sure that your client uses `DB_HOST` and `DB_PORT`. The managed instances d
 The server certificate is issued by a private certificate authority. Configure the client to require TLS without chain verification: `sslmode=require` for PostgreSQL clients, `ssl: { rejectUnauthorized: false }` for `pg` in Node.js. Do not turn TLS off.
 
 **Provisioning failed in the dashboard**
-The error message is shown in the **New database** dialog. Failed attempts do not leave a partial database behind, so you can retry. If the error persists, contact [support](/edge/support).
+The error message is shown in the **Add database** dialog. Failed attempts do not leave a partial database behind, so you can retry. If the error persists, contact [support](/edge/support).
 
 ## Related pages
 

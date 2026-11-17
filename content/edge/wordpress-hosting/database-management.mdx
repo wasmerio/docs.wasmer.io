@@ -8,22 +8,22 @@ import dbAdminer from '@assets/deploy/wordpress-hosting/db-adminer.png';
 
 Each WordPress app includes a managed MySQL database. WordPress apps always use MySQL; other engines are not available for WordPress. For databases on non-WordPress apps, including PostgreSQL, see the [Databases documentation](/edge/learn/databases).
 
-The simplest way to inspect the database is through the built-in DB Explorer, which opens an Adminer UI in your browser.
+The simplest way to inspect the database is through the database explorer, which opens Adminer in your browser.
 
 ## Open the database in Adminer
 
-1. Open the **Databases** tab for your app.
-2. Review the database card if you need the host, port, username, or password.
-3. Click **Go to DB Explorer**.
+1. Open your app in the [Wasmer dashboard](https://dashboard.wasmer.io) and select **Databases** in the sidebar.
+2. Click the database name to show its connection details, such as the host, port, username, and password.
+3. Click **Open database explorer**. Adminer opens in a new tab.
 4. Browse WordPress tables such as `wp_options`, `wp_posts`, `wp_users`, and `wp_terms`.
 
-<ImageLoader img={dbLogin} alt="Database card in the Wasmer dashboard with the DB Explorer button" />
+<ImageLoader img={dbLogin} alt="Databases tab with the database connection details and the Open database explorer button" />
 
 <ImageLoader img={dbAdminer} alt="Adminer database explorer showing WordPress tables" />
 
 ## When to use it
 
-The DB Explorer is useful when you need to:
+The database explorer is useful when you need to:
 
 - Inspect WordPress tables directly
 - Verify a setting in `wp_options`

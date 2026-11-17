@@ -33,8 +33,8 @@ Now, let's re-deploy the app
 wasmer deploy
 ```
 
-After deployment completes, you can open your app's dashboard, printed in the deployment status: `-> Dashboard:  https://wasmer.io/apps/...`.
-To see the persistent volume under the storage tab (e.g. https://wasmer.io/apps/{username}/{appname}/storage).
+After deployment completes, you can open your app's dashboard, printed in the deployment status: `Manage:  https://wasmer.io/apps/...`.
+To see the persistent volume, go to the **Storage** tab.
 All the data that your application creates under the mounted directory will persist through app crashes, restarts and updates. 
 The volumes are also s3 compatible.
 You can enable S3 access per volume and use any s3 client to retrieve and upload data
@@ -44,7 +44,7 @@ You can enable S3 access per volume and use any s3 client to retrieve and upload
 
 <ImageLoader
   img={dashboard}
-  alt={"app dashboard"}
+  alt={"Storage tab of an app in the Wasmer dashboard, with the data volume and its Browse files button"}
   className="bg-[#111111] rounded-lg p-4 dark:bg-transparent"
 />
 
@@ -65,10 +65,12 @@ You can provide these credentials to any s3 client for accessing your volume.
 
 By default the credentials are printed as an rclone configuration snippet for connecting to your volume; `--format=rclone` selects it explicitly, and `json`, `yaml` and `table` formats are also available
 
-## via wasmer.io
-In the storage section of your app's dashboard, you can see your volumes. 
+## via the Wasmer dashboard
+In the **Storage** tab of your app in the [Wasmer dashboard](https://dashboard.wasmer.io), you can see your volumes. 
 
-Clicking "Explore files" on a volume opens a file explorer to browse its files
+Clicking **Browse files** next to a volume opens a file explorer in a new browser tab to browse its files
+
+You can also turn on S3 access there: open the volume's actions menu and choose **S3 access**. The dialog shows the endpoint, access key and secret key
 
 You can also manage files remotely over [SFTP](/edge/learn/ssh/sftp)
 

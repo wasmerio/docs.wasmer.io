@@ -7,7 +7,7 @@ import addDomain from "@assets/deploy/domains/add-domain.png";
 
 You can point any custom subdomains or domains to your application by **updating the DNS records** of your domain.
 
-Please go to your app's dashboard settings and click on the `Domains` tab.
+Please open your app in the [Wasmer dashboard](https://dashboard.wasmer.io) and click on the `Domains` tab.
 
 You will see a list of domains that are already configured for your app.
 
@@ -16,7 +16,9 @@ You will see a list of domains that are already configured for your app.
 
 ## Adding a new domain
 
-To add a new domain, type it into the search field, click on the `Add` button and follow the instructions.
+To add a new domain, click on the `Add domain` button, type the domain into the `Domain` field, click on `Add domain` and follow the DNS instructions shown for the new domain.
+
+For an apex domain such as `example.com`, or its `www` subdomain, the button reads `Continue` instead. The next step sets up the two as a pair, with `example.com` redirecting to `www.example.com`.
 
 <ImageLoader img={addDomain} alt="Add Domain" />
 
