@@ -10,12 +10,12 @@ WordPress content that must survive redeploys lives in a persistent volume. In m
 
 ## Open the Volume UI
 
-1. Open the **Storage** tab for your app.
-2. Find the `wp-content` volume.
-3. Click **Explore files**.
+1. Open your app in the [Wasmer dashboard](https://dashboard.wasmer.io) and select **Storage** in the sidebar.
+2. Find the volume with the path `/app/wp-content`.
+3. Click **Browse files**. The file explorer opens in a new tab.
 4. Browse persistent directories such as `plugins`, `themes`, and `uploads`.
 
-<ImageLoader img={volumeDashboard} alt="Storage tab showing the wp-content volume" />
+<ImageLoader img={volumeDashboard} alt="Storage tab showing the /app/wp-content volume and its Browse files button" />
 
 <ImageLoader img={volumeExplorer} alt="Volume file explorer showing the wp-content directory" />
 

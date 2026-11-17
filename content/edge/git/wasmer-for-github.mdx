@@ -17,22 +17,25 @@ deployed from GitHub.
 
 ### Open your Wasmer Edge app
 
-Go to the Wasmer dashboard and select the app you want to connect to GitHub.
+Go to the [Wasmer dashboard](https://dashboard.wasmer.io) and select the app
+you want to connect to GitHub.
 
 ### Connect GitHub
 
-Open the app's Git settings and choose GitHub as the repository provider. If
-prompted, authorize Wasmer to access the repository or organization.
+Open the app's **Settings**, then **Git**. If prompted, click
+**Continue with GitHub** to connect your GitHub account, then install the
+GitHub App on the account or organization that owns the repository.
 
 ### Select the repository and branch
 
-Choose the repository that contains your app and select the branch Wasmer should
-deploy to production. Most apps use `main`.
+Find the repository that contains your app and click **Connect**. Then, under
+**Deployment settings**, set the **Deployment branch** Wasmer should deploy to
+production. Most apps use `main`.
 
 ### Deploy
 
-Save the connection and deploy the app. Future changes pushed to the selected
-branch can be deployed through the Git connection.
+Click **Save changes**. From now on, every commit pushed to the deployment
+branch creates a new deployment.
 
 </Steps>
 
@@ -53,7 +56,8 @@ you can deploy that branch from a local checkout with `wasmer deploy`.
 
 Make sure the GitHub account or organization connected to Wasmer has access to
 the repository. For organization repositories, an organization owner may need to
-approve access.
+approve access. To grant access to more repositories, click
+**Adjust GitHub App permissions** below the repository list.
 
 ### A deployment did not start
 
